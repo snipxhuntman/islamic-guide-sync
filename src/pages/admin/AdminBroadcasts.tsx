@@ -108,7 +108,7 @@ const AdminBroadcasts: React.FC = () => {
     setForm({ text: "", textEn: "", textAr: "", imageUrl: "", active: true });
   };
 
-  const ImageUpload = ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }) => (
+  const renderImageUpload = (inputRef: React.RefObject<HTMLInputElement>) => (
     <>
       <input
         ref={inputRef}
@@ -117,7 +117,7 @@ const AdminBroadcasts: React.FC = () => {
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) handleImageUpload(file, (url) => setForm({ ...form, imageUrl: url }));
+          if (file) handleImageUpload(file, (url) => setForm((prev) => ({ ...prev, imageUrl: url })));
           e.target.value = "";
         }}
       />
@@ -136,7 +136,7 @@ const AdminBroadcasts: React.FC = () => {
     </>
   );
 
-  const SlideForm = ({ onSubmit, submitLabel, inputRef }: { onSubmit: () => void; submitLabel: string; inputRef: React.RefObject<HTMLInputElement> }) => (
+  const renderSlideForm = (onSubmit: () => void, submitLabel: string, inputRef: React.RefObject<HTMLInputElement>) => (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
         <Switch checked={form.active} onCheckedChange={(v) => setForm({ ...form, active: v })} />
@@ -156,7 +156,7 @@ const AdminBroadcasts: React.FC = () => {
           <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} rows={2} />
         </div>
       </div>
-      <ImageUpload inputRef={inputRef} />
+      {renderImageUpload(inputRef)}
       <div className="flex gap-2">
         <Button size="sm" onClick={onSubmit}><Check className="w-4 h-4 mr-1" /> {submitLabel}</Button>
         <Button size="sm" variant="ghost" onClick={() => { setShowAdd(false); cancelEdit(); }}>
@@ -179,7 +179,7 @@ const AdminBroadcasts: React.FC = () => {
       </div>
 
       {showAdd && (
-        <Card><CardContent className="pt-4"><SlideForm onSubmit={handleAdd} submitLabel={t.add} inputRef={fileRef} /></CardContent></Card>
+        <Card><CardContent className="pt-4">{renderSlideForm(handleAdd, t.add, fileRef)}</CardContent></Card>
       )}
 
       <div className="space-y-3">
@@ -187,7 +187,7 @@ const AdminBroadcasts: React.FC = () => {
           <Card key={b.id} className={!b.active ? "opacity-50" : ""}>
             <CardContent className="pt-4">
               {editing === b.id ? (
-                <SlideForm onSubmit={() => handleSaveEdit(b.id)} submitLabel={t.save} inputRef={editFileRef} />
+                renderSlideForm(() => handleSaveEdit(b.id), t.save, editFileRef)
               ) : (
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3 flex-1">

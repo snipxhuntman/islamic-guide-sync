@@ -130,7 +130,7 @@ const AdminMessages: React.FC = () => {
     setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   };
 
-  const ImageSection = ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }) => (
+  const renderImageSection = (inputRef: React.RefObject<HTMLInputElement>) => (
     <div className="space-y-2">
       <input
         ref={inputRef}
@@ -139,7 +139,7 @@ const AdminMessages: React.FC = () => {
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) handleImageUpload(file, (url) => setForm({ ...form, imageUrl: url }));
+          if (file) handleImageUpload(file, (url) => setForm((prev) => ({ ...prev, imageUrl: url })));
           e.target.value = "";
         }}
       />
@@ -159,15 +159,7 @@ const AdminMessages: React.FC = () => {
     </div>
   );
 
-  const MessageForm = ({
-    onSubmit,
-    submitLabel,
-    inputRef,
-  }: {
-    onSubmit: () => void;
-    submitLabel: string;
-    inputRef: React.RefObject<HTMLInputElement>;
-  }) => (
+  const renderMessageForm = (onSubmit: () => void, submitLabel: string, inputRef: React.RefObject<HTMLInputElement>) => (
     <div className="space-y-3">
       <div>
         <label className="text-xs font-medium text-muted-foreground">{t.germanRequired}</label>
@@ -181,7 +173,7 @@ const AdminMessages: React.FC = () => {
         <label className="text-xs font-medium text-muted-foreground">{t.arabic}</label>
         <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
       </div>
-      <ImageSection inputRef={inputRef} />
+      {renderImageSection(inputRef)}
       {/* Hyperlink fields */}
       <div className="space-y-2 border-t border-border pt-3">
         <div>
@@ -228,7 +220,7 @@ const AdminMessages: React.FC = () => {
       {showAdd && (
         <Card>
           <CardContent className="pt-4">
-            <MessageForm onSubmit={handleAdd} submitLabel={t.add} inputRef={fileInputRef} />
+            {renderMessageForm(handleAdd, t.add, fileInputRef)}
           </CardContent>
         </Card>
       )}
@@ -238,7 +230,7 @@ const AdminMessages: React.FC = () => {
           <Card key={m.id}>
             <CardContent className="pt-4">
               {editing === m.id ? (
-                <MessageForm onSubmit={() => handleSaveEdit(m.id)} submitLabel={t.save} inputRef={editFileInputRef} />
+                renderMessageForm(() => handleSaveEdit(m.id), t.save, editFileInputRef)
               ) : (
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-1">
