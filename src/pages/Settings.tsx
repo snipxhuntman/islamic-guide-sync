@@ -21,19 +21,14 @@ const defaultSettings: NotifSettings = {
   prayer: true,
   ringtone: "adhan1",
   prayerAlerts: {
-    fajr: 15,
-    shuruk: 10,
-    dhuhr: 15,
-    asr: 15,
-    maghrib: 10,
-    isha: 15,
+    fajr: 15, shuruk: 10, dhuhr: 15, asr: 15, maghrib: 10, isha: 15,
   },
   broadcast: true,
   events: true,
 };
 
 const Settings: React.FC = () => {
-  const { t, language, setLanguage, isRTL } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
 
   const [notif, setNotif] = useState<NotifSettings>(() => {
@@ -93,27 +88,20 @@ const Settings: React.FC = () => {
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground mb-3">{t("notifications")}</h2>
           <div className="space-y-3 bg-card rounded-xl border border-border p-4">
-            {/* All notifications */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-foreground">{t("allNotifications")}</span>
-              <div className={isRTL ? "switch-flip" : ""}>
-                <Switch checked={notif.all} onCheckedChange={(v) => updateNotif("all", v)} />
-              </div>
+              <Switch checked={notif.all} onCheckedChange={(v) => updateNotif("all", v)} />
             </div>
 
             {notif.all && (
               <>
-                {/* Prayer notifications */}
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-foreground">{t("prayerNotifications")}</span>
-                  <div className={isRTL ? "switch-flip" : ""}>
-                    <Switch checked={notif.prayer} onCheckedChange={(v) => updateNotif("prayer", v)} />
-                  </div>
+                  <Switch checked={notif.prayer} onCheckedChange={(v) => updateNotif("prayer", v)} />
                 </div>
 
                 {notif.prayer && (
                   <>
-                    {/* Ringtone */}
                     <div className="flex items-center justify-between ps-4">
                       <span className="text-xs text-muted-foreground">{t("ringtone")}</span>
                       <Select value={notif.ringtone} onValueChange={(v) => updateNotif("ringtone", v)}>
@@ -128,7 +116,6 @@ const Settings: React.FC = () => {
                       </Select>
                     </div>
 
-                    {/* Per-prayer alert times */}
                     {prayerKeys.map((key) => (
                       <div key={key} className="flex items-center justify-between ps-4">
                         <span className="text-xs text-muted-foreground">{t(key)}</span>
@@ -152,20 +139,14 @@ const Settings: React.FC = () => {
                   </>
                 )}
 
-                {/* Broadcast */}
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-foreground">{t("broadcastNotifications")}</span>
-                  <div className={isRTL ? "switch-flip" : ""}>
-                    <Switch checked={notif.broadcast} onCheckedChange={(v) => updateNotif("broadcast", v)} />
-                  </div>
+                  <Switch checked={notif.broadcast} onCheckedChange={(v) => updateNotif("broadcast", v)} />
                 </div>
 
-                {/* Events */}
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-foreground">{t("eventNotifications")}</span>
-                  <div className={isRTL ? "switch-flip" : ""}>
-                    <Switch checked={notif.events} onCheckedChange={(v) => updateNotif("events", v)} />
-                  </div>
+                  <Switch checked={notif.events} onCheckedChange={(v) => updateNotif("events", v)} />
                 </div>
               </>
             )}

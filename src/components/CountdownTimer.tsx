@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { getPrayerTimesForDate, getNextPrayer } from "@/data/prayerTimes";
 
 const CountdownTimer: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [nextPrayerName, setNextPrayerName] = useState("");
 
@@ -16,7 +16,6 @@ const CountdownTimer: React.FC = () => {
       const next = getNextPrayer(prayers);
       if (!next) {
         setNextPrayerName(t("fajr"));
-        // Time until tomorrow's fajr (approximate)
         const now = new Date();
         const midnight = new Date(now);
         midnight.setHours(24, 0, 0, 0);
@@ -53,6 +52,14 @@ const CountdownTimer: React.FC = () => {
   const circumference = 2 * Math.PI * 70;
   const strokeDashoffset = circumference * (1 - progress);
 
+  // For Arabic, reverse the order: seconds | minutes | hours (RTL reading)
+  const timeParts = [
+    { value: timeLeft.hours, label: t("hours") },
+    { value: timeLeft.minutes, label: t("minutes") },
+    { value: timeLeft.seconds, label: t("seconds") },
+  ];
+  const displayParts = isRTL ? [...timeParts].reverse() : timeParts;
+
   return (
     <div className="flex flex-col items-center gap-3">
       <p className="text-sm text-muted-foreground font-medium">
@@ -77,16 +84,16 @@ const CountdownTimer: React.FC = () => {
             className="transition-all duration-1000"
           />
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center" dir="ltr">
           <span className="text-2xl font-bold text-foreground tabular-nums">
             {String(timeLeft.hours).padStart(2, "0")}:
             {String(timeLeft.minutes).padStart(2, "0")}:
             {String(timeLeft.seconds).padStart(2, "0")}
           </span>
           <div className="flex gap-3 text-[10px] text-muted-foreground mt-1">
-            <span>{t("hours")}</span>
-            <span>{t("minutes")}</span>
-            <span>{t("seconds")}</span>
+            {displayParts.map((p, i) => (
+              <span key={i}>{p.label}</span>
+            ))}
           </div>
         </div>
       </div>

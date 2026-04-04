@@ -3,7 +3,7 @@ export interface ClassItem {
   title: string;
   titleEn: string;
   titleAr: string;
-  day: string; // "monday" etc
+  day: string;
   description: string;
   descriptionEn: string;
   descriptionAr: string;
@@ -30,7 +30,10 @@ export const classesData: ClassItem[] = [
     isCancelled: false,
     links: {
       youtube: "https://youtube.com",
+      instagram: "https://instagram.com",
       telegram: "https://t.me",
+      facebook: "https://facebook.com",
+      tiktok: "https://tiktok.com",
     },
   },
   {
@@ -46,6 +49,9 @@ export const classesData: ClassItem[] = [
     links: {
       youtube: "https://youtube.com",
       instagram: "https://instagram.com",
+      telegram: "https://t.me",
+      facebook: "https://facebook.com",
+      tiktok: "https://tiktok.com",
     },
   },
   {
@@ -59,7 +65,11 @@ export const classesData: ClassItem[] = [
     descriptionAr: "دورة اللغة العربية - المستوى الأول",
     isCancelled: true,
     links: {
+      youtube: "https://youtube.com",
+      instagram: "https://instagram.com",
       telegram: "https://t.me",
+      facebook: "https://facebook.com",
+      tiktok: "https://tiktok.com",
     },
   },
   {
@@ -74,8 +84,10 @@ export const classesData: ClassItem[] = [
     isCancelled: false,
     links: {
       youtube: "https://youtube.com",
-      facebook: "https://facebook.com",
+      instagram: "https://instagram.com",
       telegram: "https://t.me",
+      facebook: "https://facebook.com",
+      tiktok: "https://tiktok.com",
     },
   },
   {
@@ -90,6 +102,9 @@ export const classesData: ClassItem[] = [
     isCancelled: false,
     links: {
       youtube: "https://youtube.com",
+      instagram: "https://instagram.com",
+      telegram: "https://t.me",
+      facebook: "https://facebook.com",
       tiktok: "https://tiktok.com",
     },
   },

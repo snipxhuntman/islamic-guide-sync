@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { classesData } from "@/data/classes";
+import { getPrayerTimesForDate } from "@/data/prayerTimes";
 import { AlertTriangle } from "lucide-react";
+
+function addMinutesToTime(time: string, minutes: number): string {
+  const [h, m] = time.split(":").map(Number);
+  const total = h * 60 + m + minutes;
+  return `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
 
 const Classes: React.FC = () => {
   const { t, language } = useLanguage();
+
+  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const todayPrayers = useMemo(() => getPrayerTimesForDate(todayStr), [todayStr]);
+
+  const classStartTime = todayPrayers ? addMinutesToTime(todayPrayers.maghrib, 20) : null;
+  const classEndTime = todayPrayers?.isha ?? null;
 
   const getTitle = (c: typeof classesData[0]) => {
     if (language === "en") return c.titleEn;
@@ -53,7 +66,10 @@ const Classes: React.FC = () => {
                 </h3>
                 <p className="text-sm text-muted-foreground mt-0.5">{getDesc(cls)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {t(cls.day)} · {t("classTime")}: Maghrib+20 – Ischaa
+                  {t(cls.day)} · {t("classTime")}:{" "}
+                  {classStartTime && classEndTime
+                    ? `${classStartTime} – ${classEndTime}`
+                    : `${t("maghrib")}+20 – ${t("isha")}`}
                 </p>
               </div>
               {cls.isCancelled && (
