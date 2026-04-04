@@ -132,9 +132,22 @@ const AdminBroadcasts: React.FC = () => {
       {form.imageUrl ? (
         <div className="space-y-2">
           <img src={form.imageUrl} alt="Preview" className="max-h-32 rounded-lg border border-border object-contain" />
-          <Button size="sm" variant="outline" onClick={() => setForm({ ...form, imageUrl: "" })}>
-            <X className="w-3 h-3 mr-1" /> {t.removeImage}
-          </Button>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-muted-foreground">Size:</label>
+            <select
+              className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+              value={form.imageSize}
+              onChange={(e) => setForm({ ...form, imageSize: e.target.value as "small" | "medium" | "large" | "full" })}
+            >
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+              <option value="full">Full Width</option>
+            </select>
+            <Button size="sm" variant="outline" onClick={() => setForm({ ...form, imageUrl: "" })}>
+              <X className="w-3 h-3 mr-1" /> {t.removeImage}
+            </Button>
+          </div>
         </div>
       ) : (
         <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
