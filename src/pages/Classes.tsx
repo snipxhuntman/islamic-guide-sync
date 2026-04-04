@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveClasses } from "@/data/classes";
 import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
