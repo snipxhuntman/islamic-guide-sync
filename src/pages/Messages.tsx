@@ -36,10 +36,23 @@ const Messages: React.FC = () => {
     return () => clearTimeout(timer);
   }, [messagesData]);
 
+  const englishEnabled = (() => {
+    const stored = localStorage.getItem("admin-english-enabled");
+    return stored !== null ? stored === "true" : true;
+  })();
+
   const getText = (msg: typeof messagesData[0]) => {
-    if (language === "en" && msg.textEn) return msg.textEn;
+    if (language === "en" && englishEnabled && msg.textEn) return msg.textEn;
     if (language === "ar" && msg.textAr) return msg.textAr;
+    if (language === "en" && !englishEnabled) {
+      // Show German + Arabic combined
+      return null; // handled in render
+    }
     return msg.text;
+  };
+
+  const shouldShowCombined = (msg: typeof messagesData[0]) => {
+    return language === "en" && !englishEnabled;
   };
 
   // Group messages by date
@@ -96,7 +109,14 @@ const Messages: React.FC = () => {
                         "max-h-48"
                       }`} />
                     )}
-                    {getText(msg) && <p className="text-sm leading-relaxed">{getText(msg)}</p>}
+                    {shouldShowCombined(msg) ? (
+                      <div className="space-y-1.5">
+                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                        {msg.textAr && <p className="text-sm leading-relaxed" dir="rtl">{msg.textAr}</p>}
+                      </div>
+                    ) : (
+                      getText(msg) && <p className="text-sm leading-relaxed">{getText(msg)}</p>
+                    )}
                     {msg.linkUrl && (
                       <a
                         href={msg.linkUrl}

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, Edit2, Check, X, ImagePlus } from "lucide-react";
 import { getMessages, saveMessages } from "@/stores/dataStore";
 import { Message } from "@/data/messages";
@@ -31,6 +32,7 @@ const i18n = {
     linkLabel: "Link Label (DE)",
     linkLabelEn: "Link Label (EN)",
     linkLabelAr: "Link Label (AR)",
+    enableEnglish: "Enable English",
   },
   de: {
     messages: "Nachrichten",
@@ -53,6 +55,7 @@ const i18n = {
     linkLabel: "Link-Text (DE)",
     linkLabelEn: "Link-Text (EN)",
     linkLabelAr: "Link-Text (AR)",
+    enableEnglish: "Englisch aktivieren",
   },
 };
 
@@ -62,9 +65,18 @@ const AdminMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(() => getMessages());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [englishEnabled, setEnglishEnabled] = useState<boolean>(() => {
+    const stored = localStorage.getItem("admin-english-enabled");
+    return stored !== null ? stored === "true" : true;
+  });
   const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleToggleEnglish = (val: boolean) => {
+    setEnglishEnabled(val);
+    localStorage.setItem("admin-english-enabled", String(val));
+  };
 
   const persist = (updated: Message[]) => {
     setMessages(updated);
@@ -179,10 +191,12 @@ const AdminMessages: React.FC = () => {
         <label className="text-xs font-medium text-muted-foreground">{t.germanRequired}</label>
         <Textarea value={form.text} onChange={(e) => setForm({ ...form, text: e.target.value })} />
       </div>
-      <div>
-        <label className="text-xs font-medium text-muted-foreground">{t.english}</label>
-        <Textarea value={form.textEn} onChange={(e) => setForm({ ...form, textEn: e.target.value })} />
-      </div>
+      {englishEnabled && (
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">{t.english}</label>
+          <Textarea value={form.textEn} onChange={(e) => setForm({ ...form, textEn: e.target.value })} />
+        </div>
+      )}
       <div>
         <label className="text-xs font-medium text-muted-foreground">{t.arabic}</label>
         <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
@@ -229,6 +243,11 @@ const AdminMessages: React.FC = () => {
         <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newMessage}
         </Button>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <Switch checked={englishEnabled} onCheckedChange={handleToggleEnglish} />
+        <label className="text-sm font-medium text-foreground">{t.enableEnglish}</label>
       </div>
 
       {showAdd && (

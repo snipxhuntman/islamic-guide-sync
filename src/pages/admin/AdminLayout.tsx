@@ -26,9 +26,9 @@ const labels: Record<AdminLang, Record<string, string>> = {
 
 const navItems = [
   { to: "/admin/dashboard", key: "dashboard", icon: LayoutDashboard },
+  { to: "/admin/broadcasts", key: "broadcasts", icon: Radio },
   { to: "/admin/prayer-times", key: "prayerTimes", icon: CalendarDays },
   { to: "/admin/messages", key: "messages", icon: MessageSquare },
-  { to: "/admin/broadcasts", key: "broadcasts", icon: Radio },
   { to: "/admin/classes", key: "classes", icon: BookOpen },
 ];
 
