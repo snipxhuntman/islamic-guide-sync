@@ -7,7 +7,7 @@ import { getClasses, saveClasses } from "@/stores/dataStore";
 import { ClassItem } from "@/data/classes";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
+
 import { useAdminLang } from "./AdminLayout";
 import {
   Select,
@@ -197,6 +197,16 @@ const AdminClasses: React.FC = () => {
 
   const ClassForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
     <div className="space-y-3">
+      {/* Cancelled toggle - first and prominent */}
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+        <Switch
+          checked={form.isCancelled}
+          onCheckedChange={(v) => setForm({ ...form, isCancelled: v })}
+          className="scale-125"
+        />
+        <label className="text-sm font-medium text-foreground">{t.cancelled}</label>
+      </div>
+
       <div className="grid grid-cols-3 gap-2">
         <div>
           <label className="text-xs font-medium text-muted-foreground">{t.titleDe}</label>
@@ -225,20 +235,14 @@ const AdminClasses: React.FC = () => {
           <Input dir="rtl" value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">{t.day}</label>
-          <Select value={form.day} onValueChange={(v) => setForm({ ...form, day: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {DAYS.map((d) => <SelectItem key={d} value={d}>{dayLabel(d)}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-end gap-2 pb-1">
-          <label className="text-xs font-medium text-muted-foreground">{t.cancelled}</label>
-          <Switch checked={form.isCancelled} onCheckedChange={(v) => setForm({ ...form, isCancelled: v })} />
-        </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">{t.day}</label>
+        <Select value={form.day} onValueChange={(v) => setForm({ ...form, day: v })}>
+          <SelectTrigger className="w-full max-w-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {DAYS.map((d) => <SelectItem key={d} value={d}>{dayLabel(d)}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Timing section */}
@@ -262,29 +266,21 @@ const AdminClasses: React.FC = () => {
           )}
         </div>
         {form.timingMode === "auto" && (
-          <div className="bg-muted/50 rounded-lg p-3">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-muted-foreground">{t.offsetLabel}</label>
-              <span className="text-sm font-semibold text-foreground">{form.autoOffset ?? 20} {t.minutes}</span>
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={90}
-              step={1}
-              value={form.autoOffset ?? 20}
-              onChange={(e) => setForm({ ...form, autoOffset: Number(e.target.value) })}
-              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-            />
-            <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-              <span>0</span>
-              <span>15</span>
-              <span>30</span>
-              <span>45</span>
-              <span>60</span>
-              <span>75</span>
-              <span>90</span>
-            </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.offsetLabel}</label>
+            <Select
+              value={String(form.autoOffset ?? 20)}
+              onValueChange={(v) => setForm({ ...form, autoOffset: Number(v) })}
+            >
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 19 }, (_, i) => i * 5).map((v) => (
+                  <SelectItem key={v} value={String(v)}>{v} {t.minutes}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
       </div>
