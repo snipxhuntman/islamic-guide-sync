@@ -5,6 +5,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import MessageCarousel from "@/components/MessageCarousel";
 import { formatHijriDate, formatGregorianDate } from "@/utils/hijri";
 import { getLivePrayerTimesForDate, getNextPrayer, prayerKeys, PrayerName } from "@/data/prayerTimes";
+import { formatTime } from "@/utils/timeFormat";
 
 const SocialIcons = () => (
   <div className="flex justify-center gap-5 py-4">
@@ -32,7 +33,7 @@ const SocialIcons = () => (
 );
 
 const HomePrayerTimes: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
   const prayers = getLivePrayerTimesForDate(dateStr);
@@ -77,7 +78,7 @@ const HomePrayerTimes: React.FC = () => {
                 isNext ? "text-[1.125rem] font-bold" : "text-[0.9375rem] font-semibold"
               }`}
             >
-              {getPrayerTime(key)}
+              {formatTime(getPrayerTime(key), language)}
             </span>
           </div>
         );

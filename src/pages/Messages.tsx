@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveMessages } from "@/data/messages";
+import { formatTimestamp, toWesternNumerals } from "@/utils/timeFormat";
 
 function getReadMessageIds(): Set<string> {
   try {
@@ -52,16 +53,12 @@ const Messages: React.FC = () => {
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const localeMap: Record<string, string> = { de: "de-DE", en: "en-US", ar: "ar-SA" };
-    return d.toLocaleDateString(localeMap[language] || "de-DE", {
+    const formatted = d.toLocaleDateString(localeMap[language] || "de-DE", {
       weekday: "long",
       day: "numeric",
       month: "long",
     });
-  };
-
-  const formatTime = (ts: string) => {
-    const d = new Date(ts);
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return language === "ar" ? toWesternNumerals(formatted) : formatted;
   };
 
   // Sort dates oldest first so latest is at the bottom
@@ -110,7 +107,7 @@ const Messages: React.FC = () => {
                         {(language === "en" && msg.linkLabelEn) || (language === "ar" && msg.linkLabelAr) || msg.linkLabel || msg.linkUrl}
                       </a>
                     )}
-                    <p className="text-[10px] opacity-60 mt-1 text-end">{formatTime(msg.timestamp)}</p>
+                    <p className="text-[10px] opacity-60 mt-1 text-end">{formatTimestamp(msg.timestamp, language)}</p>
                   </div>
                 </div>
               ))}

@@ -3,6 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveClasses } from "@/data/classes";
 import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
 import { AlertTriangle } from "lucide-react";
+import { formatTime } from "@/utils/timeFormat";
 
 function addMinutesToTime(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);
@@ -94,7 +95,7 @@ const Classes: React.FC = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   {t(cls.day)} · {t("classTime")}:{" "}
                   {displayStart && displayEnd
-                    ? `${displayStart} – ${displayEnd}`
+                    ? `${formatTime(displayStart, language)} – ${formatTime(displayEnd, language)}`
                     : `${t("maghrib")}+20 – ${t("isha")}`}
                 </p>
               </div>
