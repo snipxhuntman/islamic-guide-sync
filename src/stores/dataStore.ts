@@ -89,6 +89,7 @@ const defaultSiteLinks: SiteLinks = {
     en: "https://www.leipziger-moschee.de/en",
     ar: "https://www.leipziger-moschee.de/ar",
   },
+  mapsUrl: "https://maps.google.com/?q=Alrahman+Moschee+Leipzig",
 };
 
 export function getSiteLinks(): SiteLinks {
