@@ -57,7 +57,13 @@ const Classes: React.FC = () => {
       </div>
 
       <div className="flex-1 px-4 mt-4 space-y-3">
-        {classes.map((cls) => (
+        {classes.map((cls) => {
+          const nextDate = getNextDateForDay(cls.day);
+          const prayers = getLivePrayerTimesForDate(nextDate);
+          const startTime = prayers ? addMinutesToTime(prayers.maghrib, 20) : null;
+          const endTime = prayers?.isha ?? null;
+
+          return (
           <div
             key={cls.id}
             className={`rounded-xl border p-4 transition-colors ${
@@ -78,8 +84,8 @@ const Classes: React.FC = () => {
                 <p className="text-sm text-muted-foreground mt-0.5">{getDesc(cls)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {t(cls.day)} · {t("classTime")}:{" "}
-                  {classStartTime && classEndTime
-                    ? `${classStartTime} – ${classEndTime}`
+                  {startTime && endTime
+                    ? `${startTime} – ${endTime}`
                     : `${t("maghrib")}+20 – ${t("isha")}`}
                 </p>
               </div>
