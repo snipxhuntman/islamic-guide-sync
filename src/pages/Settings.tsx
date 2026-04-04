@@ -96,7 +96,7 @@ const Settings: React.FC = () => {
             {/* All notifications */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-foreground">{t("allNotifications")}</span>
-              <div className={isRTL ? "switch-flip" : ""}>
+              
                 <Switch checked={notif.all} onCheckedChange={(v) => updateNotif("all", v)} />
               </div>
             </div>
@@ -106,7 +106,7 @@ const Settings: React.FC = () => {
                 {/* Prayer notifications */}
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-foreground">{t("prayerNotifications")}</span>
-                  <div className={isRTL ? "switch-flip" : ""}>
+                  
                     <Switch checked={notif.prayer} onCheckedChange={(v) => updateNotif("prayer", v)} />
                   </div>
                 </div>
@@ -155,7 +155,7 @@ const Settings: React.FC = () => {
                 {/* Broadcast */}
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-foreground">{t("broadcastNotifications")}</span>
-                  <div className={isRTL ? "switch-flip" : ""}>
+                  
                     <Switch checked={notif.broadcast} onCheckedChange={(v) => updateNotif("broadcast", v)} />
                   </div>
                 </div>
@@ -163,7 +163,7 @@ const Settings: React.FC = () => {
                 {/* Events */}
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-foreground">{t("eventNotifications")}</span>
-                  <div className={isRTL ? "switch-flip" : ""}>
+                  
                     <Switch checked={notif.events} onCheckedChange={(v) => updateNotif("events", v)} />
                   </div>
                 </div>
