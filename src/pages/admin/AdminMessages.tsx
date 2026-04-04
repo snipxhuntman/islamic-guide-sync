@@ -181,6 +181,29 @@ const AdminMessages: React.FC = () => {
         <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
       </div>
       <ImageSection inputRef={inputRef} />
+      {/* Hyperlink fields */}
+      <div className="space-y-2 border-t border-border pt-3">
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">{t.linkUrl}</label>
+          <Input value={form.linkUrl} placeholder="https://..." onChange={(e) => setForm({ ...form, linkUrl: e.target.value })} />
+        </div>
+        {form.linkUrl && (
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.linkLabel}</label>
+              <Input value={form.linkLabel} placeholder="Mehr erfahren" onChange={(e) => setForm({ ...form, linkLabel: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.linkLabelEn}</label>
+              <Input value={form.linkLabelEn} placeholder="Learn more" onChange={(e) => setForm({ ...form, linkLabelEn: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.linkLabelAr}</label>
+              <Input dir="rtl" value={form.linkLabelAr} placeholder="اقرأ المزيد" onChange={(e) => setForm({ ...form, linkLabelAr: e.target.value })} />
+            </div>
+          </div>
+        )}
+      </div>
       <div className="flex gap-2">
         <Button size="sm" onClick={onSubmit}>
           <Check className="w-4 h-4 mr-1" /> {submitLabel}
