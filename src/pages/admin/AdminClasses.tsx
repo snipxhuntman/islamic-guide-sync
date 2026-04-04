@@ -299,7 +299,7 @@ const AdminClasses: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
           {SOCIAL_KEYS.map((key) => (
             <div key={key} className="flex items-center gap-2">
               <Switch
@@ -312,7 +312,7 @@ const AdminClasses: React.FC = () => {
           ))}
         </div>
         {form.linksMode === "manual" && (
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
             {SOCIAL_KEYS.map((key) => (
               <div key={key}>
                 <label className="text-xs font-medium text-muted-foreground capitalize">{key}</label>
