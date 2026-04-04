@@ -1,0 +1,205 @@
+export type Language = "de" | "en" | "ar";
+
+export const translations: Record<Language, Record<string, string>> = {
+  de: {
+    // Navigation
+    home: "Startseite",
+    prayerTimes: "Gebetszeiten",
+    messages: "Nachrichten",
+    classes: "Unterrichte",
+    settings: "Einstellungen",
+
+    // Homepage
+    mosqueName: "Alrahman Moschee",
+    mosqueSubtitle: "Leipzig",
+    timeUntil: "Zeit bis",
+    hours: "Std",
+    minutes: "Min",
+    seconds: "Sek",
+
+    // Prayer names
+    fajr: "Fajr",
+    shuruk: "Shuruk",
+    dhuhr: "Dhuhr",
+    asr: "Asr",
+    maghrib: "Maghrib",
+    isha: "Ischaa",
+
+    // Prayer times page
+    prayer: "Gebet",
+    time: "Zeit",
+    iqama: "Iqama",
+    today: "Heute",
+    qiblaDirection: "Qibla-Richtung",
+    allowLocation: "Standort erlauben",
+    qiblaDesc: "Kompass zeigt Richtung nach Makkah",
+    locationDenied: "Standortzugriff verweigert",
+
+    // Messages
+    noMessages: "Keine Nachrichten",
+
+    // Classes
+    cancelled: "Heute kein Unterricht",
+    classTime: "Unterrichtszeit",
+    everyWeek: "Jede Woche",
+
+    // Settings
+    language: "Sprache",
+    german: "Deutsch",
+    english: "English",
+    arabic: "العربية",
+    notifications: "Benachrichtigungen",
+    allNotifications: "Alle Benachrichtigungen",
+    prayerNotifications: "Gebetsbenachrichtigungen",
+    ringtone: "Klingelton",
+    adhan1: "Adhan 1",
+    adhan2: "Adhan 2",
+    ring: "Klingeln",
+    alertBefore: "Minuten vorher",
+    broadcastNotifications: "Nachrichtenbenachrichtigungen",
+    eventNotifications: "Eventbenachrichtigungen",
+    website: "Webseite",
+    privacyPolicy: "Datenschutzerklärung",
+
+    // Privacy
+    privacyTitle: "Datenschutzerklärung",
+    privacyContent: "Diese App speichert Ihre Einstellungen lokal auf Ihrem Gerät. Es werden keine personenbezogenen Daten an Server übertragen. Der Qibla-Kompass nutzt Ihren Standort nur zur Berechnung der Gebetsrichtung und speichert keine Standortdaten.",
+
+    // Days
+    monday: "Montag",
+    tuesday: "Dienstag",
+    wednesday: "Mittwoch",
+    thursday: "Donnerstag",
+    friday: "Freitag",
+    saturday: "Samstag",
+    sunday: "Sonntag",
+  },
+  en: {
+    home: "Home",
+    prayerTimes: "Prayer Times",
+    messages: "Messages",
+    classes: "Classes",
+    settings: "Settings",
+
+    mosqueName: "Alrahman Mosque",
+    mosqueSubtitle: "Leipzig",
+    timeUntil: "Time until",
+    hours: "Hrs",
+    minutes: "Min",
+    seconds: "Sec",
+
+    fajr: "Fajr",
+    shuruk: "Sunrise",
+    dhuhr: "Dhuhr",
+    asr: "Asr",
+    maghrib: "Maghrib",
+    isha: "Isha",
+
+    prayer: "Prayer",
+    time: "Time",
+    iqama: "Iqama",
+    today: "Today",
+    qiblaDirection: "Qibla Direction",
+    allowLocation: "Allow Location",
+    qiblaDesc: "Compass points towards Makkah",
+    locationDenied: "Location access denied",
+
+    noMessages: "No messages",
+
+    cancelled: "Class cancelled today",
+    classTime: "Class time",
+    everyWeek: "Every week",
+
+    language: "Language",
+    german: "Deutsch",
+    english: "English",
+    arabic: "العربية",
+    notifications: "Notifications",
+    allNotifications: "All Notifications",
+    prayerNotifications: "Prayer Notifications",
+    ringtone: "Ringtone",
+    adhan1: "Adhan 1",
+    adhan2: "Adhan 2",
+    ring: "Ring",
+    alertBefore: "Minutes before",
+    broadcastNotifications: "Broadcast Notifications",
+    eventNotifications: "Event Notifications",
+    website: "Website",
+    privacyPolicy: "Privacy Policy",
+
+    privacyTitle: "Privacy Policy",
+    privacyContent: "This app stores your settings locally on your device. No personal data is transmitted to servers. The Qibla compass uses your location only to calculate the prayer direction and does not save any location data.",
+
+    monday: "Monday",
+    tuesday: "Tuesday",
+    wednesday: "Wednesday",
+    thursday: "Thursday",
+    friday: "Friday",
+    saturday: "Saturday",
+    sunday: "Sunday",
+  },
+  ar: {
+    home: "الرئيسية",
+    prayerTimes: "أوقات الصلاة",
+    messages: "الرسائل",
+    classes: "الدروس",
+    settings: "الإعدادات",
+
+    mosqueName: "مسجد الرحمن",
+    mosqueSubtitle: "لايبزيغ",
+    timeUntil: "الوقت حتى",
+    hours: "ساعة",
+    minutes: "دقيقة",
+    seconds: "ثانية",
+
+    fajr: "الفجر",
+    shuruk: "الشروق",
+    dhuhr: "الظهر",
+    asr: "العصر",
+    maghrib: "المغرب",
+    isha: "العشاء",
+
+    prayer: "الصلاة",
+    time: "الوقت",
+    iqama: "الإقامة",
+    today: "اليوم",
+    qiblaDirection: "اتجاه القبلة",
+    allowLocation: "السماح بالموقع",
+    qiblaDesc: "البوصلة تشير نحو مكة المكرمة",
+    locationDenied: "تم رفض الوصول للموقع",
+
+    noMessages: "لا توجد رسائل",
+
+    cancelled: "لا درس اليوم",
+    classTime: "وقت الدرس",
+    everyWeek: "كل أسبوع",
+
+    language: "اللغة",
+    german: "Deutsch",
+    english: "English",
+    arabic: "العربية",
+    notifications: "الإشعارات",
+    allNotifications: "جميع الإشعارات",
+    prayerNotifications: "إشعارات الصلاة",
+    ringtone: "نغمة الرنين",
+    adhan1: "أذان ١",
+    adhan2: "أذان ٢",
+    ring: "رنين",
+    alertBefore: "دقائق قبل",
+    broadcastNotifications: "إشعارات البث",
+    eventNotifications: "إشعارات الفعاليات",
+    website: "الموقع الإلكتروني",
+    privacyPolicy: "سياسة الخصوصية",
+
+    privacyTitle: "سياسة الخصوصية",
+    privacyContent: "يحتفظ هذا التطبيق بإعداداتك محلياً على جهازك. لا يتم إرسال أي بيانات شخصية إلى الخوادم. تستخدم بوصلة القبلة موقعك فقط لحساب اتجاه الصلاة ولا تحفظ أي بيانات موقع.",
+
+    monday: "الإثنين",
+    tuesday: "الثلاثاء",
+    wednesday: "الأربعاء",
+    thursday: "الخميس",
+    friday: "الجمعة",
+    saturday: "السبت",
+    sunday: "الأحد",
+  },
+};
