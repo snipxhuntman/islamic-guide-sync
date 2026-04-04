@@ -181,7 +181,7 @@ const QiblaCompass: React.FC = () => {
       if (diff <= 2) {
         // Locked on — one stronger vibration, max once per 2s
         if (now - lastLockedVibTime.current > 2000) {
-          vibrate(40);
+          hapticMedium();
           lastLockedVibTime.current = now;
         }
       } else if (diff <= 20) {
