@@ -93,6 +93,26 @@ const Settings: React.FC = () => {
           </div>
         </section>
 
+        {/* Time Format */}
+        <section>
+          <h2 className="text-sm font-semibold text-muted-foreground mb-3">{t("timeFormat")}</h2>
+          <div className="flex gap-2">
+            {(["24", "12"] as HourFormat[]).map((fmt) => (
+              <button
+                key={fmt}
+                onClick={() => handleHourFormatChange(fmt)}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  hourFormat === fmt
+                    ? "bg-accent text-accent-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
+              >
+                {fmt === "24" ? t("format24h") : t("format12h")}
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* Notifications */}
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground mb-3">{t("notifications")}</h2>
