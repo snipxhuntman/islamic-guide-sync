@@ -28,6 +28,7 @@ const i18n = {
     added: "Slide added", updated: "Slide updated", deleted: "Slide deleted",
     noSlides: "No slides yet.",
     textRequired: "German text or image is required",
+    link: "Hyperlink (optional)",
   },
   de: {
     title: "Startseiten-Broadcasts",
@@ -40,6 +41,7 @@ const i18n = {
     added: "Folie hinzugefügt", updated: "Folie aktualisiert", deleted: "Folie gelöscht",
     noSlides: "Noch keine Folien.",
     textRequired: "Deutscher Text oder Bild erforderlich",
+    link: "Hyperlink (optional)",
   },
 };
 
