@@ -3,6 +3,7 @@ export interface Message {
   text: string;
   textEn?: string;
   textAr?: string;
+  imageUrl?: string; // base64 data URL or external URL
   timestamp: string; // ISO date-time
 }
 

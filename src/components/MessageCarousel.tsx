@@ -31,7 +31,10 @@ const MessageCarousel: React.FC = () => {
         >
           {messages.map((msg) => (
             <div key={msg.id} className="min-w-full p-4">
-              <p className="text-sm text-card-foreground line-clamp-2">{getText(msg)}</p>
+              {msg.imageUrl && (
+                <img src={msg.imageUrl} alt="" className="rounded-lg mb-2 max-h-24 object-contain" />
+              )}
+              {getText(msg) && <p className="text-sm text-card-foreground line-clamp-2">{getText(msg)}</p>}
             </div>
           ))}
         </div>
