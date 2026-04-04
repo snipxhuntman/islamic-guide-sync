@@ -200,6 +200,9 @@ export const translations: Record<Language, Record<string, string>> = {
     classCancellationAlerts: "تنبيهات إلغاء الدروس",
     messageNotifications: "إشعارات الرسائل",
     website: "الموقع الإلكتروني",
+    timeFormat: "صيغة الوقت",
+    format24h: "24 ساعة",
+    format12h: "12 ساعة",
     privacyPolicy: "سياسة الخصوصية",
 
     privacyTitle: "سياسة الخصوصية",
