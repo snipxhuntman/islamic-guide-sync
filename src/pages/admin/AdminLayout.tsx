@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { Outlet, NavLink, Navigate, useNavigate } from "react-router-dom";
-import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe } from "lucide-react";
+import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type AdminLang = "en" | "de";
@@ -15,11 +15,11 @@ export const useAdminLang = () => useContext(AdminLangContext);
 const labels: Record<AdminLang, Record<string, string>> = {
   en: {
     dashboard: "Dashboard", prayerTimes: "Prayer Times", messages: "Messages",
-    classes: "Classes", logout: "Logout", adminPanel: "Admin Panel",
+    classes: "Classes", broadcasts: "Broadcasts", logout: "Logout", adminPanel: "Admin Panel",
   },
   de: {
     dashboard: "Dashboard", prayerTimes: "Gebetszeiten", messages: "Nachrichten",
-    classes: "Unterricht", logout: "Abmelden", adminPanel: "Admin-Bereich",
+    classes: "Unterricht", broadcasts: "Broadcasts", logout: "Abmelden", adminPanel: "Admin-Bereich",
   },
 };
 
@@ -27,6 +27,7 @@ const navItems = [
   { to: "/admin/dashboard", key: "dashboard", icon: LayoutDashboard },
   { to: "/admin/prayer-times", key: "prayerTimes", icon: CalendarDays },
   { to: "/admin/messages", key: "messages", icon: MessageSquare },
+  { to: "/admin/broadcasts", key: "broadcasts", icon: Radio },
   { to: "/admin/classes", key: "classes", icon: BookOpen },
 ];
 
