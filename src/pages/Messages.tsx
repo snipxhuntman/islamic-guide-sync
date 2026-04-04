@@ -36,10 +36,23 @@ const Messages: React.FC = () => {
     return () => clearTimeout(timer);
   }, [messagesData]);
 
+  const englishEnabled = (() => {
+    const stored = localStorage.getItem("admin-english-enabled");
+    return stored !== null ? stored === "true" : true;
+  })();
+
   const getText = (msg: typeof messagesData[0]) => {
-    if (language === "en" && msg.textEn) return msg.textEn;
+    if (language === "en" && englishEnabled && msg.textEn) return msg.textEn;
     if (language === "ar" && msg.textAr) return msg.textAr;
+    if (language === "en" && !englishEnabled) {
+      // Show German + Arabic combined
+      return null; // handled in render
+    }
     return msg.text;
+  };
+
+  const shouldShowCombined = (msg: typeof messagesData[0]) => {
+    return language === "en" && !englishEnabled;
   };
 
   // Group messages by date
