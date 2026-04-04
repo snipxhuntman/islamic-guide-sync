@@ -24,16 +24,11 @@ function generatePrayerTimes(): PrayerDay[] {
     days.push({
       date: dateStr,
       fajr: `04:${String(30 - offset).padStart(2, "0")}`,
-      fajrIqama: `04:${String(45 - offset).padStart(2, "0")}`,
       shuruk: `06:${String(10 - offset).padStart(2, "0")}`,
       dhuhr: "13:15",
-      dhuhrIqama: "13:30",
       asr: `16:${String(45 + offset).padStart(2, "0")}`,
-      asrIqama: `17:${String(0 + offset).padStart(2, "0")}`,
       maghrib: `20:${String(15 + offset).padStart(2, "0")}`,
-      maghribIqama: `20:${String(20 + offset).padStart(2, "0")}`,
       isha: `22:${String(0 + offset).padStart(2, "0")}`,
-      ishaIqama: `22:${String(15 + offset).padStart(2, "0")}`,
     });
   }
   return days;
