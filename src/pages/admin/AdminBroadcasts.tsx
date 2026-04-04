@@ -85,7 +85,7 @@ const AdminBroadcasts: React.FC = () => {
 
   const startEdit = (b: Broadcast) => {
     setEditing(b.id);
-    setForm({ text: b.text, textEn: b.textEn || "", textAr: b.textAr || "", imageUrl: b.imageUrl || "", active: b.active });
+    setForm({ text: b.text, textEn: b.textEn || "", textAr: b.textAr || "", imageUrl: b.imageUrl || "", imageSize: b.imageSize || "medium", active: b.active });
   };
 
   const handleSaveEdit = (id: string) => {
