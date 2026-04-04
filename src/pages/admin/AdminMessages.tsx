@@ -92,6 +92,7 @@ const AdminMessages: React.FC = () => {
       textEn: form.textEn || undefined,
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
+      imageSize: form.imageUrl ? form.imageSize : undefined,
       linkUrl: form.linkUrl || undefined,
       linkLabel: form.linkLabel || undefined,
       linkLabelEn: form.linkLabelEn || undefined,
