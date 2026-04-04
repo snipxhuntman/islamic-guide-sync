@@ -101,6 +101,9 @@ function formFromBroadcast(b: Broadcast): FormState {
     endDate: b.schedule?.endDate || "",
     startHour: b.schedule?.startHour || "",
     endHour: b.schedule?.endHour || "",
+    dayOfWeek: b.schedule?.dayOfWeek !== undefined ? String(b.schedule.dayOfWeek) : "",
+    endDayOfWeek: b.schedule?.endDayOfWeek !== undefined ? String(b.schedule.endDayOfWeek) : "",
+    dayOfMonth: b.schedule?.dayOfMonth !== undefined ? String(b.schedule.dayOfMonth) : "",
   };
 }
 
