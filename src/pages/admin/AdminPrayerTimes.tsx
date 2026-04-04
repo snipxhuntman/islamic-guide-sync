@@ -60,6 +60,14 @@ function generateSampleCSV(): string {
 
 const offsetOptions = Array.from({ length: 19 }, (_, i) => i * 5); // 0,5,10,...90
 
+// Generate all HH:MM values for 24h time picker
+const timeOptions: string[] = [];
+for (let h = 0; h < 24; h++) {
+  for (let m = 0; m < 60; m += 5) {
+    timeOptions.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+  }
+}
+
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
   const [hijriOffset, setHijriOffset] = useState(() => getHijriCorrection());
