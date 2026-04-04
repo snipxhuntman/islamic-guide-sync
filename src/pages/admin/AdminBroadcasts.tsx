@@ -80,10 +80,11 @@ const AdminBroadcasts: React.FC = () => {
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
       imageSize: form.imageUrl ? form.imageSize : undefined,
+      link: form.link || undefined,
       active: form.active,
     };
     persist([...items, item]);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true });
     setShowAdd(false);
     toast.success(t.added);
   };
