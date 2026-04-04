@@ -32,6 +32,7 @@ const i18n = {
     linkLabel: "Link Label (DE)",
     linkLabelEn: "Link Label (EN)",
     linkLabelAr: "Link Label (AR)",
+    enableEnglish: "Enable English",
   },
   de: {
     messages: "Nachrichten",
@@ -54,6 +55,7 @@ const i18n = {
     linkLabel: "Link-Text (DE)",
     linkLabelEn: "Link-Text (EN)",
     linkLabelAr: "Link-Text (AR)",
+    enableEnglish: "Englisch aktivieren",
   },
 };
 
