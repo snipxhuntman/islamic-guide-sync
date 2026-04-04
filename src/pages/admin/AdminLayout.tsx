@@ -20,7 +20,7 @@ const labels: Record<AdminLang, Record<string, string>> = {
   },
   de: {
     dashboard: "Dashboard", prayerTimes: "Gebetszeiten", messages: "Nachrichten",
-    classes: "Unterricht", broadcasts: "Broadcasts", logout: "Abmelden", adminPanel: "Admin-Bereich",
+    classes: "Unterricht", broadcasts: "Broadcasts", privacy: "Datenschutz", logout: "Abmelden", adminPanel: "Admin-Bereich",
   },
 };
 
