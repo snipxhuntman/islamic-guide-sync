@@ -33,6 +33,12 @@ const defaultSettings: NotifSettings = {
 const Settings: React.FC = () => {
   const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
+  const [hourFormat, setHourFormatState] = useState<HourFormat>(() => getHourFormat());
+
+  const handleHourFormatChange = (fmt: HourFormat) => {
+    setHourFormatState(fmt);
+    setHourFormat(fmt);
+  };
 
   const [notif, setNotif] = useState<NotifSettings>(() => {
     const saved = localStorage.getItem("notif-settings");
