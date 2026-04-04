@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveClasses } from "@/data/classes";
 import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
@@ -10,15 +10,25 @@ function addMinutesToTime(time: string, minutes: number): string {
   return `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 
+const DAY_INDEX: Record<string, number> = {
+  sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+  thursday: 4, friday: 5, saturday: 6,
+};
+
+function getNextDateForDay(dayName: string): string {
+  const target = DAY_INDEX[dayName] ?? 1;
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const current = now.getDay();
+  const diff = (target - current + 7) % 7; // 0 = today if same day
+  const next = new Date(now);
+  next.setDate(next.getDate() + diff);
+  return next.toISOString().split("T")[0];
+}
+
 const Classes: React.FC = () => {
   const { t, language } = useLanguage();
   const classes = getLiveClasses();
-
-  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
-  const todayPrayers = useMemo(() => getLivePrayerTimesForDate(todayStr), [todayStr]);
-
-  const classStartTime = todayPrayers ? addMinutesToTime(todayPrayers.maghrib, 20) : null;
-  const classEndTime = todayPrayers?.isha ?? null;
 
   const getTitle = (c: typeof classes[0]) => {
     if (language === "en") return c.titleEn;
@@ -47,7 +57,13 @@ const Classes: React.FC = () => {
       </div>
 
       <div className="flex-1 px-4 mt-4 space-y-3">
-        {classes.map((cls) => (
+        {classes.map((cls) => {
+          const nextDate = getNextDateForDay(cls.day);
+          const prayers = getLivePrayerTimesForDate(nextDate);
+          const startTime = prayers ? addMinutesToTime(prayers.maghrib, 20) : null;
+          const endTime = prayers?.isha ?? null;
+
+          return (
           <div
             key={cls.id}
             className={`rounded-xl border p-4 transition-colors ${
@@ -68,8 +84,8 @@ const Classes: React.FC = () => {
                 <p className="text-sm text-muted-foreground mt-0.5">{getDesc(cls)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {t(cls.day)} · {t("classTime")}:{" "}
-                  {classStartTime && classEndTime
-                    ? `${classStartTime} – ${classEndTime}`
+                  {startTime && endTime
+                    ? `${startTime} – ${endTime}`
                     : `${t("maghrib")}+20 – ${t("isha")}`}
                 </p>
               </div>
@@ -101,7 +117,8 @@ const Classes: React.FC = () => {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
