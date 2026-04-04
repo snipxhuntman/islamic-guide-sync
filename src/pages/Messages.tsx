@@ -57,7 +57,10 @@ const Messages: React.FC = () => {
               {grouped[date].map((msg) => (
                 <div key={msg.id} className="flex justify-start">
                   <div className="max-w-[85%] bg-primary text-primary-foreground rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
-                    <p className="text-sm leading-relaxed">{getText(msg)}</p>
+                    {msg.imageUrl && (
+                      <img src={msg.imageUrl} alt="" className="rounded-lg mb-2 max-h-48 object-contain" />
+                    )}
+                    {getText(msg) && <p className="text-sm leading-relaxed">{getText(msg)}</p>}
                     <p className="text-[10px] opacity-60 mt-1 text-end">{formatTime(msg.timestamp)}</p>
                   </div>
                 </div>
