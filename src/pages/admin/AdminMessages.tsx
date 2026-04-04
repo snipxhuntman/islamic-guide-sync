@@ -62,7 +62,7 @@ const AdminMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(() => getMessages());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -92,6 +92,7 @@ const AdminMessages: React.FC = () => {
       textEn: form.textEn || undefined,
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
+      imageSize: form.imageUrl ? form.imageSize : undefined,
       linkUrl: form.linkUrl || undefined,
       linkLabel: form.linkLabel || undefined,
       linkLabelEn: form.linkLabelEn || undefined,
@@ -99,7 +100,7 @@ const AdminMessages: React.FC = () => {
       timestamp: new Date().toISOString(),
     };
     persist([msg, ...messages]);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
     setShowAdd(false);
     toast.success(t.added);
   };
@@ -111,23 +112,23 @@ const AdminMessages: React.FC = () => {
 
   const startEdit = (m: Message) => {
     setEditing(m.id);
-    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "", imageUrl: m.imageUrl || "", linkUrl: m.linkUrl || "", linkLabel: m.linkLabel || "", linkLabelEn: m.linkLabelEn || "", linkLabelAr: m.linkLabelAr || "" });
+    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "", imageUrl: m.imageUrl || "", imageSize: m.imageSize || "medium", linkUrl: m.linkUrl || "", linkLabel: m.linkLabel || "", linkLabelEn: m.linkLabelEn || "", linkLabelAr: m.linkLabelAr || "" });
   };
 
   const handleSaveEdit = (id: string) => {
     persist(messages.map((m) =>
       m.id === id
-        ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, linkUrl: form.linkUrl || undefined, linkLabel: form.linkLabel || undefined, linkLabelEn: form.linkLabelEn || undefined, linkLabelAr: form.linkLabelAr || undefined }
+        ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, imageSize: form.imageUrl ? form.imageSize : undefined, linkUrl: form.linkUrl || undefined, linkLabel: form.linkLabel || undefined, linkLabelEn: form.linkLabelEn || undefined, linkLabelAr: form.linkLabelAr || undefined }
         : m
     ));
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
     toast.success(t.updated);
   };
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   };
 
   const renderImageSection = (inputRef: React.RefObject<HTMLInputElement>) => (
@@ -147,9 +148,22 @@ const AdminMessages: React.FC = () => {
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground">{t.imagePreview}</p>
           <img src={form.imageUrl} alt="Preview" className="max-h-40 rounded-lg border border-border object-contain" />
-          <Button size="sm" variant="outline" onClick={() => setForm({ ...form, imageUrl: "" })}>
-            <X className="w-3 h-3 mr-1" /> {t.removeImage}
-          </Button>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-muted-foreground">Size:</label>
+            <select
+              className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+              value={form.imageSize}
+              onChange={(e) => setForm({ ...form, imageSize: e.target.value as "small" | "medium" | "large" | "full" })}
+            >
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+              <option value="full">Full Width</option>
+            </select>
+            <Button size="sm" variant="outline" onClick={() => setForm({ ...form, imageUrl: "" })}>
+              <X className="w-3 h-3 mr-1" /> {t.removeImage}
+            </Button>
+          </div>
         </div>
       ) : (
         <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
@@ -212,7 +226,7 @@ const AdminMessages: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">{t.messages}</h1>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" }); }}>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newMessage}
         </Button>
       </div>

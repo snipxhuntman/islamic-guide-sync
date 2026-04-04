@@ -8,6 +8,13 @@ import { Switch } from "@/components/ui/switch";
 import { Broadcast, getAllBroadcasts } from "@/data/broadcasts";
 import { toast } from "sonner";
 import { useAdminLang } from "./AdminLayout";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const i18n = {
   en: {
@@ -46,7 +53,7 @@ const AdminBroadcasts: React.FC = () => {
   const [items, setItems] = useState<Broadcast[]>(() => getAllBroadcasts());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", active: true });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
   const fileRef = useRef<HTMLInputElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
 
@@ -70,10 +77,11 @@ const AdminBroadcasts: React.FC = () => {
       textEn: form.textEn || undefined,
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
+      imageSize: form.imageUrl ? form.imageSize : undefined,
       active: form.active,
     };
     persist([...items, item]);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
     setShowAdd(false);
     toast.success(t.added);
   };
@@ -85,17 +93,17 @@ const AdminBroadcasts: React.FC = () => {
 
   const startEdit = (b: Broadcast) => {
     setEditing(b.id);
-    setForm({ text: b.text, textEn: b.textEn || "", textAr: b.textAr || "", imageUrl: b.imageUrl || "", active: b.active });
+    setForm({ text: b.text, textEn: b.textEn || "", textAr: b.textAr || "", imageUrl: b.imageUrl || "", imageSize: b.imageSize || "medium", active: b.active });
   };
 
   const handleSaveEdit = (id: string) => {
     persist(items.map((b) =>
       b.id === id
-        ? { ...b, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, active: form.active }
+        ? { ...b, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, imageSize: form.imageUrl ? form.imageSize : undefined, active: form.active }
         : b
     ));
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
     toast.success(t.updated);
   };
 
@@ -105,7 +113,7 @@ const AdminBroadcasts: React.FC = () => {
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
   };
 
   const renderImageUpload = (inputRef: React.RefObject<HTMLInputElement>) => (
@@ -124,9 +132,22 @@ const AdminBroadcasts: React.FC = () => {
       {form.imageUrl ? (
         <div className="space-y-2">
           <img src={form.imageUrl} alt="Preview" className="max-h-32 rounded-lg border border-border object-contain" />
-          <Button size="sm" variant="outline" onClick={() => setForm({ ...form, imageUrl: "" })}>
-            <X className="w-3 h-3 mr-1" /> {t.removeImage}
-          </Button>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-muted-foreground">Size:</label>
+            <select
+              className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+              value={form.imageSize}
+              onChange={(e) => setForm({ ...form, imageSize: e.target.value as "small" | "medium" | "large" | "full" })}
+            >
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
+              <option value="full">Full Width</option>
+            </select>
+            <Button size="sm" variant="outline" onClick={() => setForm({ ...form, imageUrl: "" })}>
+              <X className="w-3 h-3 mr-1" /> {t.removeImage}
+            </Button>
+          </div>
         </div>
       ) : (
         <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
@@ -173,7 +194,7 @@ const AdminBroadcasts: React.FC = () => {
           <h1 className="text-2xl font-bold text-foreground">{t.title}</h1>
           <p className="text-sm text-muted-foreground">{t.desc}</p>
         </div>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", active: true }); }}>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newSlide}
         </Button>
       </div>
