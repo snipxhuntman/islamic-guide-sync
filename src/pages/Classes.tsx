@@ -68,7 +68,7 @@ const Classes: React.FC = () => {
           } else {
             const nextDate = getNextDateForDay(cls.day);
             const prayers = getLivePrayerTimesForDate(nextDate);
-            displayStart = prayers ? addMinutesToTime(prayers.maghrib, 20) : null;
+            displayStart = prayers ? addMinutesToTime(prayers.maghrib, cls.autoOffset ?? 20) : null;
             displayEnd = prayers?.isha ?? null;
           }
 

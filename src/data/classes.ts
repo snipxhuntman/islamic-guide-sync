@@ -9,6 +9,7 @@ export interface ClassItem {
   descriptionAr: string;
   isCancelled: boolean;
   timingMode: "auto" | "manual";
+  autoOffset?: number; // minutes after Maghrib (0-90), default 20
   manualStart?: string;
   manualEnd?: string;
   links: {
