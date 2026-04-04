@@ -58,7 +58,7 @@ const CountdownTimer: React.FC = () => {
     { value: timeLeft.minutes, label: t("minutes") },
     { value: timeLeft.seconds, label: t("seconds") },
   ];
-  const displayParts = isRTL ? [...timeParts].reverse() : timeParts;
+  const displayParts = timeParts;
 
   return (
     <div className="flex flex-col items-center gap-3">
