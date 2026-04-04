@@ -16,7 +16,7 @@ const i18n = {
     socialLinks: "Social Media Links",
     donationLinks: "Donation Links",
     websiteLinks: "Website Links",
-    save: "Save",
+    mapsUrl: "Google Maps Address",
     saved: "Links saved",
     german: "German",
     english: "English",
