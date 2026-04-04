@@ -209,7 +209,7 @@ const AdminClasses: React.FC = () => {
         <label className="text-sm font-medium text-foreground">{t.cancelled}</label>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div>
           <label className="text-xs font-medium text-muted-foreground">{t.titleDe}</label>
           <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
@@ -223,7 +223,7 @@ const AdminClasses: React.FC = () => {
           <Input dir="rtl" value={form.titleAr} onChange={(e) => setForm({ ...form, titleAr: e.target.value })} />
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div>
           <label className="text-xs font-medium text-muted-foreground">{t.descDe}</label>
           <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
