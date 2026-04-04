@@ -171,6 +171,7 @@ const AdminClasses: React.FC = () => {
       ...rest,
       autoOffset: rest.autoOffset ?? 20,
       linksMode: rest.linksMode ?? "manual",
+      linksVisible: { youtube: true, instagram: true, telegram: true, facebook: true, tiktok: true, ...rest.linksVisible },
       links: { youtube: "", instagram: "", telegram: "", facebook: "", tiktok: "", ...rest.links },
     });
   };
