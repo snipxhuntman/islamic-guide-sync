@@ -198,6 +198,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     privacyTitle: "سياسة الخصوصية",
     privacyContent: "يحتفظ هذا التطبيق بإعداداتك محلياً على جهازك. لا يتم إرسال أي بيانات شخصية إلى الخوادم. تستخدم بوصلة القبلة موقعك فقط لحساب اتجاه الصلاة ولا تحفظ أي بيانات موقع.",
+    donate: "تبرع",
 
     monday: "الإثنين",
     tuesday: "الثلاثاء",
