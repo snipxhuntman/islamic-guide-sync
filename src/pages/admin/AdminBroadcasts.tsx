@@ -331,8 +331,75 @@ const AdminBroadcasts: React.FC = () => {
         </div>
       )}
 
-      {/* Date & time range for recurring and once */}
-      {(form.scheduleType === "recurring" || form.scheduleType === "once") && (
+      {/* Daily: just start/end time */}
+      {form.scheduleType === "recurring" && form.recurringInterval === "daily" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.startTime}</label>
+            <Input type="time" value={form.startHour} onChange={(e) => setForm({ ...form, startHour: e.target.value })} className="text-xs" />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.endTime}</label>
+            <Input type="time" value={form.endHour} onChange={(e) => setForm({ ...form, endHour: e.target.value })} className="text-xs" />
+          </div>
+        </div>
+      )}
+
+      {/* Weekly / Biweekly: day of week + time */}
+      {form.scheduleType === "recurring" && (form.recurringInterval === "weekly" || form.recurringInterval === "biweekly") && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.dayOfWeek}</label>
+            <select className="h-9 w-full rounded-md border border-input bg-background px-3 text-xs" value={form.dayOfWeek} onChange={(e) => setForm({ ...form, dayOfWeek: e.target.value })}>
+              <option value="">—</option>
+              {t.days.map((d, i) => <option key={i} value={i}>{d}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.startTime}</label>
+            <Input type="time" value={form.startHour} onChange={(e) => setForm({ ...form, startHour: e.target.value })} className="text-xs" />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.endDayOfWeek}</label>
+            <select className="h-9 w-full rounded-md border border-input bg-background px-3 text-xs" value={form.endDayOfWeek} onChange={(e) => setForm({ ...form, endDayOfWeek: e.target.value })}>
+              <option value="">—</option>
+              {t.days.map((d, i) => <option key={i} value={i}>{d}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.endTime}</label>
+            <Input type="time" value={form.endHour} onChange={(e) => setForm({ ...form, endHour: e.target.value })} className="text-xs" />
+          </div>
+        </div>
+      )}
+
+      {/* Monthly: day of month + time */}
+      {form.scheduleType === "recurring" && form.recurringInterval === "monthly" && (
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.dayOfMonth}</label>
+              <select className="h-9 w-full rounded-md border border-input bg-background px-3 text-xs" value={form.dayOfMonth} onChange={(e) => setForm({ ...form, dayOfMonth: e.target.value })}>
+                <option value="">—</option>
+                {Array.from({ length: 31 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+              </select>
+            </div>
+            <div className="hidden sm:block" />
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.startTime}</label>
+              <Input type="time" value={form.startHour} onChange={(e) => setForm({ ...form, startHour: e.target.value })} className="text-xs" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.endTime}</label>
+              <Input type="time" value={form.endHour} onChange={(e) => setForm({ ...form, endHour: e.target.value })} className="text-xs" />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground italic">{t.febNote}</p>
+        </div>
+      )}
+
+      {/* Once: date + time range */}
+      {form.scheduleType === "once" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
             <label className="text-xs font-medium text-muted-foreground">{t.startDate}</label>
