@@ -171,7 +171,7 @@ const AdminBroadcasts: React.FC = () => {
         <Switch checked={form.active} onCheckedChange={(v) => setForm({ ...form, active: v })} />
         <label className="text-sm font-medium text-foreground">{t.active}</label>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div>
           <label className="text-xs font-medium text-muted-foreground">{t.textDe}</label>
           <Textarea value={form.text} onChange={(e) => setForm({ ...form, text: e.target.value })} rows={2} />
