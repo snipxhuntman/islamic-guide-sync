@@ -189,7 +189,7 @@ const QiblaCompass: React.FC = () => {
         // At 20° → every 400ms, at 3° → every 100ms
         const interval = 100 + ((diff - 2) / 18) * 300;
         if (now - lastHapticTime.current > interval) {
-          vibrate(15);
+          hapticLight();
           lastHapticTime.current = now;
         }
       }
