@@ -7,7 +7,7 @@ import { getClasses, saveClasses } from "@/stores/dataStore";
 import { ClassItem } from "@/data/classes";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
+
 import { useAdminLang } from "./AdminLayout";
 import {
   Select,
