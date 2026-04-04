@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { classesData } from "@/data/classes";
-import { getPrayerTimesForDate } from "@/data/prayerTimes";
+import { getLiveClasses } from "@/data/classes";
+import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
 import { AlertTriangle } from "lucide-react";
 
 function addMinutesToTime(time: string, minutes: number): string {

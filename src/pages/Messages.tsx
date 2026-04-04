@@ -1,6 +1,6 @@
 import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { messagesData } from "@/data/messages";
+import { getLiveMessages } from "@/data/messages";
 
 const Messages: React.FC = () => {
   const { t, language } = useLanguage();
