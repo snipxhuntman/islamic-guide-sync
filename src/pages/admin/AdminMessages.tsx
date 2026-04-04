@@ -48,6 +48,10 @@ const i18n = {
     addImage: "Bild hinzufügen",
     removeImage: "Bild entfernen",
     imagePreview: "Bildvorschau",
+    linkUrl: "Link-URL",
+    linkLabel: "Link-Text (DE)",
+    linkLabelEn: "Link-Text (EN)",
+    linkLabelAr: "Link-Text (AR)",
   },
 };
 
