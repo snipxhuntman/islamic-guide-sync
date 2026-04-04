@@ -65,9 +65,18 @@ const AdminMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(() => getMessages());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
+  const [englishEnabled, setEnglishEnabled] = useState<boolean>(() => {
+    const stored = localStorage.getItem("admin-english-enabled");
+    return stored !== null ? stored === "true" : true;
+  });
   const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleToggleEnglish = (val: boolean) => {
+    setEnglishEnabled(val);
+    localStorage.setItem("admin-english-enabled", String(val));
+  };
 
   const persist = (updated: Message[]) => {
     setMessages(updated);
