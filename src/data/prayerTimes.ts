@@ -1,16 +1,11 @@
 export interface PrayerDay {
   date: string; // YYYY-MM-DD
   fajr: string;
-  fajrIqama: string;
   shuruk: string;
   dhuhr: string;
-  dhuhrIqama: string;
   asr: string;
-  asrIqama: string;
   maghrib: string;
-  maghribIqama: string;
   isha: string;
-  ishaIqama: string;
 }
 
 // Generate sample prayer times for 60 days starting from today
