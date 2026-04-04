@@ -53,16 +53,12 @@ const Messages: React.FC = () => {
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const localeMap: Record<string, string> = { de: "de-DE", en: "en-US", ar: "ar-SA" };
-    return d.toLocaleDateString(localeMap[language] || "de-DE", {
+    const formatted = d.toLocaleDateString(localeMap[language] || "de-DE", {
       weekday: "long",
       day: "numeric",
       month: "long",
     });
-  };
-
-  const formatTime = (ts: string) => {
-    const d = new Date(ts);
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return language === "ar" ? toWesternNumerals(formatted) : formatted;
   };
 
   // Sort dates oldest first so latest is at the bottom
