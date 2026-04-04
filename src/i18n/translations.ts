@@ -188,8 +188,9 @@ export const translations: Record<Language, Record<string, string>> = {
     adhan2: "أذان ٢",
     ring: "رنين",
     alertBefore: "دقائق قبل",
-    broadcastNotifications: "إشعارات البث",
-    eventNotifications: "إشعارات الفعاليات",
+    classNotifications: "إشعارات الدروس",
+    classCancellationAlerts: "تنبيهات إلغاء الدروس",
+    messageNotifications: "إشعارات الرسائل",
     website: "الموقع الإلكتروني",
     privacyPolicy: "سياسة الخصوصية",
 

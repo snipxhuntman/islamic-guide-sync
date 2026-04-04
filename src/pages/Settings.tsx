@@ -142,13 +142,20 @@ const Settings: React.FC = () => {
                 )}
 
                 <div className="flex items-center justify-between border-t border-border pt-3">
-                  <span className="text-sm text-foreground">{t("broadcastNotifications")}</span>
-                  <Switch checked={notif.broadcast} onCheckedChange={(v) => updateNotif("broadcast", v)} />
+                  <span className="text-sm text-foreground">{t("classNotifications")}</span>
+                  <Switch checked={notif.classes} onCheckedChange={(v) => updateNotif("classes", v)} />
                 </div>
 
+                {notif.classes && (
+                  <div className="flex items-center justify-between ps-4">
+                    <span className="text-xs text-muted-foreground">{t("classCancellationAlerts")}</span>
+                    <Switch checked={notif.classCancellations} onCheckedChange={(v) => updateNotif("classCancellations", v)} />
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between border-t border-border pt-3">
-                  <span className="text-sm text-foreground">{t("eventNotifications")}</span>
-                  <Switch checked={notif.events} onCheckedChange={(v) => updateNotif("events", v)} />
+                  <span className="text-sm text-foreground">{t("messageNotifications")}</span>
+                  <Switch checked={notif.messages} onCheckedChange={(v) => updateNotif("messages", v)} />
                 </div>
               </>
             )}
