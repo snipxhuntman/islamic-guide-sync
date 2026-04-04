@@ -65,6 +65,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Privacy
     privacyTitle: "Datenschutzerklärung",
     privacyContent: "Diese App speichert Ihre Einstellungen lokal auf Ihrem Gerät. Es werden keine personenbezogenen Daten an Server übertragen. Der Qibla-Kompass nutzt Ihren Standort nur zur Berechnung der Gebetsrichtung und speichert keine Standortdaten.",
+    donate: "Spenden",
 
     // Days
     monday: "Montag",
