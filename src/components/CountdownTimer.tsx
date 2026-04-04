@@ -10,7 +10,7 @@ const CountdownTimer: React.FC = () => {
   useEffect(() => {
     const update = () => {
       const today = new Date().toISOString().split("T")[0];
-      const prayers = getPrayerTimesForDate(today);
+      const prayers = getLivePrayerTimesForDate(today);
       if (!prayers) return;
 
       const next = getNextPrayer(prayers);
