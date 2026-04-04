@@ -60,6 +60,9 @@ export const translations: Record<Language, Record<string, string>> = {
     classCancellationAlerts: "Unterrichtsausfälle melden",
     messageNotifications: "Nachrichtenbenachrichtigungen",
     website: "Webseite",
+    timeFormat: "Zeitformat",
+    format24h: "24-Stunden",
+    format12h: "12-Stunden",
     privacyPolicy: "Datenschutzerklärung",
 
     // Privacy
