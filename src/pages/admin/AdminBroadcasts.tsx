@@ -205,7 +205,7 @@ const AdminBroadcasts: React.FC = () => {
           <h1 className="text-2xl font-bold text-foreground">{t.title}</h1>
           <p className="text-sm text-muted-foreground">{t.desc}</p>
         </div>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true }); }}>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newSlide}
         </Button>
       </div>
