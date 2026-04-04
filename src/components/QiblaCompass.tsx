@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 // Makkah coordinates (Kaaba)
 const KAABA_LAT = 21.4225;
@@ -30,10 +31,20 @@ function angleDiff(a: number, b: number): number {
   return d;
 }
 
-/** Vibrate helper with fallback */
-function vibrate(pattern: number | number[]) {
-  if (navigator.vibrate) {
-    navigator.vibrate(pattern);
+/** Haptic helpers — Capacitor native first, Vibration API fallback */
+async function hapticLight() {
+  try {
+    await Haptics.impact({ style: ImpactStyle.Light });
+  } catch {
+    navigator.vibrate?.(15);
+  }
+}
+
+async function hapticMedium() {
+  try {
+    await Haptics.impact({ style: ImpactStyle.Medium });
+  } catch {
+    navigator.vibrate?.(40);
   }
 }
 
@@ -170,7 +181,7 @@ const QiblaCompass: React.FC = () => {
       if (diff <= 2) {
         // Locked on — one stronger vibration, max once per 2s
         if (now - lastLockedVibTime.current > 2000) {
-          vibrate(40);
+          hapticMedium();
           lastLockedVibTime.current = now;
         }
       } else if (diff <= 20) {
@@ -178,7 +189,7 @@ const QiblaCompass: React.FC = () => {
         // At 20° → every 400ms, at 3° → every 100ms
         const interval = 100 + ((diff - 2) / 18) * 300;
         if (now - lastHapticTime.current > interval) {
-          vibrate(15);
+          hapticLight();
           lastHapticTime.current = now;
         }
       }
