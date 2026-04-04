@@ -299,6 +299,19 @@ const AdminClasses: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
+        {/* Show/hide toggles for each social link */}
+        <div className="grid grid-cols-5 gap-2">
+          {SOCIAL_KEYS.map((key) => (
+            <div key={key} className="flex items-center gap-2">
+              <Switch
+                checked={form.linksVisible?.[key] !== false}
+                onCheckedChange={(v) => setForm({ ...form, linksVisible: { ...form.linksVisible, [key]: v } })}
+                className="scale-90"
+              />
+              <label className="text-xs font-medium text-muted-foreground capitalize">{key}</label>
+            </div>
+          ))}
+        </div>
         {form.linksMode === "manual" && (
           <div className="grid grid-cols-5 gap-2">
             {SOCIAL_KEYS.map((key) => (
@@ -307,6 +320,7 @@ const AdminClasses: React.FC = () => {
                 <Input
                   value={form.links[key] || ""}
                   placeholder="URL"
+                  disabled={form.linksVisible?.[key] === false}
                   onChange={(e) => setForm({ ...form, links: { ...form.links, [key]: e.target.value } })}
                 />
               </div>

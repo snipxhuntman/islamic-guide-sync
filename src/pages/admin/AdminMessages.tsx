@@ -1,91 +1,198 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Trash2, Edit2, Check, X } from "lucide-react";
+import { Plus, Trash2, Edit2, Check, X, ImagePlus } from "lucide-react";
 import { getMessages, saveMessages } from "@/stores/dataStore";
 import { Message } from "@/data/messages";
 import { toast } from "sonner";
+import { useAdminLang } from "./AdminLayout";
+
+const i18n = {
+  en: {
+    messages: "Messages",
+    newMessage: "New Message",
+    germanRequired: "German (required)",
+    english: "English",
+    arabic: "Arabic",
+    add: "Add",
+    save: "Save",
+    cancel: "Cancel",
+    noMessages: "No messages yet.",
+    textRequired: "German text is required",
+    added: "Message added",
+    updated: "Message updated",
+    deleted: "Message deleted",
+    addImage: "Add Image",
+    removeImage: "Remove Image",
+    imagePreview: "Image preview",
+  },
+  de: {
+    messages: "Nachrichten",
+    newMessage: "Neue Nachricht",
+    germanRequired: "Deutsch (erforderlich)",
+    english: "Englisch",
+    arabic: "Arabisch",
+    add: "Hinzufügen",
+    save: "Speichern",
+    cancel: "Abbrechen",
+    noMessages: "Noch keine Nachrichten.",
+    textRequired: "Deutscher Text ist erforderlich",
+    added: "Nachricht hinzugefügt",
+    updated: "Nachricht aktualisiert",
+    deleted: "Nachricht gelöscht",
+    addImage: "Bild hinzufügen",
+    removeImage: "Bild entfernen",
+    imagePreview: "Bildvorschau",
+  },
+};
 
 const AdminMessages: React.FC = () => {
+  const { lang } = useAdminLang();
+  const t = i18n[lang];
   const [messages, setMessages] = useState<Message[]>(() => getMessages());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "" });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "" });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   const persist = (updated: Message[]) => {
     setMessages(updated);
     saveMessages(updated);
   };
 
+  const handleImageUpload = (file: File, callback: (dataUrl: string) => void) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => callback(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const handleAdd = () => {
-    if (!form.text.trim()) { toast.error("German text is required"); return; }
+    if (!form.text.trim() && !form.imageUrl) {
+      toast.error(t.textRequired);
+      return;
+    }
     const msg: Message = {
       id: String(Date.now()),
       text: form.text,
       textEn: form.textEn || undefined,
       textAr: form.textAr || undefined,
+      imageUrl: form.imageUrl || undefined,
       timestamp: new Date().toISOString(),
     };
     persist([msg, ...messages]);
-    setForm({ text: "", textEn: "", textAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "" });
     setShowAdd(false);
-    toast.success("Message added");
+    toast.success(t.added);
   };
 
   const handleDelete = (id: string) => {
     persist(messages.filter((m) => m.id !== id));
-    toast.success("Message deleted");
+    toast.success(t.deleted);
   };
 
   const startEdit = (m: Message) => {
     setEditing(m.id);
-    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "" });
+    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "", imageUrl: m.imageUrl || "" });
   };
 
   const handleSaveEdit = (id: string) => {
     persist(messages.map((m) =>
-      m.id === id ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined } : m
+      m.id === id
+        ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined }
+        : m
     ));
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "" });
-    toast.success("Message updated");
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "" });
+    toast.success(t.updated);
   };
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "" });
   };
+
+  const ImageSection = ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }) => (
+    <div className="space-y-2">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleImageUpload(file, (url) => setForm({ ...form, imageUrl: url }));
+          e.target.value = "";
+        }}
+      />
+      {form.imageUrl ? (
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground">{t.imagePreview}</p>
+          <img src={form.imageUrl} alt="Preview" className="max-h-40 rounded-lg border border-border object-contain" />
+          <Button size="sm" variant="outline" onClick={() => setForm({ ...form, imageUrl: "" })}>
+            <X className="w-3 h-3 mr-1" /> {t.removeImage}
+          </Button>
+        </div>
+      ) : (
+        <Button size="sm" variant="outline" onClick={() => inputRef.current?.click()}>
+          <ImagePlus className="w-4 h-4 mr-1" /> {t.addImage}
+        </Button>
+      )}
+    </div>
+  );
+
+  const MessageForm = ({
+    onSubmit,
+    submitLabel,
+    inputRef,
+  }: {
+    onSubmit: () => void;
+    submitLabel: string;
+    inputRef: React.RefObject<HTMLInputElement>;
+  }) => (
+    <div className="space-y-3">
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">{t.germanRequired}</label>
+        <Textarea value={form.text} onChange={(e) => setForm({ ...form, text: e.target.value })} />
+      </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">{t.english}</label>
+        <Textarea value={form.textEn} onChange={(e) => setForm({ ...form, textEn: e.target.value })} />
+      </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">{t.arabic}</label>
+        <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
+      </div>
+      <ImageSection inputRef={inputRef} />
+      <div className="flex gap-2">
+        <Button size="sm" onClick={onSubmit}>
+          <Check className="w-4 h-4 mr-1" /> {submitLabel}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => { setShowAdd(false); cancelEdit(); }}>
+          <X className="w-4 h-4 mr-1" /> {t.cancel}
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Messages</h1>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "" }); }}>
-          <Plus className="w-4 h-4 mr-1" /> New Message
+        <h1 className="text-2xl font-bold text-foreground">{t.messages}</h1>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "" }); }}>
+          <Plus className="w-4 h-4 mr-1" /> {t.newMessage}
         </Button>
       </div>
 
       {showAdd && (
         <Card>
-          <CardContent className="pt-4 space-y-3">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">German (required)</label>
-              <Textarea value={form.text} onChange={(e) => setForm({ ...form, text: e.target.value })} />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">English</label>
-              <Textarea value={form.textEn} onChange={(e) => setForm({ ...form, textEn: e.target.value })} />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Arabic</label>
-              <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
-            </div>
-            <div className="flex gap-2">
-              <Button size="sm" onClick={handleAdd}>Add</Button>
-              <Button size="sm" variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Button>
-            </div>
+          <CardContent className="pt-4">
+            <MessageForm onSubmit={handleAdd} submitLabel={t.add} inputRef={fileInputRef} />
           </CardContent>
         </Card>
       )}
@@ -95,30 +202,16 @@ const AdminMessages: React.FC = () => {
           <Card key={m.id}>
             <CardContent className="pt-4">
               {editing === m.id ? (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">German</label>
-                    <Textarea value={form.text} onChange={(e) => setForm({ ...form, text: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">English</label>
-                    <Textarea value={form.textEn} onChange={(e) => setForm({ ...form, textEn: e.target.value })} />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground">Arabic</label>
-                    <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleSaveEdit(m.id)}><Check className="w-4 h-4 mr-1" /> Save</Button>
-                    <Button size="sm" variant="ghost" onClick={cancelEdit}><X className="w-4 h-4 mr-1" /> Cancel</Button>
-                  </div>
-                </div>
+                <MessageForm onSubmit={() => handleSaveEdit(m.id)} submitLabel={t.save} inputRef={editFileInputRef} />
               ) : (
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-1">
                     <p className="text-sm text-foreground">{m.text}</p>
                     {m.textEn && <p className="text-xs text-muted-foreground">EN: {m.textEn}</p>}
                     {m.textAr && <p className="text-xs text-muted-foreground" dir="rtl">AR: {m.textAr}</p>}
+                    {m.imageUrl && (
+                      <img src={m.imageUrl} alt="Attached" className="max-h-32 rounded-lg border border-border object-contain mt-1" />
+                    )}
                     <p className="text-[10px] text-muted-foreground">{new Date(m.timestamp).toLocaleString()}</p>
                   </div>
                   <div className="flex gap-1">
@@ -135,7 +228,7 @@ const AdminMessages: React.FC = () => {
           </Card>
         ))}
         {messages.length === 0 && (
-          <p className="text-center text-muted-foreground py-8">No messages yet.</p>
+          <p className="text-center text-muted-foreground py-8">{t.noMessages}</p>
         )}
       </div>
     </div>
