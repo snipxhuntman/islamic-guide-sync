@@ -31,6 +31,11 @@ const i18n = {
     startDate: "Start date", endDate: "End date",
     startTime: "Start time", endTime: "End time",
     interval: "Repeats",
+    dayOfWeek: "Day of week",
+    endDayOfWeek: "End day",
+    dayOfMonth: "Day of month",
+    febNote: "Note: February has 28 days (29 in leap years), some months have 30 days.",
+    days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   },
   de: {
     title: "Startseiten-Broadcasts",
@@ -53,6 +58,11 @@ const i18n = {
     startDate: "Startdatum", endDate: "Enddatum",
     startTime: "Startzeit", endTime: "Endzeit",
     interval: "Wiederholung",
+    dayOfWeek: "Wochentag",
+    endDayOfWeek: "Endtag",
+    dayOfMonth: "Tag im Monat",
+    febNote: "Hinweis: Februar hat 28 Tage (29 im Schaltjahr), einige Monate haben 30 Tage.",
+    days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
   },
 };
 
