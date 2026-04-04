@@ -42,7 +42,7 @@ const SocialIcons = () => {
 const HomePrayerTimes: React.FC = () => {
   const { t, language } = useLanguage();
   const today = new Date();
-  const dateStr = today.toISOString().split("T")[0];
+  const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const prayers = getLivePrayerTimesForDate(dateStr);
   const nextPrayer = prayers ? getNextPrayer(prayers) : null;
 

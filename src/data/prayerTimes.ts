@@ -22,7 +22,7 @@ function generatePrayerTimes(): PrayerDay[] {
   for (let i = 0; i < 60; i++) {
     const d = new Date(base);
     d.setDate(d.getDate() + i);
-    const dateStr = d.toISOString().split("T")[0];
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
     // Slightly vary times across days to simulate seasonal change
     const offset = Math.floor(i / 10);
