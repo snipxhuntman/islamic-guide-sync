@@ -12,8 +12,9 @@ interface NotifSettings {
   prayer: boolean;
   ringtone: string;
   prayerAlerts: Record<string, number>;
-  broadcast: boolean;
-  events: boolean;
+  classes: boolean;
+  classCancellations: boolean;
+  messages: boolean;
 }
 
 const defaultSettings: NotifSettings = {
@@ -23,8 +24,9 @@ const defaultSettings: NotifSettings = {
   prayerAlerts: {
     fajr: 15, shuruk: 10, dhuhr: 15, asr: 15, maghrib: 10, isha: 15,
   },
-  broadcast: true,
-  events: true,
+  classes: true,
+  classCancellations: true,
+  messages: true,
 };
 
 const Settings: React.FC = () => {
