@@ -243,6 +243,7 @@ const AdminBroadcasts: React.FC = () => {
                       {b.textEn && <p className="text-xs text-muted-foreground break-words">EN: {b.textEn}</p>}
                       {b.textAr && <p className="text-xs text-muted-foreground break-words" dir="rtl">AR: {b.textAr}</p>}
                       {b.imageUrl && <img src={b.imageUrl} alt="" className="max-h-20 rounded border border-border object-contain mt-1" />}
+                      {b.link && <p className="text-xs text-muted-foreground break-words">🔗 {b.link}</p>}
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-1 shrink-0">
