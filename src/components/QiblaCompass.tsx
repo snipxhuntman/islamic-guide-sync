@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 // Makkah coordinates (Kaaba)
 const KAABA_LAT = 21.4225;
