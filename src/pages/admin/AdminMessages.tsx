@@ -245,6 +245,11 @@ const AdminMessages: React.FC = () => {
         </Button>
       </div>
 
+      <div className="flex items-center gap-3">
+        <Switch checked={englishEnabled} onCheckedChange={handleToggleEnglish} />
+        <label className="text-sm font-medium text-foreground">{t.enableEnglish}</label>
+      </div>
+
       {showAdd && (
         <Card>
           <CardContent className="pt-4">
