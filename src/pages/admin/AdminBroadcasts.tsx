@@ -70,6 +70,7 @@ const AdminBroadcasts: React.FC = () => {
       textEn: form.textEn || undefined,
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
+      imageSize: form.imageUrl ? form.imageSize : undefined,
       active: form.active,
     };
     persist([...items, item]);
