@@ -197,7 +197,7 @@ const AdminClasses: React.FC = () => {
 
   const dayLabel = (d: string) => t[d as keyof typeof t] || (d.charAt(0).toUpperCase() + d.slice(1));
 
-  const ClassForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
+  const renderClassForm = (onSubmit: () => void, submitLabel: string) => (
     <div className="space-y-3">
       {/* Cancelled toggle - first and prominent */}
       <div className="flex items-center gap-3 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
@@ -299,7 +299,6 @@ const AdminClasses: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
-        {/* Show/hide toggles for each social link */}
         <div className="grid grid-cols-5 gap-2">
           {SOCIAL_KEYS.map((key) => (
             <div key={key} className="flex items-center gap-2">
@@ -370,7 +369,7 @@ const AdminClasses: React.FC = () => {
       </Card>
 
       {showAdd && (
-        <Card><CardContent className="pt-4"><ClassForm onSubmit={handleAdd} submitLabel={t.add} /></CardContent></Card>
+        <Card><CardContent className="pt-4">{renderClassForm(handleAdd, t.add)}</CardContent></Card>
       )}
 
       <div className="space-y-3">
@@ -378,7 +377,7 @@ const AdminClasses: React.FC = () => {
           <Card key={c.id} className={c.isCancelled ? "opacity-70 border-destructive/30" : ""}>
             <CardContent className="pt-4">
               {editing === c.id ? (
-                <ClassForm onSubmit={() => handleSaveEdit(c.id)} submitLabel={t.save} />
+                renderClassForm(() => handleSaveEdit(c.id), t.save)
               ) : (
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
