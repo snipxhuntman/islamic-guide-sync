@@ -19,6 +19,16 @@ import {
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
+const SOCIAL_KEYS = ["youtube", "instagram", "telegram", "facebook", "tiktok"] as const;
+
+const DEFAULT_SOCIAL_LINKS = {
+  youtube: "https://youtube.com",
+  instagram: "https://instagram.com",
+  telegram: "https://t.me",
+  facebook: "https://facebook.com",
+  tiktok: "https://tiktok.com",
+};
+
 const i18n = {
   en: {
     classes: "Classes",
@@ -28,7 +38,7 @@ const i18n = {
     day: "Day", cancelled: "Cancelled", timing: "Timing",
     autoLabel: "Auto (Maghrib + offset → Isha)",
     manual: "Manual",
-    startTime: "Start Time (24h)", endTime: "End Time (24h)",
+    startTime: "Start Time", endTime: "End Time",
     offsetLabel: "Offset after Maghrib",
     minutes: "min",
     add: "Add", save: "Save", cancel: "Cancel",
@@ -37,6 +47,11 @@ const i18n = {
     added: "Class added", updated: "Class updated", deleted: "Class deleted",
     monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday",
     thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday",
+    socialLinks: "Social Links",
+    socialAuto: "Default links (all classes)",
+    socialManual: "Custom links",
+    defaultLinksLabel: "Default Social Links",
+    defaultLinksDesc: "These links are used for all classes set to 'Default links'.",
   },
   de: {
     classes: "Unterricht",
@@ -46,7 +61,7 @@ const i18n = {
     day: "Tag", cancelled: "Abgesagt", timing: "Zeitplanung",
     autoLabel: "Auto (Maghrib + Versatz → Isha)",
     manual: "Manuell",
-    startTime: "Startzeit (24h)", endTime: "Endzeit (24h)",
+    startTime: "Startzeit", endTime: "Endzeit",
     offsetLabel: "Versatz nach Maghrib",
     minutes: "Min",
     add: "Hinzufügen", save: "Speichern", cancel: "Abbrechen",
@@ -55,7 +70,55 @@ const i18n = {
     added: "Unterricht hinzugefügt", updated: "Unterricht aktualisiert", deleted: "Unterricht gelöscht",
     monday: "Montag", tuesday: "Dienstag", wednesday: "Mittwoch",
     thursday: "Donnerstag", friday: "Freitag", saturday: "Samstag", sunday: "Sonntag",
+    socialLinks: "Social Links",
+    socialAuto: "Standard-Links (alle Unterrichte)",
+    socialManual: "Eigene Links",
+    defaultLinksLabel: "Standard Social Links",
+    defaultLinksDesc: "Diese Links werden für alle Unterrichte mit 'Standard-Links' verwendet.",
   },
+};
+
+function getDefaultLinks(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem("admin-default-social-links");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { ...DEFAULT_SOCIAL_LINKS };
+}
+
+function saveDefaultLinks(links: Record<string, string>) {
+  localStorage.setItem("admin-default-social-links", JSON.stringify(links));
+}
+
+/** 24h time input — uses two selects (HH and MM) to guarantee 24h regardless of browser locale */
+const Time24Input: React.FC<{ value: string; onChange: (v: string) => void; label: string }> = ({ value, onChange, label }) => {
+  const [hh, mm] = (value || "00:00").split(":").map((s) => s.padStart(2, "0"));
+  return (
+    <div>
+      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <div className="flex gap-1 items-center">
+        <select
+          className="flex h-10 w-16 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+          value={hh}
+          onChange={(e) => onChange(`${e.target.value}:${mm}`)}
+        >
+          {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((h) => (
+            <option key={h} value={h}>{h}</option>
+          ))}
+        </select>
+        <span className="text-foreground font-bold">:</span>
+        <select
+          className="flex h-10 w-16 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+          value={mm}
+          onChange={(e) => onChange(`${hh}:${e.target.value}`)}
+        >
+          {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0")).map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
 };
 
 const emptyForm = (): Omit<ClassItem, "id"> => ({
@@ -65,8 +128,9 @@ const emptyForm = (): Omit<ClassItem, "id"> => ({
   isCancelled: false,
   timingMode: "auto",
   autoOffset: 20,
-  manualStart: "",
-  manualEnd: "",
+  manualStart: "19:00",
+  manualEnd: "20:00",
+  linksMode: "auto",
   links: { youtube: "", instagram: "", telegram: "", facebook: "", tiktok: "" },
 });
 
@@ -77,6 +141,7 @@ const AdminClasses: React.FC = () => {
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState<Omit<ClassItem, "id">>(emptyForm());
+  const [defaultLinks, setDefaultLinksState] = useState<Record<string, string>>(getDefaultLinks);
 
   const persist = (updated: ClassItem[]) => {
     setClasses(updated);
@@ -85,7 +150,8 @@ const AdminClasses: React.FC = () => {
 
   const handleAdd = () => {
     if (!form.title.trim()) { toast.error(t.titleRequired); return; }
-    const item: ClassItem = { ...form, id: String(Date.now()) };
+    const resolvedLinks = form.linksMode === "auto" ? { ...defaultLinks } : form.links;
+    const item: ClassItem = { ...form, links: resolvedLinks, id: String(Date.now()) };
     persist([...classes, item]);
     setForm(emptyForm());
     setShowAdd(false);
@@ -103,12 +169,14 @@ const AdminClasses: React.FC = () => {
     setForm({
       ...rest,
       autoOffset: rest.autoOffset ?? 20,
+      linksMode: rest.linksMode ?? "manual",
       links: { youtube: "", instagram: "", telegram: "", facebook: "", tiktok: "", ...rest.links },
     });
   };
 
   const handleSaveEdit = (id: string) => {
-    persist(classes.map((c) => (c.id === id ? { ...form, id } : c)));
+    const resolvedLinks = form.linksMode === "auto" ? { ...defaultLinks } : form.links;
+    persist(classes.map((c) => (c.id === id ? { ...form, links: resolvedLinks, id } : c)));
     setEditing(null);
     setForm(emptyForm());
     toast.success(t.updated);
@@ -117,6 +185,12 @@ const AdminClasses: React.FC = () => {
   const cancelEdit = () => {
     setEditing(null);
     setForm(emptyForm());
+  };
+
+  const handleDefaultLinksChange = (key: string, value: string) => {
+    const updated = { ...defaultLinks, [key]: value };
+    setDefaultLinksState(updated);
+    saveDefaultLinks(updated);
   };
 
   const dayLabel = (d: string) => t[d as keyof typeof t] || (d.charAt(0).toUpperCase() + d.slice(1));
@@ -182,14 +256,8 @@ const AdminClasses: React.FC = () => {
           </div>
           {form.timingMode === "manual" && (
             <>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground">{t.startTime}</label>
-                <Input type="time" step="60" value={form.manualStart || ""} onChange={(e) => setForm({ ...form, manualStart: e.target.value })} />
-              </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground">{t.endTime}</label>
-                <Input type="time" step="60" value={form.manualEnd || ""} onChange={(e) => setForm({ ...form, manualEnd: e.target.value })} />
-              </div>
+              <Time24Input label={t.startTime} value={form.manualStart || "19:00"} onChange={(v) => setForm({ ...form, manualStart: v })} />
+              <Time24Input label={t.endTime} value={form.manualEnd || "20:00"} onChange={(v) => setForm({ ...form, manualEnd: v })} />
             </>
           )}
         </div>
@@ -199,36 +267,56 @@ const AdminClasses: React.FC = () => {
               <label className="text-xs font-medium text-muted-foreground">{t.offsetLabel}</label>
               <span className="text-sm font-semibold text-foreground">{form.autoOffset ?? 20} {t.minutes}</span>
             </div>
-            <Slider
-              value={[form.autoOffset ?? 20]}
-              onValueChange={([v]) => setForm({ ...form, autoOffset: v })}
+            <input
+              type="range"
               min={0}
               max={90}
-              step={5}
-              className="w-full"
+              step={1}
+              value={form.autoOffset ?? 20}
+              onChange={(e) => setForm({ ...form, autoOffset: Number(e.target.value) })}
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
             />
             <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
               <span>0</span>
+              <span>15</span>
               <span>30</span>
+              <span>45</span>
               <span>60</span>
+              <span>75</span>
               <span>90</span>
             </div>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-5 gap-2">
-        {(["youtube", "instagram", "telegram", "facebook", "tiktok"] as const).map((key) => (
-          <div key={key}>
-            <label className="text-xs font-medium text-muted-foreground capitalize">{key}</label>
-            <Input
-              value={form.links[key] || ""}
-              placeholder="URL"
-              onChange={(e) => setForm({ ...form, links: { ...form.links, [key]: e.target.value } })}
-            />
+      {/* Social links section */}
+      <div className="space-y-2">
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">{t.socialLinks}</label>
+          <Select value={form.linksMode || "auto"} onValueChange={(v: "auto" | "manual") => setForm({ ...form, linksMode: v })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">{t.socialAuto}</SelectItem>
+              <SelectItem value="manual">{t.socialManual}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {form.linksMode === "manual" && (
+          <div className="grid grid-cols-5 gap-2">
+            {SOCIAL_KEYS.map((key) => (
+              <div key={key}>
+                <label className="text-xs font-medium text-muted-foreground capitalize">{key}</label>
+                <Input
+                  value={form.links[key] || ""}
+                  placeholder="URL"
+                  onChange={(e) => setForm({ ...form, links: { ...form.links, [key]: e.target.value } })}
+                />
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
+
       <div className="flex gap-2">
         <Button size="sm" onClick={onSubmit}><Check className="w-4 h-4 mr-1" /> {submitLabel}</Button>
         <Button size="sm" variant="ghost" onClick={() => { setShowAdd(false); cancelEdit(); }}>
@@ -246,6 +334,28 @@ const AdminClasses: React.FC = () => {
           <Plus className="w-4 h-4 mr-1" /> {t.newClass}
         </Button>
       </div>
+
+      {/* Default social links card */}
+      <Card>
+        <CardContent className="pt-4 space-y-2">
+          <div>
+            <h3 className="font-medium text-foreground text-sm">{t.defaultLinksLabel}</h3>
+            <p className="text-xs text-muted-foreground">{t.defaultLinksDesc}</p>
+          </div>
+          <div className="grid grid-cols-5 gap-2">
+            {SOCIAL_KEYS.map((key) => (
+              <div key={key}>
+                <label className="text-xs font-medium text-muted-foreground capitalize">{key}</label>
+                <Input
+                  value={defaultLinks[key] || ""}
+                  placeholder="URL"
+                  onChange={(e) => handleDefaultLinksChange(key, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {showAdd && (
         <Card><CardContent className="pt-4"><ClassForm onSubmit={handleAdd} submitLabel={t.add} /></CardContent></Card>
@@ -267,6 +377,9 @@ const AdminClasses: React.FC = () => {
                       {c.timingMode === "manual"
                         ? `${c.manualStart} – ${c.manualEnd}`
                         : `Maghrib +${c.autoOffset ?? 20}${t.minutes} → Isha`}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {t.socialLinks}: {(c.linksMode ?? "manual") === "auto" ? t.socialAuto : t.socialManual}
                     </p>
                     {c.isCancelled && <span className="text-xs text-destructive font-medium">{t.cancelled.toUpperCase()}</span>}
                   </div>

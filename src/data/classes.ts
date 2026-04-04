@@ -12,6 +12,14 @@ export interface ClassItem {
   autoOffset?: number; // minutes after Maghrib (0-90), default 20
   manualStart?: string;
   manualEnd?: string;
+  linksMode?: "auto" | "manual"; // auto = use default URLs, manual = custom per class
+  defaultLinks?: {
+    youtube?: string;
+    instagram?: string;
+    telegram?: string;
+    facebook?: string;
+    tiktok?: string;
+  };
   links: {
     youtube?: string;
     instagram?: string;
