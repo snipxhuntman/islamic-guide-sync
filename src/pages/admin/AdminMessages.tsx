@@ -110,7 +110,7 @@ const AdminMessages: React.FC = () => {
 
   const startEdit = (m: Message) => {
     setEditing(m.id);
-    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "", imageUrl: m.imageUrl || "" });
+    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "", imageUrl: m.imageUrl || "", linkUrl: m.linkUrl || "", linkLabel: m.linkLabel || "", linkLabelEn: m.linkLabelEn || "", linkLabelAr: m.linkLabelAr || "" });
   };
 
   const handleSaveEdit = (id: string) => {
