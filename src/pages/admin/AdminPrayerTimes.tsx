@@ -139,6 +139,7 @@ const AdminPrayerTimes: React.FC = () => {
         </CardContent>
       </Card>
 
+      <Card>
         <CardHeader>
           <CardTitle className="text-sm text-muted-foreground">{data.length} days loaded</CardTitle>
         </CardHeader>
