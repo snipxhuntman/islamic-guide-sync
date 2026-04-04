@@ -249,7 +249,7 @@ const AdminClasses: React.FC = () => {
 
       {/* Timing section */}
       <div className="space-y-2">
-        <div className="grid grid-cols-3 gap-2 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
           <div>
             <label className="text-xs font-medium text-muted-foreground">{t.timing}</label>
             <Select value={form.timingMode} onValueChange={(v: "auto" | "manual") => setForm({ ...form, timingMode: v })}>
