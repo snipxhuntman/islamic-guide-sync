@@ -126,7 +126,7 @@ const QiblaCompass: React.FC = () => {
   const smoothH = useRef<number>(0);
   const hasReading = useRef(false);
   const rafId = useRef(0);
-  const qiblaBearing = useRef<number>(136.5); // fallback for Leipzig
+  const qiblaBearing = useRef<number>(134.09); // fallback for Leipzig
   const lastHapticTime = useRef(0);
   const lastLockedVibTime = useRef(0);
   const geoWatchId = useRef<number | null>(null);
