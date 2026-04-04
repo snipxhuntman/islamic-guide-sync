@@ -8,9 +8,9 @@ export interface ClassItem {
   descriptionEn: string;
   descriptionAr: string;
   isCancelled: boolean;
-  timingMode: "auto" | "manual"; // auto = Maghrib+20 → Isha, manual = custom times
-  manualStart?: string; // HH:MM
-  manualEnd?: string;   // HH:MM
+  timingMode: "auto" | "manual";
+  manualStart?: string;
+  manualEnd?: string;
   links: {
     youtube?: string;
     instagram?: string;
@@ -25,7 +25,8 @@ export function getLiveClasses(): ClassItem[] {
     const raw = localStorage.getItem("admin-classes");
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0)
+        return parsed.map((c: ClassItem) => ({ ...c, timingMode: c.timingMode ?? "auto" }));
     }
   } catch {}
   return classesData;
@@ -42,6 +43,7 @@ export const classesData: ClassItem[] = [
     descriptionEn: "Quran explanation",
     descriptionAr: "شرح القرآن الكريم",
     isCancelled: false,
+    timingMode: "auto",
     links: {
       youtube: "https://youtube.com",
       instagram: "https://instagram.com",
@@ -60,6 +62,7 @@ export const classesData: ClassItem[] = [
     descriptionEn: "Islamic jurisprudence",
     descriptionAr: "الفقه الإسلامي",
     isCancelled: false,
+    timingMode: "auto",
     links: {
       youtube: "https://youtube.com",
       instagram: "https://instagram.com",
@@ -78,6 +81,7 @@ export const classesData: ClassItem[] = [
     descriptionEn: "Arabic course level 1",
     descriptionAr: "دورة اللغة العربية - المستوى الأول",
     isCancelled: true,
+    timingMode: "auto",
     links: {
       youtube: "https://youtube.com",
       instagram: "https://instagram.com",
@@ -96,6 +100,7 @@ export const classesData: ClassItem[] = [
     descriptionEn: "Life of the Prophet ﷺ",
     descriptionAr: "سيرة النبي ﷺ",
     isCancelled: false,
+    timingMode: "auto",
     links: {
       youtube: "https://youtube.com",
       instagram: "https://instagram.com",
@@ -114,6 +119,7 @@ export const classesData: ClassItem[] = [
     descriptionEn: "Islamic creed",
     descriptionAr: "أصول العقيدة",
     isCancelled: false,
+    timingMode: "auto",
     links: {
       youtube: "https://youtube.com",
       instagram: "https://instagram.com",
