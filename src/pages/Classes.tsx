@@ -14,7 +14,7 @@ const Classes: React.FC = () => {
   const { t, language } = useLanguage();
 
   const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
-  const todayPrayers = useMemo(() => getPrayerTimesForDate(todayStr), [todayStr]);
+  const todayPrayers = useMemo(() => getLivePrayerTimesForDate(todayStr), [todayStr]);
 
   const classStartTime = todayPrayers ? addMinutesToTime(todayPrayers.maghrib, 20) : null;
   const classEndTime = todayPrayers?.isha ?? null;
