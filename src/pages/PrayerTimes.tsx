@@ -94,10 +94,10 @@ const PrayerTimes: React.FC = () => {
                   {t(key)}
                 </div>
                 <div className={`px-4 py-3 text-center tabular-nums ${isActive ? "text-accent-foreground" : "text-muted-foreground"}`}>
-                  {time}
+                  {formatTime(time, language)}
                 </div>
                 <div className={`px-4 py-3 text-center tabular-nums ${isActive ? "text-accent-foreground" : "text-muted-foreground"}`}>
-                  {iqama}
+                  {iqama === "-" ? "-" : formatTime(iqama, language)}
                 </div>
               </div>
             );
