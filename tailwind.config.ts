@@ -57,6 +57,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        mosque: {
+          teal: {
+            dark: "hsl(168, 72%, 17%)",
+            DEFAULT: "hsl(163, 50%, 30%)",
+            light: "hsl(160, 40%, 40%)",
+          },
+          gold: {
+            DEFAULT: "hsl(40, 80%, 56%)",
+            light: "hsl(42, 85%, 65%)",
+            dark: "hsl(38, 75%, 45%)",
+          },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,25 +77,20 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      maxWidth: {
+        app: "430px",
       },
     },
   },
