@@ -4,6 +4,7 @@ export interface Message {
   textEn?: string;
   textAr?: string;
   imageUrl?: string;
+  imageSize?: "small" | "medium" | "large" | "full"; // display size
   linkUrl?: string;
   linkLabel?: string;
   linkLabelEn?: string;

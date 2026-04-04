@@ -3,7 +3,8 @@ export interface Broadcast {
   text: string;
   textEn?: string;
   textAr?: string;
-  imageUrl?: string; // base64 data URL or external URL
+  imageUrl?: string;
+  imageSize?: "small" | "medium" | "large" | "full";
   active: boolean;
 }
 
