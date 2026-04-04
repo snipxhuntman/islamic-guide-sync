@@ -118,7 +118,7 @@ const AdminMessages: React.FC = () => {
   const handleSaveEdit = (id: string) => {
     persist(messages.map((m) =>
       m.id === id
-        ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, linkUrl: form.linkUrl || undefined, linkLabel: form.linkLabel || undefined, linkLabelEn: form.linkLabelEn || undefined, linkLabelAr: form.linkLabelAr || undefined }
+        ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, imageSize: form.imageUrl ? form.imageSize : undefined, linkUrl: form.linkUrl || undefined, linkLabel: form.linkLabel || undefined, linkLabelEn: form.linkLabelEn || undefined, linkLabelAr: form.linkLabelAr || undefined }
         : m
     ));
     setEditing(null);
