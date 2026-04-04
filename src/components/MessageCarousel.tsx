@@ -25,6 +25,20 @@ const MessageCarousel: React.FC = () => {
 
   if (broadcasts.length === 0) return null;
 
+  const renderSlideContent = (b: Broadcast) => (
+    <>
+      {b.imageUrl && (
+        <img src={b.imageUrl} alt="" className={`rounded-lg mb-2 object-contain ${
+          b.imageSize === "small" ? "max-h-16" :
+          b.imageSize === "large" ? "max-h-48 w-full" :
+          b.imageSize === "full" ? "max-h-none w-full" :
+          "max-h-32 w-full"
+        }`} />
+      )}
+      {getText(b) && <p className="text-sm text-card-foreground line-clamp-2">{getText(b)}</p>}
+    </>
+  );
+
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-lg bg-card border border-border shadow-sm">
@@ -34,15 +48,13 @@ const MessageCarousel: React.FC = () => {
         >
           {broadcasts.map((b) => (
             <div key={b.id} className="min-w-full p-4">
-              {b.imageUrl && (
-                <img src={b.imageUrl} alt="" className={`rounded-lg mb-2 object-contain ${
-                  b.imageSize === "small" ? "max-h-16" :
-                  b.imageSize === "large" ? "max-h-48 w-full" :
-                  b.imageSize === "full" ? "max-h-none w-full" :
-                  "max-h-32 w-full"
-                }`} />
+              {b.link ? (
+                <a href={b.link} target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
+                  {renderSlideContent(b)}
+                </a>
+              ) : (
+                renderSlideContent(b)
               )}
-              {getText(b) && <p className="text-sm text-card-foreground line-clamp-2">{getText(b)}</p>}
             </div>
           ))}
         </div>

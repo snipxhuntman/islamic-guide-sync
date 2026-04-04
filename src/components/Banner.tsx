@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Globe, MapPin } from "lucide-react";
 
@@ -7,45 +7,33 @@ interface BannerProps {
 }
 
 const Banner: React.FC<BannerProps> = ({ className = "" }) => {
-  const [flipped, setFlipped] = useState(false);
   const { t } = useLanguage();
 
   return (
-    <div
-      className={`flip-card cursor-pointer ${className}`}
-      onClick={() => setFlipped(!flipped)}
-    >
-      <div className={`flip-card-inner relative w-full h-20 ${flipped ? "flipped" : ""}`}>
-        {/* Front */}
-        <div className="flip-card-front absolute inset-0 flex items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg">
-          <div className="text-center">
-            <h1 className="text-xl font-bold tracking-wide">{t("mosqueName")}</h1>
-            <p className="text-sm opacity-80">{t("mosqueSubtitle")}</p>
-          </div>
-        </div>
-        {/* Back */}
-        <div className="flip-card-back absolute inset-0 flex items-center justify-center gap-8 rounded-xl bg-secondary text-secondary-foreground shadow-lg">
-          <a
-            href="https://leipziger-moschee.de"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex flex-col items-center gap-1 hover:text-accent transition-colors"
-          >
-            <Globe className="w-8 h-8" />
-            <span className="text-xs">{t("website")}</span>
-          </a>
-          <a
-            href="https://maps.google.com/?q=Alrahman+Moschee+Leipzig"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="flex flex-col items-center gap-1 hover:text-accent transition-colors"
-          >
-            <MapPin className="w-8 h-8" />
-            <span className="text-xs">Google Maps</span>
-          </a>
-        </div>
+    <div className={`relative rounded-xl bg-primary text-primary-foreground shadow-lg px-4 py-4 ${className}`}>
+      <div className="text-center">
+        <h1 className="text-xl font-bold tracking-wide">{t("mosqueName")}</h1>
+        <p className="text-sm opacity-80">{t("mosqueSubtitle")}</p>
+      </div>
+      <div className="absolute bottom-2 right-2 flex gap-1.5">
+        <a
+          href="https://leipziger-moschee.de"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/40 transition-colors"
+          aria-label="Website"
+        >
+          <Globe className="w-3.5 h-3.5" />
+        </a>
+        <a
+          href="https://maps.google.com/?q=Alrahman+Moschee+Leipzig"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/40 transition-colors"
+          aria-label="Location"
+        >
+          <MapPin className="w-3.5 h-3.5" />
+        </a>
       </div>
     </div>
   );

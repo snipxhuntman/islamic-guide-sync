@@ -5,6 +5,7 @@ export interface Broadcast {
   textAr?: string;
   imageUrl?: string;
   imageSize?: "small" | "medium" | "large" | "full";
+  link?: string;
   active: boolean;
 }
 
