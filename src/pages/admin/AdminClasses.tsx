@@ -374,7 +374,7 @@ const AdminClasses: React.FC = () => {
 
       <div className="space-y-3">
         {classes.map((c) => (
-          <Card key={c.id} className={c.isCancelled ? "opacity-70 border-destructive/30" : ""}>
+          <Card key={c.id} className={c.isCancelled && editing !== c.id ? "opacity-70 border-destructive/30" : c.isCancelled ? "border-destructive/30" : ""}>
             <CardContent className="pt-4">
               {editing === c.id ? (
                 renderClassForm(() => handleSaveEdit(c.id), t.save)
