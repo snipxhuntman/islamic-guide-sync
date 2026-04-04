@@ -124,7 +124,7 @@ const AdminBroadcasts: React.FC = () => {
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true });
   };
 
   const renderImageUpload = (inputRef: React.RefObject<HTMLInputElement>) => (
