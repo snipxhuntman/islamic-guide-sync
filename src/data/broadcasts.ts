@@ -1,3 +1,17 @@
+export type ScheduleType = "always" | "recurring" | "once";
+export type RecurringInterval = "daily" | "weekly" | "biweekly" | "monthly";
+
+export interface BroadcastSchedule {
+  type: ScheduleType;
+  // For "recurring": interval + startTime/endTime (HH:MM) + startDate/endDate (YYYY-MM-DD)
+  recurringInterval?: RecurringInterval;
+  // For "once" and "recurring": date range
+  startDate?: string; // YYYY-MM-DD
+  endDate?: string;   // YYYY-MM-DD
+  startHour?: string; // HH:MM
+  endHour?: string;   // HH:MM
+}
+
 export interface Broadcast {
   id: string;
   text: string;
@@ -6,7 +20,62 @@ export interface Broadcast {
   imageUrl?: string;
   imageSize?: "small" | "medium" | "large" | "full";
   link?: string;
+  schedule?: BroadcastSchedule;
   active: boolean;
+}
+
+function isBroadcastVisible(b: Broadcast): boolean {
+  if (!b.active) return false;
+  if (!b.schedule || b.schedule.type === "always") return true;
+
+  const now = new Date();
+  const today = now.toISOString().split("T")[0];
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  const { startDate, endDate, startHour, endHour } = b.schedule;
+
+  // Check date range
+  if (startDate && today < startDate) return false;
+  if (endDate && today > endDate) return false;
+
+  // Check time window
+  const startMin = startHour ? parseTimeToMinutes(startHour) : 0;
+  const endMin = endHour ? parseTimeToMinutes(endHour) : 24 * 60 - 1;
+
+  // On start date, only show from startHour onward
+  if (startDate && today === startDate && currentMinutes < startMin) return false;
+  // On end date, only show until endHour
+  if (endDate && today === endDate && currentMinutes > endMin) return false;
+
+  if (b.schedule.type === "once") return true;
+
+  // Recurring: check if today matches the interval pattern
+  if (b.schedule.type === "recurring" && startDate) {
+    const start = new Date(startDate + "T00:00:00");
+    const diffDays = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+    switch (b.schedule.recurringInterval) {
+      case "daily":
+        return true;
+      case "weekly":
+        return diffDays % 7 === 0;
+      case "biweekly":
+        return diffDays % 14 === 0;
+      case "monthly": {
+        // Same day of month
+        return now.getDate() === start.getDate();
+      }
+      default:
+        return true;
+    }
+  }
+
+  return true;
+}
+
+function parseTimeToMinutes(t: string): number {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + (m || 0);
 }
 
 export function getLiveBroadcasts(): Broadcast[] {
@@ -14,10 +83,10 @@ export function getLiveBroadcasts(): Broadcast[] {
     const raw = localStorage.getItem("admin-broadcasts");
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed.filter((b: Broadcast) => b.active);
+      if (Array.isArray(parsed)) return parsed.filter(isBroadcastVisible);
     }
   } catch {}
-  return broadcastsData.filter((b) => b.active);
+  return broadcastsData.filter(isBroadcastVisible);
 }
 
 export function getAllBroadcasts(): Broadcast[] {
