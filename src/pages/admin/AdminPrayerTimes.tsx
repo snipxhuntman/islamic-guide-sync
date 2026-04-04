@@ -227,19 +227,10 @@ const AdminPrayerTimes: React.FC = () => {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Select
+                  <Time24Input
                     value={s.fixedTime}
-                    onValueChange={(v) => updateIqamaSetting(prayer, { fixedTime: v })}
-                  >
-                    <SelectTrigger className="w-28 h-9 font-mono">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {timeOptions.map((t) => (
-                        <SelectItem key={t} value={t}>{t}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onChange={(v) => updateIqamaSetting(prayer, { fixedTime: v })}
+                  />
                 )}
               </div>
             );
