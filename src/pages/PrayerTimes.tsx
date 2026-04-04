@@ -5,6 +5,7 @@ import QiblaCompass from "@/components/QiblaCompass";
 import { formatHijriDate, formatGregorianDate } from "@/utils/hijri";
 import { getLivePrayerTimesForDate, getCurrentPrayer, prayerKeys, PrayerName } from "@/data/prayerTimes";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { formatTime } from "@/utils/timeFormat";
 
 const PrayerTimes: React.FC = () => {
   const { t, language, isRTL } = useLanguage();
