@@ -1,4 +1,5 @@
 // Simple Hijri date conversion using the Umm al-Qura approximation
+import { toWesternNumerals } from "@/utils/timeFormat";
 
 export function getHijriCorrection(): number {
   try {
