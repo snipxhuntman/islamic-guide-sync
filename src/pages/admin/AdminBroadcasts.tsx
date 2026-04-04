@@ -46,7 +46,7 @@ const AdminBroadcasts: React.FC = () => {
   const [items, setItems] = useState<Broadcast[]>(() => getAllBroadcasts());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, active: true });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
   const fileRef = useRef<HTMLInputElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
 
@@ -73,7 +73,7 @@ const AdminBroadcasts: React.FC = () => {
       active: form.active,
     };
     persist([...items, item]);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
     setShowAdd(false);
     toast.success(t.added);
   };
@@ -95,7 +95,7 @@ const AdminBroadcasts: React.FC = () => {
         : b
     ));
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
     toast.success(t.updated);
   };
 
@@ -105,7 +105,7 @@ const AdminBroadcasts: React.FC = () => {
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
   };
 
   const renderImageUpload = (inputRef: React.RefObject<HTMLInputElement>) => (
@@ -173,7 +173,7 @@ const AdminBroadcasts: React.FC = () => {
           <h1 className="text-2xl font-bold text-foreground">{t.title}</h1>
           <p className="text-sm text-muted-foreground">{t.desc}</p>
         </div>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, active: true }); }}>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newSlide}
         </Button>
       </div>
