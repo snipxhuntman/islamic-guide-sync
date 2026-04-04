@@ -197,6 +197,16 @@ const AdminClasses: React.FC = () => {
 
   const ClassForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
     <div className="space-y-3">
+      {/* Cancelled toggle - first and prominent */}
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+        <Switch
+          checked={form.isCancelled}
+          onCheckedChange={(v) => setForm({ ...form, isCancelled: v })}
+          className="scale-125"
+        />
+        <label className="text-sm font-medium text-foreground">{t.cancelled}</label>
+      </div>
+
       <div className="grid grid-cols-3 gap-2">
         <div>
           <label className="text-xs font-medium text-muted-foreground">{t.titleDe}</label>
@@ -225,20 +235,14 @@ const AdminClasses: React.FC = () => {
           <Input dir="rtl" value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">{t.day}</label>
-          <Select value={form.day} onValueChange={(v) => setForm({ ...form, day: v })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {DAYS.map((d) => <SelectItem key={d} value={d}>{dayLabel(d)}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-end gap-2 pb-1">
-          <label className="text-xs font-medium text-muted-foreground">{t.cancelled}</label>
-          <Switch checked={form.isCancelled} onCheckedChange={(v) => setForm({ ...form, isCancelled: v })} />
-        </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">{t.day}</label>
+        <Select value={form.day} onValueChange={(v) => setForm({ ...form, day: v })}>
+          <SelectTrigger className="w-full max-w-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {DAYS.map((d) => <SelectItem key={d} value={d}>{dayLabel(d)}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Timing section */}
