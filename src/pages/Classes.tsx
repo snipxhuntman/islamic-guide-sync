@@ -58,10 +58,19 @@ const Classes: React.FC = () => {
 
       <div className="flex-1 px-4 mt-4 space-y-3">
         {classes.map((cls) => {
-          const nextDate = getNextDateForDay(cls.day);
-          const prayers = getLivePrayerTimesForDate(nextDate);
-          const startTime = prayers ? addMinutesToTime(prayers.maghrib, 20) : null;
-          const endTime = prayers?.isha ?? null;
+          const isManual = cls.timingMode === "manual" && cls.manualStart && cls.manualEnd;
+          let displayStart: string | null;
+          let displayEnd: string | null;
+
+          if (isManual) {
+            displayStart = cls.manualStart!;
+            displayEnd = cls.manualEnd!;
+          } else {
+            const nextDate = getNextDateForDay(cls.day);
+            const prayers = getLivePrayerTimesForDate(nextDate);
+            displayStart = prayers ? addMinutesToTime(prayers.maghrib, 20) : null;
+            displayEnd = prayers?.isha ?? null;
+          }
 
           return (
           <div
@@ -84,8 +93,8 @@ const Classes: React.FC = () => {
                 <p className="text-sm text-muted-foreground mt-0.5">{getDesc(cls)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {t(cls.day)} · {t("classTime")}:{" "}
-                  {startTime && endTime
-                    ? `${startTime} – ${endTime}`
+                  {displayStart && displayEnd
+                    ? `${displayStart} – ${displayEnd}`
                     : `${t("maghrib")}+20 – ${t("isha")}`}
                 </p>
               </div>

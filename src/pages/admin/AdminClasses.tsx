@@ -22,6 +22,9 @@ const emptyForm = (): Omit<ClassItem, "id"> => ({
   day: "monday",
   description: "", descriptionEn: "", descriptionAr: "",
   isCancelled: false,
+  timingMode: "auto",
+  manualStart: "",
+  manualEnd: "",
   links: { youtube: "", instagram: "", telegram: "", facebook: "", tiktok: "" },
 });
 
@@ -112,6 +115,30 @@ const AdminClasses: React.FC = () => {
           <label className="text-xs font-medium text-muted-foreground">Cancelled</label>
           <Switch checked={form.isCancelled} onCheckedChange={(v) => setForm({ ...form, isCancelled: v })} />
         </div>
+      </div>
+      <div className="grid grid-cols-3 gap-2 items-end">
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">Timing</label>
+          <Select value={form.timingMode} onValueChange={(v: "auto" | "manual") => setForm({ ...form, timingMode: v })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">Auto (Maghrib+20 → Isha)</SelectItem>
+              <SelectItem value="manual">Manual</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {form.timingMode === "manual" && (
+          <>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">Start Time</label>
+              <Input type="time" value={form.manualStart || ""} onChange={(e) => setForm({ ...form, manualStart: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">End Time</label>
+              <Input type="time" value={form.manualEnd || ""} onChange={(e) => setForm({ ...form, manualEnd: e.target.value })} />
+            </div>
+          </>
+        )}
       </div>
       <div className="grid grid-cols-5 gap-2">
         {(["youtube", "instagram", "telegram", "facebook", "tiktok"] as const).map((key) => (
