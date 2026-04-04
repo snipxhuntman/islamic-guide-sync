@@ -109,7 +109,14 @@ const Messages: React.FC = () => {
                         "max-h-48"
                       }`} />
                     )}
-                    {getText(msg) && <p className="text-sm leading-relaxed">{getText(msg)}</p>}
+                    {shouldShowCombined(msg) ? (
+                      <div className="space-y-1.5">
+                        <p className="text-sm leading-relaxed">{msg.text}</p>
+                        {msg.textAr && <p className="text-sm leading-relaxed" dir="rtl">{msg.textAr}</p>}
+                      </div>
+                    ) : (
+                      getText(msg) && <p className="text-sm leading-relaxed">{getText(msg)}</p>
+                    )}
                     {msg.linkUrl && (
                       <a
                         href={msg.linkUrl}
