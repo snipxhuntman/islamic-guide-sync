@@ -60,7 +60,8 @@ export function formatHijriDate(date: Date, lang: string): string {
 
 export function formatGregorianDate(date: Date, lang: string): string {
   const localeMap: Record<string, string> = { de: "de-DE", en: "en-US", ar: "ar-SA" };
-  return date.toLocaleDateString(localeMap[lang] || "de-DE", {
+  const formatted = date.toLocaleDateString(localeMap[lang] || "de-DE", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
+  return lang === "ar" ? toWesternNumerals(formatted) : formatted;
 }
