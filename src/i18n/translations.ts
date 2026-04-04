@@ -56,8 +56,9 @@ export const translations: Record<Language, Record<string, string>> = {
     adhan2: "Adhan 2",
     ring: "Klingeln",
     alertBefore: "Minuten vorher",
-    broadcastNotifications: "Nachrichtenbenachrichtigungen",
-    eventNotifications: "Eventbenachrichtigungen",
+    classNotifications: "Unterrichtsbenachrichtigungen",
+    classCancellationAlerts: "Unterrichtsausfälle melden",
+    messageNotifications: "Nachrichtenbenachrichtigungen",
     website: "Webseite",
     privacyPolicy: "Datenschutzerklärung",
 
