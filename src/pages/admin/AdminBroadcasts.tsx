@@ -109,14 +109,26 @@ function formFromBroadcast(b: Broadcast): FormState {
 
 function formToSchedule(f: FormState): BroadcastSchedule | undefined {
   if (f.scheduleType === "always") return { type: "always" };
-  return {
+  const sched: BroadcastSchedule = {
     type: f.scheduleType,
-    recurringInterval: f.scheduleType === "recurring" ? f.recurringInterval : undefined,
-    startDate: f.startDate || undefined,
-    endDate: f.endDate || undefined,
     startHour: f.startHour || undefined,
     endHour: f.endHour || undefined,
   };
+  if (f.scheduleType === "recurring") {
+    sched.recurringInterval = f.recurringInterval;
+    if (f.recurringInterval === "weekly" || f.recurringInterval === "biweekly") {
+      sched.dayOfWeek = f.dayOfWeek ? Number(f.dayOfWeek) : undefined;
+      sched.endDayOfWeek = f.endDayOfWeek ? Number(f.endDayOfWeek) : undefined;
+    }
+    if (f.recurringInterval === "monthly") {
+      sched.dayOfMonth = f.dayOfMonth ? Number(f.dayOfMonth) : undefined;
+    }
+  }
+  if (f.scheduleType === "once") {
+    sched.startDate = f.startDate || undefined;
+    sched.endDate = f.endDate || undefined;
+  }
+  return sched;
 }
 
 function saveBroadcasts(data: Broadcast[]) {
