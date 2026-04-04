@@ -68,6 +68,7 @@ export interface SiteLinks {
     en: string;
     ar: string;
   };
+  mapsUrl: string;
 }
 
 const defaultSiteLinks: SiteLinks = {
