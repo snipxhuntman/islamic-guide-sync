@@ -50,21 +50,32 @@ function isBroadcastVisible(b: Broadcast): boolean {
 
   if (b.schedule.type === "once") return true;
 
-  // Recurring: check if today matches the interval pattern
-  if (b.schedule.type === "recurring" && startDate) {
-    const start = new Date(startDate + "T00:00:00");
-    const diffDays = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
+  // Recurring
+  if (b.schedule.type === "recurring") {
     switch (b.schedule.recurringInterval) {
       case "daily":
+        // Just time window, already checked above
         return true;
-      case "weekly":
-        return diffDays % 7 === 0;
-      case "biweekly":
-        return diffDays % 14 === 0;
+      case "weekly": {
+        const dow = b.schedule.dayOfWeek;
+        if (dow !== undefined && now.getDay() !== dow) return false;
+        return true;
+      }
+      case "biweekly": {
+        const dow = b.schedule.dayOfWeek;
+        if (dow !== undefined && now.getDay() !== dow) return false;
+        // Check if it's the right week (every 2 weeks from startDate or from epoch)
+        if (startDate) {
+          const start = new Date(startDate + "T00:00:00");
+          const diffWeeks = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7));
+          if (diffWeeks % 2 !== 0) return false;
+        }
+        return true;
+      }
       case "monthly": {
-        // Same day of month
-        return now.getDate() === start.getDate();
+        const dom = b.schedule.dayOfMonth;
+        if (dom !== undefined && now.getDate() !== dom) return false;
+        return true;
       }
       default:
         return true;
