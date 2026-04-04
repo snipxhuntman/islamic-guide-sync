@@ -165,6 +165,21 @@ const AdminDashboard: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Maps URL */}
+      <Card>
+        <CardHeader className="flex flex-row items-center gap-2 pb-2">
+          <MapPin className="w-5 h-5 text-muted-foreground" />
+          <CardTitle className="text-base font-semibold">{t.mapsUrl}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Input
+            value={links.mapsUrl}
+            onChange={(e) => setLinks((prev) => ({ ...prev, mapsUrl: e.target.value }))}
+            placeholder="https://maps.google.com/..."
+          />
+        </CardContent>
+      </Card>
+
       <Button onClick={handleSave} className="w-full">{t.save}</Button>
     </div>
   );
