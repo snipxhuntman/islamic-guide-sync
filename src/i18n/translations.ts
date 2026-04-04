@@ -132,6 +132,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     privacyTitle: "Privacy Policy",
     privacyContent: "This app stores your settings locally on your device. No personal data is transmitted to servers. The Qibla compass uses your location only to calculate the prayer direction and does not save any location data.",
+    donate: "Donate",
 
     monday: "Monday",
     tuesday: "Tuesday",
