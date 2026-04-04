@@ -142,13 +142,20 @@ function formatScheduleLabel(b: Broadcast, t: typeof i18n.en): string {
   if (s.type === "recurring") {
     const intervalLabels: Record<RecurringInterval, string> = { daily: t.daily, weekly: t.weekly, biweekly: t.biweekly, monthly: t.monthly };
     parts.push(`🔁 ${intervalLabels[s.recurringInterval || "daily"]}`);
+    if ((s.recurringInterval === "weekly" || s.recurringInterval === "biweekly") && s.dayOfWeek !== undefined) {
+      parts.push(t.days[s.dayOfWeek]);
+      if (s.endDayOfWeek !== undefined) parts.push(`→ ${t.days[s.endDayOfWeek]}`);
+    }
+    if (s.recurringInterval === "monthly" && s.dayOfMonth !== undefined) {
+      parts.push(`${t.dayOfMonth}: ${s.dayOfMonth}`);
+    }
   } else {
     parts.push(`📅 ${t.once}`);
+    if (s.startDate) parts.push(`${t.from} ${s.startDate}`);
+    if (s.endDate) parts.push(`${t.to} ${s.endDate}`);
   }
-  if (s.startDate) parts.push(`${t.from} ${s.startDate}`);
   if (s.startHour) parts.push(`${t.at} ${s.startHour}`);
-  if (s.endDate) parts.push(`${t.to} ${s.endDate}`);
-  if (s.endHour) parts.push(`${t.at} ${s.endHour}`);
+  if (s.endHour) parts.push(`→ ${s.endHour}`);
   return parts.join(" · ");
 }
 
