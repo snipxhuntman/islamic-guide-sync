@@ -22,6 +22,9 @@ const emptyForm = (): Omit<ClassItem, "id"> => ({
   day: "monday",
   description: "", descriptionEn: "", descriptionAr: "",
   isCancelled: false,
+  timingMode: "auto",
+  manualStart: "",
+  manualEnd: "",
   links: { youtube: "", instagram: "", telegram: "", facebook: "", tiktok: "" },
 });
 
