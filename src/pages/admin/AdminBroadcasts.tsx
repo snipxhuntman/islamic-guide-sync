@@ -111,6 +111,14 @@ const AdminBroadcasts: React.FC = () => {
     persist(items.map((b) => (b.id === id ? { ...b, active: !b.active } : b)));
   };
 
+  const moveSlide = (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= items.length) return;
+    const updated = [...items];
+    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+    persist(updated);
+  };
+
   const cancelEdit = () => {
     setEditing(null);
     setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
