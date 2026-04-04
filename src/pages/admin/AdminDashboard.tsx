@@ -35,6 +35,7 @@ const i18n = {
     german: "Deutsch",
     english: "Englisch",
     arabic: "Arabisch",
+    mapsUrl: "Google Maps Adresse",
   },
 };
 
