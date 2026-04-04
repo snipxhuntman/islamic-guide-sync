@@ -110,7 +110,8 @@ const Classes: React.FC = () => {
             <div className="flex gap-2 mt-3">
               {socialIcons.map(
                 ({ key, icon }) =>
-                  cls.links[key as keyof typeof cls.links] && (
+                  cls.links[key as keyof typeof cls.links] &&
+                  (cls.linksVisible?.[key as keyof typeof cls.links] !== false) && (
                     <a
                       key={key}
                       href={cls.links[key as keyof typeof cls.links]}
