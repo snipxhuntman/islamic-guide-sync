@@ -19,6 +19,7 @@ import AdminPrayerTimes from "./pages/admin/AdminPrayerTimes.tsx";
 import AdminMessages from "./pages/admin/AdminMessages.tsx";
 import AdminClasses from "./pages/admin/AdminClasses.tsx";
 import AdminBroadcasts from "./pages/admin/AdminBroadcasts.tsx";
+import AdminPrivacyPolicy from "./pages/admin/AdminPrivacyPolicy.tsx";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
                 <Route path="messages" element={<AdminMessages />} />
                 <Route path="classes" element={<AdminClasses />} />
                 <Route path="broadcasts" element={<AdminBroadcasts />} />
+                <Route path="privacy" element={<AdminPrivacyPolicy />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
