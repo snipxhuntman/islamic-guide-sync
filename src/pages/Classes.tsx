@@ -95,7 +95,7 @@ const Classes: React.FC = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   {t(cls.day)} · {t("classTime")}:{" "}
                   {displayStart && displayEnd
-                    ? `${displayStart} – ${displayEnd}`
+                    ? `${formatTime(displayStart, language)} – ${formatTime(displayEnd, language)}`
                     : `${t("maghrib")}+20 – ${t("isha")}`}
                 </p>
               </div>
