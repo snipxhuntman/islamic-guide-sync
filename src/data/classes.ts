@@ -8,6 +8,9 @@ export interface ClassItem {
   descriptionEn: string;
   descriptionAr: string;
   isCancelled: boolean;
+  timingMode: "auto" | "manual"; // auto = Maghrib+20 → Isha, manual = custom times
+  manualStart?: string; // HH:MM
+  manualEnd?: string;   // HH:MM
   links: {
     youtube?: string;
     instagram?: string;
