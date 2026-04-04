@@ -80,11 +80,15 @@ interface FormState {
   endDate: string;
   startHour: string;
   endHour: string;
+  dayOfWeek: string;
+  endDayOfWeek: string;
+  dayOfMonth: string;
 }
 
 const defaultForm: FormState = {
   text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium", link: "", active: true,
   scheduleType: "always", recurringInterval: "daily", startDate: "", endDate: "", startHour: "", endHour: "",
+  dayOfWeek: "", endDayOfWeek: "", dayOfMonth: "",
 };
 
 function formFromBroadcast(b: Broadcast): FormState {
