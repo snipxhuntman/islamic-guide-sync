@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Trash2, Download } from "lucide-react";
+import { Upload, Trash2, Download, Minus, Plus } from "lucide-react";
 import { getPrayerTimes, savePrayerTimes } from "@/stores/dataStore";
 import { PrayerDay } from "@/data/prayerTimes";
 import { toast } from "sonner";
+import { getHijriCorrection, setHijriCorrection, formatHijriDate } from "@/utils/hijri";
 import {
   Table,
   TableBody,
@@ -48,7 +49,17 @@ function generateSampleCSV(): string {
 
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
+  const [hijriOffset, setHijriOffset] = useState(() => getHijriCorrection());
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const updateHijriOffset = (delta: number) => {
+    const next = Math.max(-3, Math.min(3, hijriOffset + delta));
+    setHijriOffset(next);
+    setHijriCorrection(next);
+    toast.success(`Hijri correction set to ${next > 0 ? "+" : ""}${next} day(s)`);
+  };
+
+  const todayHijri = formatHijriDate(new Date(), "en");
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -99,6 +110,34 @@ const AdminPrayerTimes: React.FC = () => {
           <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleUpload} />
         </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Hijri Calendar Correction</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Button size="icon" variant="outline" onClick={() => updateHijriOffset(-1)} disabled={hijriOffset <= -3}>
+                <Minus className="w-4 h-4" />
+              </Button>
+              <span className="font-mono text-lg min-w-[3ch] text-center">
+                {hijriOffset > 0 ? "+" : ""}{hijriOffset}
+              </span>
+              <Button size="icon" variant="outline" onClick={() => updateHijriOffset(1)} disabled={hijriOffset >= 3}>
+                <Plus className="w-4 h-4" />
+              </Button>
+              <span className="text-sm text-muted-foreground">day(s)</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Today: <span className="font-semibold text-foreground">{todayHijri}</span>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Adjust if the Hijri date doesn't match your local moon sighting. Range: -3 to +3 days.
+          </p>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
