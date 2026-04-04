@@ -95,16 +95,16 @@ const AdminPrayerTimes: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="space-y-3">
         <h1 className="text-2xl font-bold text-foreground">Prayer Times</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleDownloadSample}>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" size="sm" onClick={handleDownloadSample} className="w-full sm:w-auto">
             <Download className="w-4 h-4 mr-1" /> Sample CSV
           </Button>
-          <Button variant="outline" size="sm" onClick={handleClear}>
+          <Button variant="outline" size="sm" onClick={handleClear} className="w-full sm:w-auto">
             <Trash2 className="w-4 h-4 mr-1" /> Clear
           </Button>
-          <Button size="sm" onClick={() => fileRef.current?.click()}>
+          <Button size="sm" onClick={() => fileRef.current?.click()} className="w-full sm:w-auto">
             <Upload className="w-4 h-4 mr-1" /> Upload CSV
           </Button>
           <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleUpload} />
