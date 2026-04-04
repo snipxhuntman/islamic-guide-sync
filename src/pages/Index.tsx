@@ -4,6 +4,7 @@ import Banner from "@/components/Banner";
 import CountdownTimer from "@/components/CountdownTimer";
 import MessageCarousel from "@/components/MessageCarousel";
 import { formatHijriDate, formatGregorianDate } from "@/utils/hijri";
+import { getLivePrayerTimesForDate, getNextPrayer, prayerKeys, PrayerName } from "@/data/prayerTimes";
 
 const SocialIcons = () => (
   <div className="flex justify-center gap-5 py-4">
@@ -30,6 +31,61 @@ const SocialIcons = () => (
   </div>
 );
 
+const HomePrayerTimes: React.FC = () => {
+  const { t } = useLanguage();
+  const today = new Date();
+  const dateStr = today.toISOString().split("T")[0];
+  const prayers = getLivePrayerTimesForDate(dateStr);
+  const nextPrayer = prayers ? getNextPrayer(prayers) : null;
+
+  if (!prayers) return null;
+
+  const getPrayerTime = (key: PrayerName) => {
+    const timeMap: Record<PrayerName, string> = {
+      fajr: prayers.fajr,
+      shuruk: prayers.shuruk,
+      dhuhr: prayers.dhuhr,
+      asr: prayers.asr,
+      maghrib: prayers.maghrib,
+      isha: prayers.isha,
+    };
+    return timeMap[key];
+  };
+
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {prayerKeys.map((key) => {
+        const isNext = nextPrayer?.name === key;
+        return (
+          <div
+            key={key}
+            className={`flex flex-col items-center rounded-xl px-2 py-3 transition-colors ${
+              isNext
+                ? "bg-accent text-accent-foreground ring-2 ring-accent shadow-md"
+                : "bg-card text-foreground"
+            }`}
+          >
+            <span
+              className={`text-[0.8125rem] leading-snug ${
+                isNext ? "font-bold" : "font-medium text-muted-foreground"
+              }`}
+            >
+              {t(key)}
+            </span>
+            <span
+              className={`tabular-nums mt-0.5 ${
+                isNext ? "text-[1.125rem] font-bold" : "text-[0.9375rem] font-semibold"
+              }`}
+            >
+              {getPrayerTime(key)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const Index: React.FC = () => {
   const { language } = useLanguage();
   const today = new Date();
@@ -48,6 +104,11 @@ const Index: React.FC = () => {
         <p className="text-sm text-accent font-semibold">
           {formatHijriDate(today, language)}
         </p>
+      </div>
+
+      {/* Prayer Times Grid */}
+      <div className="mt-4 px-4">
+        <HomePrayerTimes />
       </div>
 
       {/* Countdown Timer */}
