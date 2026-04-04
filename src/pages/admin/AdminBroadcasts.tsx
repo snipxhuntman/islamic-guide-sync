@@ -55,7 +55,7 @@ const AdminBroadcasts: React.FC = () => {
   const [items, setItems] = useState<Broadcast[]>(() => getAllBroadcasts());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true });
   const fileRef = useRef<HTMLInputElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
 
