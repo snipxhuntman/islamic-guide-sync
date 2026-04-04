@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { classesData } from "@/data/classes";
-import { getPrayerTimesForDate } from "@/data/prayerTimes";
+import { getLiveClasses } from "@/data/classes";
+import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
 import { AlertTriangle } from "lucide-react";
 
 function addMinutesToTime(time: string, minutes: number): string {
@@ -12,20 +12,21 @@ function addMinutesToTime(time: string, minutes: number): string {
 
 const Classes: React.FC = () => {
   const { t, language } = useLanguage();
+  const classes = getLiveClasses();
 
   const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
-  const todayPrayers = useMemo(() => getPrayerTimesForDate(todayStr), [todayStr]);
+  const todayPrayers = useMemo(() => getLivePrayerTimesForDate(todayStr), [todayStr]);
 
   const classStartTime = todayPrayers ? addMinutesToTime(todayPrayers.maghrib, 20) : null;
   const classEndTime = todayPrayers?.isha ?? null;
 
-  const getTitle = (c: typeof classesData[0]) => {
+  const getTitle = (c: typeof classes[0]) => {
     if (language === "en") return c.titleEn;
     if (language === "ar") return c.titleAr;
     return c.title;
   };
 
-  const getDesc = (c: typeof classesData[0]) => {
+  const getDesc = (c: typeof classes[0]) => {
     if (language === "en") return c.descriptionEn;
     if (language === "ar") return c.descriptionAr;
     return c.description;
@@ -46,7 +47,7 @@ const Classes: React.FC = () => {
       </div>
 
       <div className="flex-1 px-4 mt-4 space-y-3">
-        {classesData.map((cls) => (
+        {classes.map((cls) => (
           <div
             key={cls.id}
             className={`rounded-xl border p-4 transition-colors ${

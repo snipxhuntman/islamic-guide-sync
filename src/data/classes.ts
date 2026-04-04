@@ -17,6 +17,17 @@ export interface ClassItem {
   };
 }
 
+export function getLiveClasses(): ClassItem[] {
+  try {
+    const raw = localStorage.getItem("admin-classes");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return classesData;
+}
+
 export const classesData: ClassItem[] = [
   {
     id: "1",

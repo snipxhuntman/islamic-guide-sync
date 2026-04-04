@@ -1,9 +1,10 @@
 import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { messagesData } from "@/data/messages";
+import { getLiveMessages } from "@/data/messages";
 
 const Messages: React.FC = () => {
   const { t, language } = useLanguage();
+  const messagesData = getLiveMessages();
 
   const getText = (msg: typeof messagesData[0]) => {
     if (language === "en" && msg.textEn) return msg.textEn;

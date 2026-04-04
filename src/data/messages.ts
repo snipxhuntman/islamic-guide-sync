@@ -6,6 +6,17 @@ export interface Message {
   timestamp: string; // ISO date-time
 }
 
+export function getLiveMessages(): Message[] {
+  try {
+    const raw = localStorage.getItem("admin-messages");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return messagesData;
+}
+
 export const messagesData: Message[] = [
   {
     id: "1",

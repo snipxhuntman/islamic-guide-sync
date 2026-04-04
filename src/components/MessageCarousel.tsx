@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { messagesData } from "@/data/messages";
+import { getLiveMessages } from "@/data/messages";
 
 const MessageCarousel: React.FC = () => {
   const { language } = useLanguage();
   const [current, setCurrent] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
-  const messages = messagesData.slice(0, 4);
+  const messages = getLiveMessages().slice(0, 4);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {

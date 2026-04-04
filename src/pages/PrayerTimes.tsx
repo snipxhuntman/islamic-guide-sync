@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import Banner from "@/components/Banner";
 import QiblaCompass from "@/components/QiblaCompass";
 import { formatHijriDate, formatGregorianDate } from "@/utils/hijri";
-import { getPrayerTimesForDate, getCurrentPrayer, prayerKeys, PrayerName } from "@/data/prayerTimes";
+import { getLivePrayerTimesForDate, getCurrentPrayer, prayerKeys, PrayerName } from "@/data/prayerTimes";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const PrayerTimes: React.FC = () => {
@@ -18,7 +18,7 @@ const PrayerTimes: React.FC = () => {
   }, [dayOffset]);
 
   const dateStr = selectedDate.toISOString().split("T")[0];
-  const prayers = getPrayerTimesForDate(dateStr);
+  const prayers = getLivePrayerTimesForDate(dateStr);
   const isToday = dayOffset === 0;
   const currentPrayer = isToday && prayers ? getCurrentPrayer(prayers) : null;
 

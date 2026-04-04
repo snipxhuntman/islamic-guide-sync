@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getPrayerTimesForDate, getNextPrayer } from "@/data/prayerTimes";
+import { getLivePrayerTimesForDate, getNextPrayer } from "@/data/prayerTimes";
 
 const CountdownTimer: React.FC = () => {
   const { t, isRTL } = useLanguage();
@@ -10,7 +10,7 @@ const CountdownTimer: React.FC = () => {
   useEffect(() => {
     const update = () => {
       const today = new Date().toISOString().split("T")[0];
-      const prayers = getPrayerTimesForDate(today);
+      const prayers = getLivePrayerTimesForDate(today);
       if (!prayers) return;
 
       const next = getNextPrayer(prayers);
