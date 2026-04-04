@@ -123,8 +123,9 @@ export const translations: Record<Language, Record<string, string>> = {
     adhan2: "Adhan 2",
     ring: "Ring",
     alertBefore: "Minutes before",
-    broadcastNotifications: "Broadcast Notifications",
-    eventNotifications: "Event Notifications",
+    classNotifications: "Class Notifications",
+    classCancellationAlerts: "Class cancellation alerts",
+    messageNotifications: "Message Notifications",
     website: "Website",
     privacyPolicy: "Privacy Policy",
 
