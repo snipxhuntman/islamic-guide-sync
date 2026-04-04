@@ -49,7 +49,17 @@ function generateSampleCSV(): string {
 
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
+  const [hijriOffset, setHijriOffset] = useState(() => getHijriCorrection());
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const updateHijriOffset = (delta: number) => {
+    const next = Math.max(-3, Math.min(3, hijriOffset + delta));
+    setHijriOffset(next);
+    setHijriCorrection(next);
+    toast.success(`Hijri correction set to ${next > 0 ? "+" : ""}${next} day(s)`);
+  };
+
+  const todayHijri = formatHijriDate(new Date(), "en");
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
