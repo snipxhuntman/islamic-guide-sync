@@ -65,6 +65,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Privacy
     privacyTitle: "Datenschutzerklärung",
     privacyContent: "Diese App speichert Ihre Einstellungen lokal auf Ihrem Gerät. Es werden keine personenbezogenen Daten an Server übertragen. Der Qibla-Kompass nutzt Ihren Standort nur zur Berechnung der Gebetsrichtung und speichert keine Standortdaten.",
+    donate: "Spenden",
 
     // Days
     monday: "Montag",
@@ -131,6 +132,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     privacyTitle: "Privacy Policy",
     privacyContent: "This app stores your settings locally on your device. No personal data is transmitted to servers. The Qibla compass uses your location only to calculate the prayer direction and does not save any location data.",
+    donate: "Donate",
 
     monday: "Monday",
     tuesday: "Tuesday",
@@ -196,6 +198,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     privacyTitle: "سياسة الخصوصية",
     privacyContent: "يحتفظ هذا التطبيق بإعداداتك محلياً على جهازك. لا يتم إرسال أي بيانات شخصية إلى الخوادم. تستخدم بوصلة القبلة موقعك فقط لحساب اتجاه الصلاة ولا تحفظ أي بيانات موقع.",
+    donate: "تبرع",
 
     monday: "الإثنين",
     tuesday: "الثلاثاء",
