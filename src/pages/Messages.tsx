@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveMessages } from "@/data/messages";
+import { formatTimestamp, toWesternNumerals } from "@/utils/timeFormat";
 
 function getReadMessageIds(): Set<string> {
   try {
