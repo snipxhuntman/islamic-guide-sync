@@ -27,6 +27,13 @@ export interface ClassItem {
     facebook?: string;
     tiktok?: string;
   };
+  linksVisible?: {
+    youtube?: boolean;
+    instagram?: boolean;
+    telegram?: boolean;
+    facebook?: boolean;
+    tiktok?: boolean;
+  };
 }
 
 export function getLiveClasses(): ClassItem[] {
