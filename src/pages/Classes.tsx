@@ -3,6 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveClasses } from "@/data/classes";
 import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
 import { AlertTriangle } from "lucide-react";
+import { formatTime } from "@/utils/timeFormat";
 
 function addMinutesToTime(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);
