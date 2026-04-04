@@ -113,6 +113,33 @@ const AdminPrayerTimes: React.FC = () => {
 
       <Card>
         <CardHeader>
+          <CardTitle className="text-sm">Hijri Calendar Correction</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Button size="icon" variant="outline" onClick={() => updateHijriOffset(-1)} disabled={hijriOffset <= -3}>
+                <Minus className="w-4 h-4" />
+              </Button>
+              <span className="font-mono text-lg min-w-[3ch] text-center">
+                {hijriOffset > 0 ? "+" : ""}{hijriOffset}
+              </span>
+              <Button size="icon" variant="outline" onClick={() => updateHijriOffset(1)} disabled={hijriOffset >= 3}>
+                <Plus className="w-4 h-4" />
+              </Button>
+              <span className="text-sm text-muted-foreground">day(s)</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Today: <span className="font-semibold text-foreground">{todayHijri}</span>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Adjust if the Hijri date doesn't match your local moon sighting. Range: -3 to +3 days.
+          </p>
+        </CardContent>
+      </Card>
+
+        <CardHeader>
           <CardTitle className="text-sm text-muted-foreground">{data.length} days loaded</CardTitle>
         </CardHeader>
         <CardContent>
