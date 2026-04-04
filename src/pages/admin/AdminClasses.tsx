@@ -132,6 +132,7 @@ const emptyForm = (): Omit<ClassItem, "id"> => ({
   manualEnd: "20:00",
   linksMode: "auto",
   links: { youtube: "", instagram: "", telegram: "", facebook: "", tiktok: "" },
+  linksVisible: { youtube: true, instagram: true, telegram: true, facebook: true, tiktok: true },
 });
 
 const AdminClasses: React.FC = () => {
