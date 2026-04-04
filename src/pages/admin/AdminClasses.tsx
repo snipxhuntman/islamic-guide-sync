@@ -377,7 +377,7 @@ const AdminClasses: React.FC = () => {
           <Card key={c.id} className={c.isCancelled ? "opacity-70 border-destructive/30" : ""}>
             <CardContent className="pt-4">
               {editing === c.id ? (
-                {renderClassForm(() => handleSaveEdit(c.id), t.save)}
+                renderClassForm(() => handleSaveEdit(c.id), t.save)
               ) : (
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
