@@ -60,13 +60,33 @@ function generateSampleCSV(): string {
 
 const offsetOptions = Array.from({ length: 19 }, (_, i) => i * 5); // 0,5,10,...90
 
-// Generate all HH:MM values for 24h time picker
-const timeOptions: string[] = [];
-for (let h = 0; h < 24; h++) {
-  for (let m = 0; m < 60; m += 5) {
-    timeOptions.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-  }
-}
+/** 24h time input — uses two selects (HH and MM) to guarantee 24h regardless of browser locale */
+const Time24Input: React.FC<{ value: string; onChange: (v: string) => void }> = ({ value, onChange }) => {
+  const [hh, mm] = (value || "00:00").split(":").map((s) => s.padStart(2, "0"));
+  return (
+    <div className="flex gap-1 items-center">
+      <select
+        className="flex h-9 w-14 rounded-md border border-input bg-background px-1.5 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+        value={hh}
+        onChange={(e) => onChange(`${e.target.value}:${mm}`)}
+      >
+        {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((h) => (
+          <option key={h} value={h}>{h}</option>
+        ))}
+      </select>
+      <span className="text-foreground font-bold">:</span>
+      <select
+        className="flex h-9 w-14 rounded-md border border-input bg-background px-1.5 py-1 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring"
+        value={mm}
+        onChange={(e) => onChange(`${hh}:${e.target.value}`)}
+      >
+        {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0")).map((m) => (
+          <option key={m} value={m}>{m}</option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
