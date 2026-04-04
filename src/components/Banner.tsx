@@ -20,19 +20,19 @@ const Banner: React.FC<BannerProps> = ({ className = "" }) => {
           href="https://leipziger-moschee.de"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/40 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/40 transition-colors"
           aria-label="Website"
         >
-          <Globe className="w-3.5 h-3.5" />
+          <Globe className="w-4.5 h-4.5" style={{ width: '1.09375rem', height: '1.09375rem' }} />
         </a>
         <a
           href="https://maps.google.com/?q=Alrahman+Moschee+Leipzig"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/40 transition-colors"
+          className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-foreground/20 hover:bg-primary-foreground/40 transition-colors"
           aria-label="Location"
         >
-          <MapPin className="w-3.5 h-3.5" />
+          <MapPin className="w-4.5 h-4.5" style={{ width: '1.09375rem', height: '1.09375rem' }} />
         </a>
       </div>
     </div>

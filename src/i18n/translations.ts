@@ -10,7 +10,7 @@ export const translations: Record<Language, Record<string, string>> = {
     settings: "Einstellungen",
 
     // Homepage
-    mosqueName: "Alrahman Moschee",
+    mosqueName: "Al Rahman Moschee",
     mosqueSubtitle: "Leipzig",
     timeUntil: "Zeit bis",
     hours: "Std",
@@ -86,7 +86,7 @@ export const translations: Record<Language, Record<string, string>> = {
     classes: "Classes",
     settings: "Settings",
 
-    mosqueName: "Alrahman Mosque",
+    mosqueName: "Al Rahman Mosque",
     mosqueSubtitle: "Leipzig",
     timeUntil: "Time until",
     hours: "Hrs",
