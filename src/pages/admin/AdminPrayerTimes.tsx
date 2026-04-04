@@ -2,10 +2,18 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, Trash2, Download, Minus, Plus } from "lucide-react";
-import { getPrayerTimes, savePrayerTimes } from "@/stores/dataStore";
+import { getPrayerTimes, savePrayerTimes, getIqamaSettings, saveIqamaSettings, IqamaSetting, IqamaSettings, computeIqama } from "@/stores/dataStore";
 import { PrayerDay } from "@/data/prayerTimes";
 import { toast } from "sonner";
 import { getHijriCorrection, setHijriCorrection, formatHijriDate } from "@/utils/hijri";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -15,16 +23,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+const IQAMA_PRAYERS = ["fajr", "dhuhr", "asr", "maghrib", "isha"] as const;
+const PRAYER_LABELS: Record<string, string> = {
+  fajr: "Fajr", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha",
+};
+
 function parseCSV(text: string): PrayerDay[] {
   const lines = text.trim().split("\n");
   if (lines.length < 2) throw new Error("CSV must have a header and at least one data row");
 
   const header = lines[0].split(",").map((h) => h.trim().toLowerCase());
-  const required = ["date", "fajr", "fajriqama", "shuruk", "dhuhr", "dhuhriqama", "asr", "asriqama", "maghrib", "maghribiqama", "isha", "ishaiqama"];
+  const required = ["date", "fajr", "shuruk", "dhuhr", "asr", "maghrib", "isha"];
   const mapping: Record<string, string> = {
-    date: "date", fajr: "fajr", fajriqama: "fajrIqama", shuruk: "shuruk",
-    dhuhr: "dhuhr", dhuhriqama: "dhuhrIqama", asr: "asr", asriqama: "asrIqama",
-    maghrib: "maghrib", maghribiqama: "maghribIqama", isha: "isha", ishaiqama: "ishaIqama",
+    date: "date", fajr: "fajr", shuruk: "shuruk", dhuhr: "dhuhr", asr: "asr", maghrib: "maghrib", isha: "isha",
   };
 
   for (const r of required) {
@@ -42,14 +53,17 @@ function parseCSV(text: string): PrayerDay[] {
 }
 
 function generateSampleCSV(): string {
-  return `date,fajr,fajriqama,shuruk,dhuhr,dhuhriqama,asr,asriqama,maghrib,maghribiqama,isha,ishaiqama
-2026-04-04,04:30,04:45,06:10,13:15,13:30,16:45,17:00,20:15,20:20,22:00,22:15
-2026-04-05,04:28,04:45,06:08,13:15,13:30,16:46,17:01,20:16,20:21,22:01,22:16`;
+  return `date,fajr,shuruk,dhuhr,asr,maghrib,isha
+2026-04-04,04:30,06:10,13:15,16:45,20:15,22:00
+2026-04-05,04:28,06:08,13:15,16:46,20:16,22:01`;
 }
+
+const offsetOptions = Array.from({ length: 19 }, (_, i) => i * 5); // 0,5,10,...90
 
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
   const [hijriOffset, setHijriOffset] = useState(() => getHijriCorrection());
+  const [iqama, setIqama] = useState<IqamaSettings>(() => getIqamaSettings());
   const fileRef = useRef<HTMLInputElement>(null);
 
   const updateHijriOffset = (delta: number) => {
@@ -60,6 +74,12 @@ const AdminPrayerTimes: React.FC = () => {
   };
 
   const todayHijri = formatHijriDate(new Date(), "en");
+
+  const updateIqamaSetting = (prayer: string, update: Partial<IqamaSetting>) => {
+    const next = { ...iqama, [prayer]: { ...iqama[prayer], ...update } };
+    setIqama(next);
+    saveIqamaSettings(next);
+  };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -141,6 +161,59 @@ const AdminPrayerTimes: React.FC = () => {
 
       <Card>
         <CardHeader>
+          <CardTitle className="text-sm">Iqama Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Set iqama as minutes after adhan (offset) or a fixed time for each prayer.
+          </p>
+          {IQAMA_PRAYERS.map((prayer) => {
+            const s = iqama[prayer];
+            return (
+              <div key={prayer} className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-medium w-20">{PRAYER_LABELS[prayer]}</span>
+                <Select
+                  value={s.mode}
+                  onValueChange={(v) => updateIqamaSetting(prayer, { mode: v as "offset" | "fixed" })}
+                >
+                  <SelectTrigger className="w-28 h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="offset">Offset</SelectItem>
+                    <SelectItem value="fixed">Fixed</SelectItem>
+                  </SelectContent>
+                </Select>
+                {s.mode === "offset" ? (
+                  <Select
+                    value={String(s.offsetMinutes)}
+                    onValueChange={(v) => updateIqamaSetting(prayer, { offsetMinutes: Number(v) })}
+                  >
+                    <SelectTrigger className="w-24 h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {offsetOptions.map((m) => (
+                        <SelectItem key={m} value={String(m)}>+{m} min</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    type="time"
+                    value={s.fixedTime}
+                    onChange={(e) => updateIqamaSetting(prayer, { fixedTime: e.target.value })}
+                    className="w-28 h-9"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle className="text-sm text-muted-foreground">{data.length} days loaded</CardTitle>
         </CardHeader>
         <CardContent>
@@ -153,16 +226,11 @@ const AdminPrayerTimes: React.FC = () => {
                   <TableRow>
                     <TableHead>Date</TableHead>
                     <TableHead>Fajr</TableHead>
-                    <TableHead>Iqama</TableHead>
                     <TableHead>Shuruk</TableHead>
                     <TableHead>Dhuhr</TableHead>
-                    <TableHead>Iqama</TableHead>
                     <TableHead>Asr</TableHead>
-                    <TableHead>Iqama</TableHead>
                     <TableHead>Maghrib</TableHead>
-                    <TableHead>Iqama</TableHead>
                     <TableHead>Isha</TableHead>
-                    <TableHead>Iqama</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -170,16 +238,11 @@ const AdminPrayerTimes: React.FC = () => {
                     <TableRow key={d.date}>
                       <TableCell className="font-mono text-xs">{d.date}</TableCell>
                       <TableCell>{d.fajr}</TableCell>
-                      <TableCell>{d.fajrIqama}</TableCell>
                       <TableCell>{d.shuruk}</TableCell>
                       <TableCell>{d.dhuhr}</TableCell>
-                      <TableCell>{d.dhuhrIqama}</TableCell>
                       <TableCell>{d.asr}</TableCell>
-                      <TableCell>{d.asrIqama}</TableCell>
                       <TableCell>{d.maghrib}</TableCell>
-                      <TableCell>{d.maghribIqama}</TableCell>
                       <TableCell>{d.isha}</TableCell>
-                      <TableCell>{d.ishaIqama}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
