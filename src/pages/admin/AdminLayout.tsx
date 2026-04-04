@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { Outlet, NavLink, Navigate, useNavigate } from "react-router-dom";
-import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe, Radio, Menu, X } from "lucide-react";
+import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe, Radio, Menu, X, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
