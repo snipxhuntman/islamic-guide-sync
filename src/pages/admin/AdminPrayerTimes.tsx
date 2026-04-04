@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Trash2, Download } from "lucide-react";
+import { Upload, Trash2, Download, Minus, Plus } from "lucide-react";
 import { getPrayerTimes, savePrayerTimes } from "@/stores/dataStore";
 import { PrayerDay } from "@/data/prayerTimes";
 import { toast } from "sonner";
+import { getHijriCorrection, setHijriCorrection, formatHijriDate } from "@/utils/hijri";
 import {
   Table,
   TableBody,

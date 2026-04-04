@@ -1,6 +1,21 @@
 // Simple Hijri date conversion using the Umm al-Qura approximation
+
+export function getHijriCorrection(): number {
+  try {
+    const v = localStorage.getItem("hijri-correction");
+    return v ? parseInt(v, 10) || 0 : 0;
+  } catch { return 0; }
+}
+
+export function setHijriCorrection(days: number): void {
+  localStorage.setItem("hijri-correction", String(days));
+}
+
 export function toHijri(date: Date): { year: number; month: number; day: number; monthName: string } {
-  const jd = gregorianToJD(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const correction = getHijriCorrection();
+  const adjusted = new Date(date);
+  adjusted.setDate(adjusted.getDate() + correction);
+  const jd = gregorianToJD(adjusted.getFullYear(), adjusted.getMonth() + 1, adjusted.getDate());
   const hijri = jdToHijri(jd);
   return { ...hijri, monthName: hijriMonthNames[hijri.month - 1] };
 }
