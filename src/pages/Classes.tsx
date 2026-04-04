@@ -25,7 +25,7 @@ const Classes: React.FC = () => {
     return c.title;
   };
 
-  const getDesc = (c: typeof classesData[0]) => {
+  const getDesc = (c: typeof classes[0]) => {
     if (language === "en") return c.descriptionEn;
     if (language === "ar") return c.descriptionAr;
     return c.description;
