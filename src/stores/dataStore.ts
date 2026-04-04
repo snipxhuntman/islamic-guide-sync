@@ -9,6 +9,7 @@ const KEYS = {
   prayerTimes: "admin-prayer-times",
   messages: "admin-messages",
   classes: "admin-classes",
+  siteLinks: "admin-site-links",
 };
 
 function load<T>(key: string, fallback: T): T {
@@ -46,4 +47,52 @@ export function getClasses(): ClassItem[] {
 }
 export function saveClasses(data: ClassItem[]) {
   save(KEYS.classes, data);
+}
+
+// Site Links
+export interface SiteLinks {
+  socials: {
+    youtube: string;
+    instagram: string;
+    facebook: string;
+    telegram: string;
+    tiktok: string;
+  };
+  donation: {
+    de: string;
+    en: string;
+    ar: string;
+  };
+  website: {
+    de: string;
+    en: string;
+    ar: string;
+  };
+}
+
+const defaultSiteLinks: SiteLinks = {
+  socials: {
+    youtube: "https://youtube.com",
+    instagram: "https://instagram.com",
+    facebook: "https://facebook.com",
+    telegram: "https://t.me",
+    tiktok: "https://tiktok.com",
+  },
+  donation: {
+    de: "https://www.leipziger-moschee.de/spenden",
+    en: "https://www.leipziger-moschee.de/en/spenden",
+    ar: "https://www.leipziger-moschee.de/ar/spenden",
+  },
+  website: {
+    de: "https://www.leipziger-moschee.de",
+    en: "https://www.leipziger-moschee.de/en",
+    ar: "https://www.leipziger-moschee.de/ar",
+  },
+};
+
+export function getSiteLinks(): SiteLinks {
+  return load(KEYS.siteLinks, defaultSiteLinks);
+}
+export function saveSiteLinks(data: SiteLinks) {
+  save(KEYS.siteLinks, data);
 }
