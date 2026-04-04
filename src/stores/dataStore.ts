@@ -10,6 +10,7 @@ const KEYS = {
   messages: "admin-messages",
   classes: "admin-classes",
   siteLinks: "admin-site-links",
+  iqamaSettings: "admin-iqama-settings",
 };
 
 function load<T>(key: string, fallback: T): T {
@@ -23,6 +24,39 @@ function load<T>(key: string, fallback: T): T {
 
 function save<T>(key: string, data: T) {
   localStorage.setItem(key, JSON.stringify(data));
+}
+
+// Iqama Settings
+export type IqamaMode = "offset" | "fixed";
+
+export interface IqamaSetting {
+  mode: IqamaMode;
+  offsetMinutes: number; // 0-90
+  fixedTime: string; // HH:MM
+}
+
+export type IqamaSettings = Record<string, IqamaSetting>;
+
+const defaultIqamaSettings: IqamaSettings = {
+  fajr: { mode: "offset", offsetMinutes: 15, fixedTime: "04:45" },
+  dhuhr: { mode: "offset", offsetMinutes: 15, fixedTime: "13:30" },
+  asr: { mode: "offset", offsetMinutes: 15, fixedTime: "17:00" },
+  maghrib: { mode: "offset", offsetMinutes: 5, fixedTime: "20:20" },
+  isha: { mode: "offset", offsetMinutes: 15, fixedTime: "22:15" },
+};
+
+export function getIqamaSettings(): IqamaSettings {
+  return load(KEYS.iqamaSettings, defaultIqamaSettings);
+}
+export function saveIqamaSettings(data: IqamaSettings) {
+  save(KEYS.iqamaSettings, data);
+}
+
+export function computeIqama(prayerTime: string, setting: IqamaSetting): string {
+  if (setting.mode === "fixed") return setting.fixedTime;
+  const [h, m] = prayerTime.split(":").map(Number);
+  const total = h * 60 + m + setting.offsetMinutes;
+  return `${String(Math.floor(total / 60) % 24).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 
 // Prayer Times
