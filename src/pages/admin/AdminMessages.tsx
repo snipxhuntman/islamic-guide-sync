@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, Edit2, Check, X, ImagePlus } from "lucide-react";
@@ -26,6 +27,10 @@ const i18n = {
     addImage: "Add Image",
     removeImage: "Remove Image",
     imagePreview: "Image preview",
+    linkUrl: "Link URL",
+    linkLabel: "Link Label (DE)",
+    linkLabelEn: "Link Label (EN)",
+    linkLabelAr: "Link Label (AR)",
   },
   de: {
     messages: "Nachrichten",
@@ -44,6 +49,10 @@ const i18n = {
     addImage: "Bild hinzufügen",
     removeImage: "Bild entfernen",
     imagePreview: "Bildvorschau",
+    linkUrl: "Link-URL",
+    linkLabel: "Link-Text (DE)",
+    linkLabelEn: "Link-Text (EN)",
+    linkLabelAr: "Link-Text (AR)",
   },
 };
 
@@ -53,7 +62,7 @@ const AdminMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(() => getMessages());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "" });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,10 +92,14 @@ const AdminMessages: React.FC = () => {
       textEn: form.textEn || undefined,
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
+      linkUrl: form.linkUrl || undefined,
+      linkLabel: form.linkLabel || undefined,
+      linkLabelEn: form.linkLabelEn || undefined,
+      linkLabelAr: form.linkLabelAr || undefined,
       timestamp: new Date().toISOString(),
     };
     persist([msg, ...messages]);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
     setShowAdd(false);
     toast.success(t.added);
   };
@@ -98,23 +111,23 @@ const AdminMessages: React.FC = () => {
 
   const startEdit = (m: Message) => {
     setEditing(m.id);
-    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "", imageUrl: m.imageUrl || "" });
+    setForm({ text: m.text, textEn: m.textEn || "", textAr: m.textAr || "", imageUrl: m.imageUrl || "", linkUrl: m.linkUrl || "", linkLabel: m.linkLabel || "", linkLabelEn: m.linkLabelEn || "", linkLabelAr: m.linkLabelAr || "" });
   };
 
   const handleSaveEdit = (id: string) => {
     persist(messages.map((m) =>
       m.id === id
-        ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined }
+        ? { ...m, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, linkUrl: form.linkUrl || undefined, linkLabel: form.linkLabel || undefined, linkLabelEn: form.linkLabelEn || undefined, linkLabelAr: form.linkLabelAr || undefined }
         : m
     ));
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
     toast.success(t.updated);
   };
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   };
 
   const ImageSection = ({ inputRef }: { inputRef: React.RefObject<HTMLInputElement> }) => (
@@ -169,6 +182,29 @@ const AdminMessages: React.FC = () => {
         <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
       </div>
       <ImageSection inputRef={inputRef} />
+      {/* Hyperlink fields */}
+      <div className="space-y-2 border-t border-border pt-3">
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">{t.linkUrl}</label>
+          <Input value={form.linkUrl} placeholder="https://..." onChange={(e) => setForm({ ...form, linkUrl: e.target.value })} />
+        </div>
+        {form.linkUrl && (
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.linkLabel}</label>
+              <Input value={form.linkLabel} placeholder="Mehr erfahren" onChange={(e) => setForm({ ...form, linkLabel: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.linkLabelEn}</label>
+              <Input value={form.linkLabelEn} placeholder="Learn more" onChange={(e) => setForm({ ...form, linkLabelEn: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.linkLabelAr}</label>
+              <Input dir="rtl" value={form.linkLabelAr} placeholder="اقرأ المزيد" onChange={(e) => setForm({ ...form, linkLabelAr: e.target.value })} />
+            </div>
+          </div>
+        )}
+      </div>
       <div className="flex gap-2">
         <Button size="sm" onClick={onSubmit}>
           <Check className="w-4 h-4 mr-1" /> {submitLabel}
@@ -184,7 +220,7 @@ const AdminMessages: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">{t.messages}</h1>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "" }); }}>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newMessage}
         </Button>
       </div>
