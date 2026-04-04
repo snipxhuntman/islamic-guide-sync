@@ -4,8 +4,9 @@ import { Language } from "@/i18n/translations";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { prayerKeys } from "@/data/prayerTimes";
-import { Globe, Shield } from "lucide-react";
+import { Globe, Shield, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getHourFormat, setHourFormat, HourFormat } from "@/utils/timeFormat";
 
 interface NotifSettings {
   all: boolean;
