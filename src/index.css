@@ -112,8 +112,10 @@
   .flip-card-back {
     transform: rotateY(180deg);
   }
+}
 
-  .rtl .switch-flip {
-    direction: rtl;
-  }
+/* RTL switch: visually flip the switch thumb direction */
+[dir="rtl"] button[role="switch"] {
+  direction: ltr;
+  transform: scaleX(-1);
 }
