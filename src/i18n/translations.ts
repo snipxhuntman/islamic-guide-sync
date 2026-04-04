@@ -131,6 +131,9 @@ export const translations: Record<Language, Record<string, string>> = {
     classCancellationAlerts: "Class cancellation alerts",
     messageNotifications: "Message Notifications",
     website: "Website",
+    timeFormat: "Time Format",
+    format24h: "24-Hour",
+    format12h: "12-Hour",
     privacyPolicy: "Privacy Policy",
 
     privacyTitle: "Privacy Policy",
