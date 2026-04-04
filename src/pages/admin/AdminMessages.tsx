@@ -191,10 +191,12 @@ const AdminMessages: React.FC = () => {
         <label className="text-xs font-medium text-muted-foreground">{t.germanRequired}</label>
         <Textarea value={form.text} onChange={(e) => setForm({ ...form, text: e.target.value })} />
       </div>
-      <div>
-        <label className="text-xs font-medium text-muted-foreground">{t.english}</label>
-        <Textarea value={form.textEn} onChange={(e) => setForm({ ...form, textEn: e.target.value })} />
-      </div>
+      {englishEnabled && (
+        <div>
+          <label className="text-xs font-medium text-muted-foreground">{t.english}</label>
+          <Textarea value={form.textEn} onChange={(e) => setForm({ ...form, textEn: e.target.value })} />
+        </div>
+      )}
       <div>
         <label className="text-xs font-medium text-muted-foreground">{t.arabic}</label>
         <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} />
