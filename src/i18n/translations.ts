@@ -86,7 +86,7 @@ export const translations: Record<Language, Record<string, string>> = {
     classes: "Classes",
     settings: "Settings",
 
-    mosqueName: "Alrahman Mosque",
+    mosqueName: "Al Rahman Mosque",
     mosqueSubtitle: "Leipzig",
     timeUntil: "Time until",
     hours: "Hrs",
