@@ -1,10 +1,39 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveMessages } from "@/data/messages";
+
+function getReadMessageIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem("read-message-ids");
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch { return new Set(); }
+}
+
+function markAllAsRead(ids: string[]) {
+  const existing = getReadMessageIds();
+  ids.forEach((id) => existing.add(id));
+  localStorage.setItem("read-message-ids", JSON.stringify([...existing]));
+}
 
 const Messages: React.FC = () => {
   const { t, language } = useLanguage();
   const messagesData = getLiveMessages();
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const [unreadIds, setUnreadIds] = useState<Set<string>>(() => {
+    const read = getReadMessageIds();
+    return new Set(messagesData.filter((m) => !read.has(m.id)).map((m) => m.id));
+  });
+
+  useEffect(() => {
+    // Scroll to bottom on mount
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Mark all as read after a short delay
+    const timer = setTimeout(() => {
+      markAllAsRead(messagesData.map((m) => m.id));
+      setUnreadIds(new Set());
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [messagesData]);
 
   const getText = (msg: typeof messagesData[0]) => {
     if (language === "en" && msg.textEn) return msg.textEn;
@@ -35,7 +64,8 @@ const Messages: React.FC = () => {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+  // Sort dates oldest first so latest is at the bottom
+  const sortedDates = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
 
   return (
     <div className="flex flex-col min-h-screen max-w-app mx-auto pb-20">
@@ -56,7 +86,11 @@ const Messages: React.FC = () => {
             <div className="space-y-2">
               {grouped[date].map((msg) => (
                 <div key={msg.id} className="flex justify-start">
-                  <div className="max-w-[85%] bg-primary text-primary-foreground rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
+                  <div className={`max-w-[85%] rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm transition-colors duration-1000 ${
+                    unreadIds.has(msg.id)
+                      ? "bg-accent text-accent-foreground ring-2 ring-accent/50"
+                      : "bg-primary text-primary-foreground"
+                  }`}>
                     {msg.imageUrl && (
                       <img src={msg.imageUrl} alt="" className={`rounded-lg mb-2 object-contain ${
                         msg.imageSize === "small" ? "max-h-24" :
@@ -89,6 +123,7 @@ const Messages: React.FC = () => {
             <p className="text-muted-foreground">{t("noMessages")}</p>
           </div>
         )}
+        <div ref={bottomRef} />
       </div>
     </div>
   );
