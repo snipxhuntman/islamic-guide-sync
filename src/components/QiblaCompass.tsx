@@ -31,10 +31,20 @@ function angleDiff(a: number, b: number): number {
   return d;
 }
 
-/** Vibrate helper with fallback */
-function vibrate(pattern: number | number[]) {
-  if (navigator.vibrate) {
-    navigator.vibrate(pattern);
+/** Haptic helpers — Capacitor native first, Vibration API fallback */
+async function hapticLight() {
+  try {
+    await Haptics.impact({ style: ImpactStyle.Light });
+  } catch {
+    navigator.vibrate?.(15);
+  }
+}
+
+async function hapticMedium() {
+  try {
+    await Haptics.impact({ style: ImpactStyle.Medium });
+  } catch {
+    navigator.vibrate?.(40);
   }
 }
 
