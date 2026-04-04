@@ -61,6 +61,16 @@ const Messages: React.FC = () => {
                       <img src={msg.imageUrl} alt="" className="rounded-lg mb-2 max-h-48 object-contain" />
                     )}
                     {getText(msg) && <p className="text-sm leading-relaxed">{getText(msg)}</p>}
+                    {msg.linkUrl && (
+                      <a
+                        href={msg.linkUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block text-xs underline opacity-80 hover:opacity-100 mt-1"
+                      >
+                        {(language === "en" && msg.linkLabelEn) || (language === "ar" && msg.linkLabelAr) || msg.linkLabel || msg.linkUrl}
+                      </a>
+                    )}
                     <p className="text-[10px] opacity-60 mt-1 text-end">{formatTime(msg.timestamp)}</p>
                   </div>
                 </div>
