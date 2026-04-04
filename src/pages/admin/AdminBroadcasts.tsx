@@ -28,6 +28,7 @@ const i18n = {
     added: "Slide added", updated: "Slide updated", deleted: "Slide deleted",
     noSlides: "No slides yet.",
     textRequired: "German text or image is required",
+    link: "Hyperlink (optional)",
   },
   de: {
     title: "Startseiten-Broadcasts",
@@ -40,6 +41,7 @@ const i18n = {
     added: "Folie hinzugefügt", updated: "Folie aktualisiert", deleted: "Folie gelöscht",
     noSlides: "Noch keine Folien.",
     textRequired: "Deutscher Text oder Bild erforderlich",
+    link: "Hyperlink (optional)",
   },
 };
 
@@ -53,7 +55,7 @@ const AdminBroadcasts: React.FC = () => {
   const [items, setItems] = useState<Broadcast[]>(() => getAllBroadcasts());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true });
   const fileRef = useRef<HTMLInputElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
 
@@ -78,10 +80,11 @@ const AdminBroadcasts: React.FC = () => {
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
       imageSize: form.imageUrl ? form.imageSize : undefined,
+      link: form.link || undefined,
       active: form.active,
     };
     persist([...items, item]);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true });
     setShowAdd(false);
     toast.success(t.added);
   };
@@ -93,17 +96,17 @@ const AdminBroadcasts: React.FC = () => {
 
   const startEdit = (b: Broadcast) => {
     setEditing(b.id);
-    setForm({ text: b.text, textEn: b.textEn || "", textAr: b.textAr || "", imageUrl: b.imageUrl || "", imageSize: b.imageSize || "medium", active: b.active });
+    setForm({ text: b.text, textEn: b.textEn || "", textAr: b.textAr || "", imageUrl: b.imageUrl || "", imageSize: b.imageSize || "medium", link: b.link || "", active: b.active });
   };
 
   const handleSaveEdit = (id: string) => {
     persist(items.map((b) =>
       b.id === id
-        ? { ...b, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, imageSize: form.imageUrl ? form.imageSize : undefined, active: form.active }
+        ? { ...b, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, imageSize: form.imageUrl ? form.imageSize : undefined, link: form.link || undefined, active: form.active }
         : b
     ));
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true });
     toast.success(t.updated);
   };
 
@@ -121,7 +124,7 @@ const AdminBroadcasts: React.FC = () => {
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true });
   };
 
   const renderImageUpload = (inputRef: React.RefObject<HTMLInputElement>) => (
@@ -185,6 +188,10 @@ const AdminBroadcasts: React.FC = () => {
           <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} rows={2} />
         </div>
       </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">{t.link}</label>
+        <Input value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="https://..." />
+      </div>
       {renderImageUpload(inputRef)}
       <div className="flex gap-2">
         <Button size="sm" onClick={onSubmit}><Check className="w-4 h-4 mr-1" /> {submitLabel}</Button>
@@ -202,7 +209,7 @@ const AdminBroadcasts: React.FC = () => {
           <h1 className="text-2xl font-bold text-foreground">{t.title}</h1>
           <p className="text-sm text-muted-foreground">{t.desc}</p>
         </div>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", active: true }); }}>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as "small" | "medium" | "large" | "full", link: "", active: true }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newSlide}
         </Button>
       </div>
@@ -236,6 +243,7 @@ const AdminBroadcasts: React.FC = () => {
                       {b.textEn && <p className="text-xs text-muted-foreground break-words">EN: {b.textEn}</p>}
                       {b.textAr && <p className="text-xs text-muted-foreground break-words" dir="rtl">AR: {b.textAr}</p>}
                       {b.imageUrl && <img src={b.imageUrl} alt="" className="max-h-20 rounded border border-border object-contain mt-1" />}
+                      {b.link && <p className="text-xs text-muted-foreground break-words">🔗 {b.link}</p>}
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-1 shrink-0">
