@@ -15,11 +15,11 @@ export const useAdminLang = () => useContext(AdminLangContext);
 const labels: Record<AdminLang, Record<string, string>> = {
   en: {
     dashboard: "Dashboard", prayerTimes: "Prayer Times", messages: "Messages",
-    classes: "Classes", logout: "Logout", adminPanel: "Admin Panel",
+    classes: "Classes", broadcasts: "Broadcasts", logout: "Logout", adminPanel: "Admin Panel",
   },
   de: {
     dashboard: "Dashboard", prayerTimes: "Gebetszeiten", messages: "Nachrichten",
-    classes: "Unterricht", logout: "Abmelden", adminPanel: "Admin-Bereich",
+    classes: "Unterricht", broadcasts: "Broadcasts", logout: "Abmelden", adminPanel: "Admin-Bereich",
   },
 };
 
