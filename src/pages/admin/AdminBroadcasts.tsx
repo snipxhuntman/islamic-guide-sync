@@ -31,6 +31,11 @@ const i18n = {
     startDate: "Start date", endDate: "End date",
     startTime: "Start time", endTime: "End time",
     interval: "Repeats",
+    dayOfWeek: "Day of week",
+    endDayOfWeek: "End day",
+    dayOfMonth: "Day of month",
+    febNote: "Note: February has 28 days (29 in leap years), some months have 30 days.",
+    days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   },
   de: {
     title: "Startseiten-Broadcasts",
@@ -53,6 +58,11 @@ const i18n = {
     startDate: "Startdatum", endDate: "Enddatum",
     startTime: "Startzeit", endTime: "Endzeit",
     interval: "Wiederholung",
+    dayOfWeek: "Wochentag",
+    endDayOfWeek: "Endtag",
+    dayOfMonth: "Tag im Monat",
+    febNote: "Hinweis: Februar hat 28 Tage (29 im Schaltjahr), einige Monate haben 30 Tage.",
+    days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
   },
 };
 
@@ -70,11 +80,15 @@ interface FormState {
   endDate: string;
   startHour: string;
   endHour: string;
+  dayOfWeek: string;
+  endDayOfWeek: string;
+  dayOfMonth: string;
 }
 
 const defaultForm: FormState = {
   text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium", link: "", active: true,
   scheduleType: "always", recurringInterval: "daily", startDate: "", endDate: "", startHour: "", endHour: "",
+  dayOfWeek: "", endDayOfWeek: "", dayOfMonth: "",
 };
 
 function formFromBroadcast(b: Broadcast): FormState {
@@ -87,19 +101,34 @@ function formFromBroadcast(b: Broadcast): FormState {
     endDate: b.schedule?.endDate || "",
     startHour: b.schedule?.startHour || "",
     endHour: b.schedule?.endHour || "",
+    dayOfWeek: b.schedule?.dayOfWeek !== undefined ? String(b.schedule.dayOfWeek) : "",
+    endDayOfWeek: b.schedule?.endDayOfWeek !== undefined ? String(b.schedule.endDayOfWeek) : "",
+    dayOfMonth: b.schedule?.dayOfMonth !== undefined ? String(b.schedule.dayOfMonth) : "",
   };
 }
 
 function formToSchedule(f: FormState): BroadcastSchedule | undefined {
   if (f.scheduleType === "always") return { type: "always" };
-  return {
+  const sched: BroadcastSchedule = {
     type: f.scheduleType,
-    recurringInterval: f.scheduleType === "recurring" ? f.recurringInterval : undefined,
-    startDate: f.startDate || undefined,
-    endDate: f.endDate || undefined,
     startHour: f.startHour || undefined,
     endHour: f.endHour || undefined,
   };
+  if (f.scheduleType === "recurring") {
+    sched.recurringInterval = f.recurringInterval;
+    if (f.recurringInterval === "weekly" || f.recurringInterval === "biweekly") {
+      sched.dayOfWeek = f.dayOfWeek ? Number(f.dayOfWeek) : undefined;
+      sched.endDayOfWeek = f.endDayOfWeek ? Number(f.endDayOfWeek) : undefined;
+    }
+    if (f.recurringInterval === "monthly") {
+      sched.dayOfMonth = f.dayOfMonth ? Number(f.dayOfMonth) : undefined;
+    }
+  }
+  if (f.scheduleType === "once") {
+    sched.startDate = f.startDate || undefined;
+    sched.endDate = f.endDate || undefined;
+  }
+  return sched;
 }
 
 function saveBroadcasts(data: Broadcast[]) {
@@ -113,13 +142,20 @@ function formatScheduleLabel(b: Broadcast, t: typeof i18n.en): string {
   if (s.type === "recurring") {
     const intervalLabels: Record<RecurringInterval, string> = { daily: t.daily, weekly: t.weekly, biweekly: t.biweekly, monthly: t.monthly };
     parts.push(`🔁 ${intervalLabels[s.recurringInterval || "daily"]}`);
+    if ((s.recurringInterval === "weekly" || s.recurringInterval === "biweekly") && s.dayOfWeek !== undefined) {
+      parts.push(t.days[s.dayOfWeek]);
+      if (s.endDayOfWeek !== undefined) parts.push(`→ ${t.days[s.endDayOfWeek]}`);
+    }
+    if (s.recurringInterval === "monthly" && s.dayOfMonth !== undefined) {
+      parts.push(`${t.dayOfMonth}: ${s.dayOfMonth}`);
+    }
   } else {
     parts.push(`📅 ${t.once}`);
+    if (s.startDate) parts.push(`${t.from} ${s.startDate}`);
+    if (s.endDate) parts.push(`${t.to} ${s.endDate}`);
   }
-  if (s.startDate) parts.push(`${t.from} ${s.startDate}`);
   if (s.startHour) parts.push(`${t.at} ${s.startHour}`);
-  if (s.endDate) parts.push(`${t.to} ${s.endDate}`);
-  if (s.endHour) parts.push(`${t.at} ${s.endHour}`);
+  if (s.endHour) parts.push(`→ ${s.endHour}`);
   return parts.join(" · ");
 }
 
@@ -295,8 +331,75 @@ const AdminBroadcasts: React.FC = () => {
         </div>
       )}
 
-      {/* Date & time range for recurring and once */}
-      {(form.scheduleType === "recurring" || form.scheduleType === "once") && (
+      {/* Daily: just start/end time */}
+      {form.scheduleType === "recurring" && form.recurringInterval === "daily" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.startTime}</label>
+            <Input type="time" value={form.startHour} onChange={(e) => setForm({ ...form, startHour: e.target.value })} className="text-xs" />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.endTime}</label>
+            <Input type="time" value={form.endHour} onChange={(e) => setForm({ ...form, endHour: e.target.value })} className="text-xs" />
+          </div>
+        </div>
+      )}
+
+      {/* Weekly / Biweekly: day of week + time */}
+      {form.scheduleType === "recurring" && (form.recurringInterval === "weekly" || form.recurringInterval === "biweekly") && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.dayOfWeek}</label>
+            <select className="h-9 w-full rounded-md border border-input bg-background px-3 text-xs" value={form.dayOfWeek} onChange={(e) => setForm({ ...form, dayOfWeek: e.target.value })}>
+              <option value="">—</option>
+              {t.days.map((d, i) => <option key={i} value={i}>{d}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.startTime}</label>
+            <Input type="time" value={form.startHour} onChange={(e) => setForm({ ...form, startHour: e.target.value })} className="text-xs" />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.endDayOfWeek}</label>
+            <select className="h-9 w-full rounded-md border border-input bg-background px-3 text-xs" value={form.endDayOfWeek} onChange={(e) => setForm({ ...form, endDayOfWeek: e.target.value })}>
+              <option value="">—</option>
+              {t.days.map((d, i) => <option key={i} value={i}>{d}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{t.endTime}</label>
+            <Input type="time" value={form.endHour} onChange={(e) => setForm({ ...form, endHour: e.target.value })} className="text-xs" />
+          </div>
+        </div>
+      )}
+
+      {/* Monthly: day of month + time */}
+      {form.scheduleType === "recurring" && form.recurringInterval === "monthly" && (
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.dayOfMonth}</label>
+              <select className="h-9 w-full rounded-md border border-input bg-background px-3 text-xs" value={form.dayOfMonth} onChange={(e) => setForm({ ...form, dayOfMonth: e.target.value })}>
+                <option value="">—</option>
+                {Array.from({ length: 31 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
+              </select>
+            </div>
+            <div className="hidden sm:block" />
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.startTime}</label>
+              <Input type="time" value={form.startHour} onChange={(e) => setForm({ ...form, startHour: e.target.value })} className="text-xs" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground">{t.endTime}</label>
+              <Input type="time" value={form.endHour} onChange={(e) => setForm({ ...form, endHour: e.target.value })} className="text-xs" />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground italic">{t.febNote}</p>
+        </div>
+      )}
+
+      {/* Once: date + time range */}
+      {form.scheduleType === "once" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
             <label className="text-xs font-medium text-muted-foreground">{t.startDate}</label>
