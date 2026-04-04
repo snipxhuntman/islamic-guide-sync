@@ -92,7 +92,7 @@ const AdminBroadcasts: React.FC = () => {
   const handleSaveEdit = (id: string) => {
     persist(items.map((b) =>
       b.id === id
-        ? { ...b, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, active: form.active }
+        ? { ...b, text: form.text, textEn: form.textEn || undefined, textAr: form.textAr || undefined, imageUrl: form.imageUrl || undefined, imageSize: form.imageUrl ? form.imageSize : undefined, active: form.active }
         : b
     ));
     setEditing(null);
