@@ -33,7 +33,7 @@ const SocialIcons = () => (
 );
 
 const HomePrayerTimes: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
   const prayers = getLivePrayerTimesForDate(dateStr);
