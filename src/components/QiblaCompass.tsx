@@ -3,7 +3,20 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
 
-const QIBLA_BEARING = 136.5;
+// Makkah coordinates (Kaaba)
+const KAABA_LAT = 21.4225;
+const KAABA_LNG = 39.8262;
+
+/** Calculate Qibla bearing from user's GPS position using the forward azimuth formula */
+function calculateQiblaBearing(lat: number, lng: number): number {
+  const φ1 = (lat * Math.PI) / 180;
+  const φ2 = (KAABA_LAT * Math.PI) / 180;
+  const Δλ = ((KAABA_LNG - lng) * Math.PI) / 180;
+  const x = Math.sin(Δλ);
+  const y = Math.cos(φ1) * Math.tan(φ2) - Math.sin(φ1) * Math.cos(Δλ);
+  let bearing = (Math.atan2(x, y) * 180) / Math.PI;
+  return (bearing + 360) % 360;
+}
 
 /** Shortest-path angular lerp */
 function lerpAngle(from: number, to: number, t: number): number {
@@ -11,7 +24,20 @@ function lerpAngle(from: number, to: number, t: number): number {
   return (from + diff * t + 360) % 360;
 }
 
-/* Static SVG parts — memoised once, never re-rendered */
+/** Signed shortest angular difference (-180 to 180) */
+function angleDiff(a: number, b: number): number {
+  let d = ((b - a + 540) % 360) - 180;
+  return d;
+}
+
+/** Vibrate helper with fallback */
+function vibrate(pattern: number | number[]) {
+  if (navigator.vibrate) {
+    navigator.vibrate(pattern);
+  }
+}
+
+/* Static SVG parts — memoised once */
 const ticks = Array.from({ length: 72 }, (_, i) => {
   const angle = i * 5;
   const rad = (angle - 90) * (Math.PI / 180);
@@ -78,9 +104,10 @@ const QiblaCompass: React.FC = () => {
   const [hasConsent, setHasConsent] = useState(false);
   const [error, setError] = useState("");
 
-  // Direct DOM refs — no React re-renders in the animation loop
+  // Direct DOM refs
   const compassFaceRef = useRef<SVGSVGElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
+  const bearingTextRef = useRef<HTMLParagraphElement>(null);
   const cardinalRefs = useRef<(SVGTextElement | null)[]>([]);
   const interRefs = useRef<(SVGTextElement | null)[]>([]);
 
@@ -88,26 +115,73 @@ const QiblaCompass: React.FC = () => {
   const smoothH = useRef<number>(0);
   const hasReading = useRef(false);
   const rafId = useRef(0);
+  const qiblaBearing = useRef<number>(136.5); // fallback for Leipzig
+  const lastHapticTime = useRef(0);
+  const lastLockedVibTime = useRef(0);
+  const geoWatchId = useRef<number | null>(null);
+
+  // Heading sensor buffer for averaging (reduces noise)
+  const headingBuffer = useRef<number[]>([]);
+  const BUFFER_SIZE = 5;
+
+  /** Push a new heading sample and return circular mean */
+  const pushHeading = useCallback((h: number) => {
+    const buf = headingBuffer.current;
+    buf.push(h);
+    if (buf.length > BUFFER_SIZE) buf.shift();
+    // Circular mean via sin/cos averaging
+    let sinSum = 0, cosSum = 0;
+    for (const v of buf) {
+      const r = (v * Math.PI) / 180;
+      sinSum += Math.sin(r);
+      cosSum += Math.cos(r);
+    }
+    return ((Math.atan2(sinSum, cosSum) * 180) / Math.PI + 360) % 360;
+  }, []);
 
   const animate = useCallback(() => {
     if (hasReading.current) {
       smoothH.current = lerpAngle(smoothH.current, rawHeading.current, 0.12);
       const h = smoothH.current;
+      const qb = qiblaBearing.current;
 
-      // Direct DOM writes — zero React overhead
+      // Direct DOM writes
       if (compassFaceRef.current) {
         compassFaceRef.current.style.transform = `rotate(${-h}deg)`;
       }
       if (arrowRef.current) {
-        arrowRef.current.style.transform = `rotate(${QIBLA_BEARING - h}deg)`;
+        arrowRef.current.style.transform = `rotate(${qb - h}deg)`;
       }
-      // Keep text upright
       cardinalRefs.current.forEach((el) => {
         if (el) el.style.transform = `rotate(${h}deg)`;
       });
       interRefs.current.forEach((el) => {
         if (el) el.style.transform = `rotate(${h}deg)`;
       });
+      // Update bearing text
+      if (bearingTextRef.current) {
+        bearingTextRef.current.textContent = `${qb.toFixed(1)}°`;
+      }
+
+      // Haptic feedback
+      const diff = Math.abs(angleDiff(h, qb));
+      const now = performance.now();
+
+      if (diff <= 2) {
+        // Locked on — one stronger vibration, max once per 2s
+        if (now - lastLockedVibTime.current > 2000) {
+          vibrate(40);
+          lastLockedVibTime.current = now;
+        }
+      } else if (diff <= 20) {
+        // Approaching — small ticks, interval decreases as we get closer
+        // At 20° → every 400ms, at 3° → every 100ms
+        const interval = 100 + ((diff - 2) / 18) * 300;
+        if (now - lastHapticTime.current > interval) {
+          vibrate(15);
+          lastHapticTime.current = now;
+        }
+      }
     }
     rafId.current = requestAnimationFrame(animate);
   }, []);
@@ -115,16 +189,31 @@ const QiblaCompass: React.FC = () => {
   useEffect(() => {
     if (!hasConsent) return;
 
+    // Request high-accuracy GPS for precise Qibla bearing
+    if ("geolocation" in navigator) {
+      geoWatchId.current = navigator.geolocation.watchPosition(
+        (pos) => {
+          qiblaBearing.current = calculateQiblaBearing(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => { /* keep fallback bearing */ },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      );
+    }
+
     const handleOrientation = (e: DeviceOrientationEvent) => {
+      let heading: number | null = null;
       const ios = (e as any).webkitCompassHeading;
       if (typeof ios === "number" && !isNaN(ios)) {
-        rawHeading.current = ios;
+        heading = ios;
       } else if (e.alpha !== null) {
-        rawHeading.current = (360 - e.alpha) % 360;
+        heading = (360 - e.alpha) % 360;
       }
-      if (!hasReading.current) {
-        smoothH.current = rawHeading.current;
-        hasReading.current = true;
+      if (heading !== null) {
+        rawHeading.current = pushHeading(heading);
+        if (!hasReading.current) {
+          smoothH.current = rawHeading.current;
+          hasReading.current = true;
+        }
       }
     };
 
@@ -147,6 +236,9 @@ const QiblaCompass: React.FC = () => {
       window.removeEventListener("deviceorientationabsolute", handleOrientation as EventListener, true);
       window.removeEventListener("deviceorientation", handleOrientation as EventListener, true);
       cancelAnimationFrame(rafId.current);
+      if (geoWatchId.current !== null) {
+        navigator.geolocation.clearWatch(geoWatchId.current);
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasConsent]);
@@ -182,7 +274,6 @@ const QiblaCompass: React.FC = () => {
       <div className="relative w-60 h-60">
         <StaticRing />
 
-        {/* Compass face — rotated via direct DOM writes */}
         <svg
           ref={compassFaceRef}
           className="absolute inset-0 w-full h-full"
@@ -226,17 +317,17 @@ const QiblaCompass: React.FC = () => {
           })}
         </svg>
 
-        {/* Qibla arrow */}
         <div ref={arrowRef} className="absolute inset-0" style={{ willChange: "transform" }}>
           <ArrowSvg />
         </div>
 
-        {/* Center hub */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-mosque-gold-dark shadow-lg border-2 border-card" />
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">{t("qiblaDesc")} · {QIBLA_BEARING}°</p>
+      <p className="text-xs text-muted-foreground">
+        {t("qiblaDesc")} · <span ref={bearingTextRef}>{qiblaBearing.current.toFixed(1)}°</span>
+      </p>
     </div>
   );
 };
