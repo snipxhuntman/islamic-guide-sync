@@ -6,6 +6,7 @@ import { formatHijriDate, formatGregorianDate } from "@/utils/hijri";
 import { getLivePrayerTimesForDate, getCurrentPrayer, prayerKeys, PrayerName } from "@/data/prayerTimes";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatTime } from "@/utils/timeFormat";
+import { getIqamaSettings, computeIqama } from "@/stores/dataStore";
 
 const PrayerTimes: React.FC = () => {
   const { t, language, isRTL } = useLanguage();
@@ -22,18 +23,14 @@ const PrayerTimes: React.FC = () => {
   const prayers = getLivePrayerTimesForDate(dateStr);
   const isToday = dayOffset === 0;
   const currentPrayer = isToday && prayers ? getCurrentPrayer(prayers) : null;
+  const iqamaSettings = getIqamaSettings();
 
   const getPrayerTime = (key: PrayerName) => {
     if (!prayers) return { time: "--:--", iqama: "--:--" };
-    const timeMap: Record<PrayerName, { time: string; iqama: string }> = {
-      fajr: { time: prayers.fajr, iqama: prayers.fajrIqama },
-      shuruk: { time: prayers.shuruk, iqama: "-" },
-      dhuhr: { time: prayers.dhuhr, iqama: prayers.dhuhrIqama },
-      asr: { time: prayers.asr, iqama: prayers.asrIqama },
-      maghrib: { time: prayers.maghrib, iqama: prayers.maghribIqama },
-      isha: { time: prayers.isha, iqama: prayers.ishaIqama },
-    };
-    return timeMap[key];
+    const time = prayers[key];
+    const setting = iqamaSettings[key];
+    const iqama = key === "shuruk" ? "-" : setting ? computeIqama(time, setting) : "-";
+    return { time, iqama };
   };
 
   const PrevIcon = isRTL ? ChevronRight : ChevronLeft;
