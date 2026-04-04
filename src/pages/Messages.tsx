@@ -4,6 +4,7 @@ import { getLiveMessages } from "@/data/messages";
 
 const Messages: React.FC = () => {
   const { t, language } = useLanguage();
+  const messagesData = getLiveMessages();
 
   const getText = (msg: typeof messagesData[0]) => {
     if (language === "en" && msg.textEn) return msg.textEn;

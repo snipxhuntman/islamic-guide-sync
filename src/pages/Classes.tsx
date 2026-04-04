@@ -46,7 +46,7 @@ const Classes: React.FC = () => {
       </div>
 
       <div className="flex-1 px-4 mt-4 space-y-3">
-        {classesData.map((cls) => (
+        {classes.map((cls) => (
           <div
             key={cls.id}
             className={`rounded-xl border p-4 transition-colors ${

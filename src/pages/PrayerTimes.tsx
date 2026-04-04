@@ -18,7 +18,7 @@ const PrayerTimes: React.FC = () => {
   }, [dayOffset]);
 
   const dateStr = selectedDate.toISOString().split("T")[0];
-  const prayers = getPrayerTimesForDate(dateStr);
+  const prayers = getLivePrayerTimesForDate(dateStr);
   const isToday = dayOffset === 0;
   const currentPrayer = isToday && prayers ? getCurrentPrayer(prayers) : null;
 

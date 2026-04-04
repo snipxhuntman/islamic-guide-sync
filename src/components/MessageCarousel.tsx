@@ -7,7 +7,7 @@ const MessageCarousel: React.FC = () => {
   const [current, setCurrent] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
-  const messages = messagesData.slice(0, 4);
+  const messages = getLiveMessages().slice(0, 4);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
