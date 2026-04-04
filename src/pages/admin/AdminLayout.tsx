@@ -30,6 +30,7 @@ const navItems = [
   { to: "/admin/prayer-times", key: "prayerTimes", icon: CalendarDays },
   { to: "/admin/messages", key: "messages", icon: MessageSquare },
   { to: "/admin/classes", key: "classes", icon: BookOpen },
+  { to: "/admin/privacy", key: "privacy", icon: ShieldCheck },
 ];
 
 const AdminLayout: React.FC = () => {

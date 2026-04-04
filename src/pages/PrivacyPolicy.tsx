@@ -2,10 +2,13 @@ import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getPrivacyPolicy } from "@/stores/dataStore";
 
 const PrivacyPolicy: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const policy = getPrivacyPolicy();
+  const content = policy[language];
 
   return (
     <div className="flex flex-col min-h-screen max-w-app mx-auto pb-20">
@@ -17,7 +20,11 @@ const PrivacyPolicy: React.FC = () => {
       </div>
       <div className="px-4 mt-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-sm text-card-foreground leading-relaxed">{t("privacyContent")}</p>
+          <div
+            className="text-sm text-card-foreground leading-relaxed prose prose-sm max-w-none [&_a]:text-primary [&_a]:underline"
+            dir={language === "ar" ? "rtl" : "ltr"}
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
         </div>
       </div>
     </div>

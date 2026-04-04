@@ -48,6 +48,7 @@ const App = () => (
                 <Route path="messages" element={<AdminMessages />} />
                 <Route path="classes" element={<AdminClasses />} />
                 <Route path="broadcasts" element={<AdminBroadcasts />} />
+                <Route path="privacy" element={<AdminPrivacyPolicy />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />

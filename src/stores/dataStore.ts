@@ -98,3 +98,23 @@ export function getSiteLinks(): SiteLinks {
 export function saveSiteLinks(data: SiteLinks) {
   save(KEYS.siteLinks, data);
 }
+
+// Privacy Policy
+export interface PrivacyPolicyContent {
+  de: string;
+  en: string;
+  ar: string;
+}
+
+const defaultPrivacyPolicy: PrivacyPolicyContent = {
+  de: "Diese App speichert Ihre Einstellungen lokal auf Ihrem Gerät. Es werden keine personenbezogenen Daten an Server übertragen. Der Qibla-Kompass nutzt Ihren Standort nur zur Berechnung der Gebetsrichtung und speichert keine Standortdaten.",
+  en: "This app stores your settings locally on your device. No personal data is transmitted to servers. The Qibla compass uses your location only to calculate the prayer direction and does not save any location data.",
+  ar: "يحتفظ هذا التطبيق بإعداداتك محلياً على جهازك. لا يتم إرسال أي بيانات شخصية إلى الخوادم. تستخدم بوصلة القبلة موقعك فقط لحساب اتجاه الصلاة ولا تحفظ أي بيانات موقع.",
+};
+
+export function getPrivacyPolicy(): PrivacyPolicyContent {
+  return load("admin-privacy-policy", defaultPrivacyPolicy);
+}
+export function savePrivacyPolicy(data: PrivacyPolicyContent) {
+  save("admin-privacy-policy", data);
+}
