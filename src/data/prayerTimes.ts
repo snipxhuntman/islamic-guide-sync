@@ -46,6 +46,22 @@ function generatePrayerTimes(): PrayerDay[] {
 
 export const prayerTimesData: PrayerDay[] = generatePrayerTimes();
 
+// Runtime getter that checks localStorage for admin-uploaded data
+export function getLivePrayerTimes(): PrayerDay[] {
+  try {
+    const raw = localStorage.getItem("admin-prayer-times");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return prayerTimesData;
+}
+
+export function getLivePrayerTimesForDate(dateStr: string): PrayerDay | undefined {
+  return getLivePrayerTimes().find((p) => p.date === dateStr);
+}
+
 export type PrayerName = "fajr" | "shuruk" | "dhuhr" | "asr" | "maghrib" | "isha";
 
 export const prayerKeys: PrayerName[] = ["fajr", "shuruk", "dhuhr", "asr", "maghrib", "isha"];
