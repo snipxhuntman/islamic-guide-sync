@@ -1,14 +1,22 @@
 import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getPrivacyPolicy } from "@/stores/dataStore";
 
 const PrivacyPolicy: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const navigate = useNavigate();
-  const policy = getPrivacyPolicy();
-  const content = policy[language];
+
+  const links = [
+    {
+      label: "Datenschutzerklärung",
+      url: "https://www.leipziger-moschee.de/datenschutz",
+    },
+    {
+      label: "Impressum",
+      url: "https://www.leipziger-moschee.de/impressum",
+    },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen max-w-app mx-auto pb-20">
@@ -18,14 +26,19 @@ const PrivacyPolicy: React.FC = () => {
         </button>
         <h1 className="text-xl font-bold text-foreground">{t("privacyTitle")}</h1>
       </div>
-      <div className="px-4 mt-4">
-        <div className="bg-card border border-border rounded-xl p-4">
-          <div
-            className="text-sm text-card-foreground leading-relaxed prose prose-sm max-w-none [&_a]:text-primary [&_a]:underline [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-sm [&_h4]:font-semibold [&_h4]:mt-3 [&_h4]:mb-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_li]:my-0.5 [&_p]:my-2"
-            dir={language === "ar" ? "rtl" : "ltr"}
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
-        </div>
+      <div className="px-4 mt-4 space-y-3">
+        {links.map((link) => (
+          <a
+            key={link.url}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between p-4 rounded-xl bg-card border border-border hover:bg-muted transition-colors"
+          >
+            <span className="text-sm font-medium text-foreground">{link.label}</span>
+            <ExternalLink className="w-4 h-4 text-muted-foreground" />
+          </a>
+        ))}
       </div>
     </div>
   );
