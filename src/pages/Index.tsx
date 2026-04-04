@@ -78,7 +78,7 @@ const HomePrayerTimes: React.FC = () => {
                 isNext ? "text-[1.125rem] font-bold" : "text-[0.9375rem] font-semibold"
               }`}
             >
-              {getPrayerTime(key)}
+              {formatTime(getPrayerTime(key), language)}
             </span>
           </div>
         );
