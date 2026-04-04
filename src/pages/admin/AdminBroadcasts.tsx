@@ -188,6 +188,10 @@ const AdminBroadcasts: React.FC = () => {
           <Textarea dir="rtl" value={form.textAr} onChange={(e) => setForm({ ...form, textAr: e.target.value })} rows={2} />
         </div>
       </div>
+      <div>
+        <label className="text-xs font-medium text-muted-foreground">{t.link}</label>
+        <Input value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} placeholder="https://..." />
+      </div>
       {renderImageUpload(inputRef)}
       <div className="flex gap-2">
         <Button size="sm" onClick={onSubmit}><Check className="w-4 h-4 mr-1" /> {submitLabel}</Button>
