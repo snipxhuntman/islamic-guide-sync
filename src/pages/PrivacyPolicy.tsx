@@ -21,7 +21,7 @@ const PrivacyPolicy: React.FC = () => {
       <div className="px-4 mt-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <div
-            className="text-sm text-card-foreground leading-relaxed prose prose-sm max-w-none [&_a]:text-primary [&_a]:underline"
+            className="text-sm text-card-foreground leading-relaxed prose prose-sm max-w-none [&_a]:text-primary [&_a]:underline [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_h4]:text-sm [&_h4]:font-semibold [&_h4]:mt-3 [&_h4]:mb-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:my-2 [&_li]:my-0.5 [&_p]:my-2"
             dir={language === "ar" ? "rtl" : "ltr"}
             dangerouslySetInnerHTML={{ __html: content }}
           />
