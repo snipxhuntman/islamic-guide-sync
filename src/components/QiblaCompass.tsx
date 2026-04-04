@@ -1,45 +1,90 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
 
 const QIBLA_BEARING = 136.5;
 
+/** Shortest-path angular interpolation */
+function lerpAngle(from: number, to: number, t: number): number {
+  let diff = ((to - from + 540) % 360) - 180;
+  return (from + diff * t + 360) % 360;
+}
+
 const QiblaCompass: React.FC = () => {
   const { t } = useLanguage();
   const [hasConsent, setHasConsent] = useState(false);
-  const [heading, setHeading] = useState<number | null>(null);
   const [error, setError] = useState("");
+
+  // Raw heading from sensor, smoothed heading for display
+  const rawHeading = useRef<number | null>(null);
+  const smoothHeading = useRef<number>(0);
+  const [displayHeading, setDisplayHeading] = useState<number | null>(null);
+  const rafId = useRef<number>(0);
+
+  const animate = useCallback(() => {
+    if (rawHeading.current !== null) {
+      smoothHeading.current = lerpAngle(smoothHeading.current, rawHeading.current, 0.15);
+      setDisplayHeading(smoothHeading.current);
+    }
+    rafId.current = requestAnimationFrame(animate);
+  }, []);
 
   useEffect(() => {
     if (!hasConsent) return;
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.alpha !== null) {
-        setHeading(e.alpha);
+      // iOS provides webkitCompassHeading (degrees from true north, clockwise)
+      const iosHeading = (e as any).webkitCompassHeading;
+      if (typeof iosHeading === "number" && !isNaN(iosHeading)) {
+        rawHeading.current = iosHeading;
+      } else if (e.alpha !== null) {
+        // Android: alpha is degrees from arbitrary north, but if absolute
+        // we need to convert. For relative orientation, alpha=0 means device
+        // points to the same direction as when sensor started.
+        // absolute orientation event gives true north.
+        rawHeading.current = (360 - e.alpha) % 360;
+      }
+
+      // Initialize smooth heading on first reading
+      if (displayHeading === null && rawHeading.current !== null) {
+        smoothHeading.current = rawHeading.current;
       }
     };
 
-    if (typeof (DeviceOrientationEvent as any).requestPermission === "function") {
+    const startListening = (eventName: string) => {
+      window.addEventListener(eventName, handleOrientation as EventListener, true);
+      rafId.current = requestAnimationFrame(animate);
+    };
+
+    // Try absolute orientation first (Android)
+    if ("ondeviceorientationabsolute" in window) {
+      startListening("deviceorientationabsolute");
+    } else if (typeof (DeviceOrientationEvent as any).requestPermission === "function") {
+      // iOS permission gate
       (DeviceOrientationEvent as any)
         .requestPermission()
         .then((state: string) => {
           if (state === "granted") {
-            window.addEventListener("deviceorientation", handleOrientation);
+            startListening("deviceorientation");
           } else {
             setError(t("locationDenied"));
           }
         })
         .catch(() => setError(t("locationDenied")));
     } else {
-      window.addEventListener("deviceorientation", handleOrientation);
+      startListening("deviceorientation");
     }
 
     return () => {
-      window.removeEventListener("deviceorientation", handleOrientation);
+      window.removeEventListener("deviceorientationabsolute", handleOrientation as EventListener, true);
+      window.removeEventListener("deviceorientation", handleOrientation as EventListener, true);
+      cancelAnimationFrame(rafId.current);
     };
-  }, [hasConsent, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasConsent]);
 
+  const heading = displayHeading;
   const qiblaRotation = heading !== null ? QIBLA_BEARING - heading : QIBLA_BEARING;
   const compassRotation = heading !== null ? -heading : 0;
 
@@ -84,10 +129,10 @@ const QiblaCompass: React.FC = () => {
           <circle cx="120" cy="120" r="108" fill="none" stroke="hsl(var(--border))" strokeWidth="1" />
         </svg>
 
-        {/* Rotating compass face */}
+        {/* Rotating compass face — no CSS transition, driven by rAF */}
         <svg
-          className="absolute inset-0 w-full h-full transition-transform duration-500 ease-out"
-          style={{ transform: `rotate(${compassRotation}deg)` }}
+          className="absolute inset-0 w-full h-full"
+          style={{ transform: `rotate(${compassRotation}deg)`, willChange: "transform" }}
           viewBox="0 0 240 240"
         >
           {/* Degree ticks */}
@@ -166,10 +211,10 @@ const QiblaCompass: React.FC = () => {
           })}
         </svg>
 
-        {/* Qibla arrow — fixed pointing toward Makkah */}
+        {/* Qibla arrow — driven by rAF, no CSS transition */}
         <div
-          className="absolute inset-0 transition-transform duration-500 ease-out"
-          style={{ transform: `rotate(${qiblaRotation}deg)` }}
+          className="absolute inset-0"
+          style={{ transform: `rotate(${qiblaRotation}deg)`, willChange: "transform" }}
         >
           <svg className="w-full h-full" viewBox="0 0 240 240">
             <defs>
@@ -181,20 +226,17 @@ const QiblaCompass: React.FC = () => {
                 <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="hsl(var(--accent))" floodOpacity="0.4" />
               </filter>
             </defs>
-            {/* Main arrow */}
             <path
               d="M120 30 L132 110 L126 105 L126 210 L114 210 L114 105 L108 110 Z"
               fill="url(#arrowGrad)"
               filter="url(#arrowShadow)"
               opacity="0.9"
             />
-            {/* Arrow tip decoration */}
             <path
               d="M120 30 L126 55 L120 48 L114 55 Z"
               fill="hsl(var(--accent))"
               opacity="1"
             />
-            {/* Kaaba icon at tip */}
             <rect x="115" y="35" width="10" height="10" rx="1" fill="hsl(var(--accent-foreground))" opacity="0.7" />
           </svg>
         </div>
