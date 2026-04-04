@@ -107,7 +107,7 @@ const Messages: React.FC = () => {
                         {(language === "en" && msg.linkLabelEn) || (language === "ar" && msg.linkLabelAr) || msg.linkLabel || msg.linkUrl}
                       </a>
                     )}
-                    <p className="text-[10px] opacity-60 mt-1 text-end">{formatTime(msg.timestamp)}</p>
+                    <p className="text-[10px] opacity-60 mt-1 text-end">{formatTimestamp(msg.timestamp, language)}</p>
                   </div>
                 </div>
               ))}
