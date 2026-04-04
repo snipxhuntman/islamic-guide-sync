@@ -353,7 +353,7 @@ const AdminClasses: React.FC = () => {
             <h3 className="font-medium text-foreground text-sm">{t.defaultLinksLabel}</h3>
             <p className="text-xs text-muted-foreground">{t.defaultLinksDesc}</p>
           </div>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
             {SOCIAL_KEYS.map((key) => (
               <div key={key}>
                 <label className="text-xs font-medium text-muted-foreground capitalize">{key}</label>
