@@ -62,7 +62,7 @@ const AdminMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(() => getMessages());
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+  const [form, setForm] = useState({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,7 +99,7 @@ const AdminMessages: React.FC = () => {
       timestamp: new Date().toISOString(),
     };
     persist([msg, ...messages]);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
     setShowAdd(false);
     toast.success(t.added);
   };
@@ -121,13 +121,13 @@ const AdminMessages: React.FC = () => {
         : m
     ));
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
     toast.success(t.updated);
   };
 
   const cancelEdit = () => {
     setEditing(null);
-    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
+    setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" });
   };
 
   const renderImageSection = (inputRef: React.RefObject<HTMLInputElement>) => (
@@ -212,7 +212,7 @@ const AdminMessages: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">{t.messages}</h1>
-        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" }); }}>
+        <Button size="sm" onClick={() => { setShowAdd(true); setForm({ text: "", textEn: "", textAr: "", imageUrl: "", imageSize: "medium" as const, linkUrl: "", linkLabel: "", linkLabelEn: "", linkLabelAr: "" }); }}>
           <Plus className="w-4 h-4 mr-1" /> {t.newMessage}
         </Button>
       </div>
