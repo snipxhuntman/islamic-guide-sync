@@ -26,6 +26,10 @@ const i18n = {
     addImage: "Add Image",
     removeImage: "Remove Image",
     imagePreview: "Image preview",
+    linkUrl: "Link URL",
+    linkLabel: "Link Label (DE)",
+    linkLabelEn: "Link Label (EN)",
+    linkLabelAr: "Link Label (AR)",
   },
   de: {
     messages: "Nachrichten",
