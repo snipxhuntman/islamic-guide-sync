@@ -3,13 +3,14 @@ export type RecurringInterval = "daily" | "weekly" | "biweekly" | "monthly";
 
 export interface BroadcastSchedule {
   type: ScheduleType;
-  // For "recurring": interval + startTime/endTime (HH:MM) + startDate/endDate (YYYY-MM-DD)
   recurringInterval?: RecurringInterval;
-  // For "once" and "recurring": date range
-  startDate?: string; // YYYY-MM-DD
-  endDate?: string;   // YYYY-MM-DD
+  startDate?: string; // YYYY-MM-DD (used for "once")
+  endDate?: string;   // YYYY-MM-DD (used for "once")
   startHour?: string; // HH:MM
   endHour?: string;   // HH:MM
+  dayOfWeek?: number; // 0=Sunday..6=Saturday (for weekly/biweekly)
+  endDayOfWeek?: number; // 0=Sunday..6=Saturday (for weekly/biweekly)
+  dayOfMonth?: number; // 1-31 (for monthly)
 }
 
 export interface Broadcast {
