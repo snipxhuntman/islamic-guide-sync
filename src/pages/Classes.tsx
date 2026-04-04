@@ -12,6 +12,7 @@ function addMinutesToTime(time: string, minutes: number): string {
 
 const Classes: React.FC = () => {
   const { t, language } = useLanguage();
+  const classes = getLiveClasses();
 
   const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
   const todayPrayers = useMemo(() => getLivePrayerTimesForDate(todayStr), [todayStr]);
