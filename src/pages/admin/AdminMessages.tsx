@@ -91,6 +91,10 @@ const AdminMessages: React.FC = () => {
       textEn: form.textEn || undefined,
       textAr: form.textAr || undefined,
       imageUrl: form.imageUrl || undefined,
+      linkUrl: form.linkUrl || undefined,
+      linkLabel: form.linkLabel || undefined,
+      linkLabelEn: form.linkLabelEn || undefined,
+      linkLabelAr: form.linkLabelAr || undefined,
       timestamp: new Date().toISOString(),
     };
     persist([msg, ...messages]);
