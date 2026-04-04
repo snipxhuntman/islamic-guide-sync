@@ -19,7 +19,7 @@ const Classes: React.FC = () => {
   const classStartTime = todayPrayers ? addMinutesToTime(todayPrayers.maghrib, 20) : null;
   const classEndTime = todayPrayers?.isha ?? null;
 
-  const getTitle = (c: typeof classesData[0]) => {
+  const getTitle = (c: typeof classes[0]) => {
     if (language === "en") return c.titleEn;
     if (language === "ar") return c.titleAr;
     return c.title;
