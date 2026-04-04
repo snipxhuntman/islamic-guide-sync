@@ -87,7 +87,7 @@ const HomePrayerTimes: React.FC = () => {
 };
 
 const Index: React.FC = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const today = new Date();
 
   return (
