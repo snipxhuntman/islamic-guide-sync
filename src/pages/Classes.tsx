@@ -24,7 +24,7 @@ function getNextDateForDay(dayName: string): string {
   const diff = (target - current + 7) % 7; // 0 = today if same day
   const next = new Date(now);
   next.setDate(next.getDate() + diff);
-  return next.toISOString().split("T")[0];
+  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
 }
 
 const Classes: React.FC = () => {
