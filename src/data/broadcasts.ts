@@ -30,7 +30,7 @@ function isBroadcastVisible(b: Broadcast): boolean {
   if (!b.schedule || b.schedule.type === "always") return true;
 
   const now = new Date();
-  const today = now.toISOString().split("T")[0];
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
   const { startDate, endDate, startHour, endHour } = b.schedule;
