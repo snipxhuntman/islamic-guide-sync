@@ -16,16 +16,24 @@ const CountdownTimer: React.FC = () => {
 
       const next = getNextPrayer(prayers);
       if (!next) {
+        // After Isha: count down to tomorrow's Fajr
         setNextPrayerName(t("fajr"));
         const now = new Date();
-        const midnight = new Date(now);
-        midnight.setHours(24, 0, 0, 0);
-        const diff = Math.max(0, Math.floor((midnight.getTime() - now.getTime()) / 1000));
-        setTimeLeft({
-          hours: Math.floor(diff / 3600),
-          minutes: Math.floor((diff % 3600) / 60),
-          seconds: diff % 60,
-        });
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
+        const tomorrowPrayers = getLivePrayerTimesForDate(tomorrowStr);
+        if (tomorrowPrayers) {
+          const [fH, fM] = tomorrowPrayers.fajr.split(":").map(Number);
+          const fajrTarget = new Date(tomorrow);
+          fajrTarget.setHours(fH, fM, 0, 0);
+          const diff = Math.max(0, Math.floor((fajrTarget.getTime() - now.getTime()) / 1000));
+          setTimeLeft({
+            hours: Math.floor(diff / 3600),
+            minutes: Math.floor((diff % 3600) / 60),
+            seconds: diff % 60,
+          });
+        }
         return;
       }
 
