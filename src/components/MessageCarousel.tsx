@@ -5,9 +5,22 @@ import { getLiveBroadcasts, Broadcast } from "@/data/broadcasts";
 const MessageCarousel: React.FC = () => {
   const { language } = useLanguage();
   const [current, setCurrent] = useState(0);
+  const [broadcasts, setBroadcasts] = useState<Broadcast[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
 
-  const broadcasts = getLiveBroadcasts();
+  // Load broadcasts reactively and re-check periodically
+  useEffect(() => {
+    const load = () => setBroadcasts(getLiveBroadcasts());
+    load();
+    // Re-check every 30s for schedule changes or admin updates
+    const poll = setInterval(load, 30000);
+    return () => clearInterval(poll);
+  }, []);
+
+  // Reset slide index when broadcasts change
+  useEffect(() => {
+    setCurrent(0);
+  }, [broadcasts.length]);
 
   useEffect(() => {
     if (broadcasts.length <= 1) return;
