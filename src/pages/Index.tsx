@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Banner from "@/components/Banner";
 import CountdownTimer from "@/components/CountdownTimer";
