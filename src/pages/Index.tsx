@@ -41,6 +41,14 @@ const SocialIcons = () => {
 
 const HomePrayerTimes: React.FC = () => {
   const { t, language } = useLanguage();
+  const [tick, setTick] = useState(0);
+
+  // Re-check next prayer every 30 seconds so the highlight stays in sync
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const today = new Date();
   const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const prayers = getLivePrayerTimesForDate(dateStr);
