@@ -75,15 +75,20 @@ const HomePrayerTimes: React.FC = () => {
         return (
           <div
             key={key}
-            className={`flex flex-col items-center rounded-xl px-2 py-3 transition-colors ${
+            className={`flex flex-col items-center rounded-xl px-2 py-3 transition-colors relative ${
               isNext
                 ? "bg-accent text-accent-foreground ring-2 ring-accent shadow-md"
                 : "bg-card text-foreground"
             }`}
           >
+            {isNext && (
+              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[0.625rem] font-bold uppercase px-2 py-0.5 rounded-full leading-none whitespace-nowrap">
+                {t("upcoming")}
+              </span>
+            )}
             <span
               className={`text-[0.8125rem] leading-snug ${
-                isNext ? "font-bold" : "font-medium text-muted-foreground"
+                isNext ? "font-bold mt-1" : "font-medium text-muted-foreground"
               }`}
             >
               {t(key)}
