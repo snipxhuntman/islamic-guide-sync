@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getLivePrayerTimesForDate, getNextPrayer } from "@/data/prayerTimes";
+import { getLivePrayerTimesForDate, getNextPrayer, prayerKeys } from "@/data/prayerTimes";
 
 const CountdownTimer: React.FC = () => {
   const { t, isRTL } = useLanguage();
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [nextPrayerName, setNextPrayerName] = useState("");
+  const [progress, setProgress] = useState(1);
 
   useEffect(() => {
+    const toMin = (time: string) => {
+      const [h, m] = time.split(":").map(Number);
+      return h * 60 + m;
+    };
+
     const update = () => {
-      const now0 = new Date();
-      const today = `${now0.getFullYear()}-${String(now0.getMonth() + 1).padStart(2, "0")}-${String(now0.getDate()).padStart(2, "0")}`;
-      const prayers = getLivePrayerTimesForDate(today);
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const prayers = getLivePrayerTimesForDate(todayStr);
       if (!prayers) return;
 
       const next = getNextPrayer(prayers);
+
       if (!next) {
-        // After Isha: count down to tomorrow's Fajr
+        // After Isha → countdown to tomorrow's Fajr
         setNextPrayerName(t("fajr"));
-        const now = new Date();
         const tomorrow = new Date(now);
         tomorrow.setDate(tomorrow.getDate() + 1);
         const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
@@ -28,26 +34,54 @@ const CountdownTimer: React.FC = () => {
           const fajrTarget = new Date(tomorrow);
           fajrTarget.setHours(fH, fM, 0, 0);
           const diff = Math.max(0, Math.floor((fajrTarget.getTime() - now.getTime()) / 1000));
+
+          // Total span: Isha → tomorrow Fajr
+          const ishaMin = toMin(prayers.isha);
+          const fajrTomorrowMin = toMin(tomorrowPrayers.fajr);
+          const totalSpan = (24 * 60 - ishaMin + fajrTomorrowMin) * 60;
+
           setTimeLeft({
             hours: Math.floor(diff / 3600),
             minutes: Math.floor((diff % 3600) / 60),
             seconds: diff % 60,
           });
+          setProgress(totalSpan > 0 ? Math.min(1, diff / totalSpan) : 0);
         }
         return;
       }
 
       setNextPrayerName(t(next.name));
       const [h, m] = next.time.split(":").map(Number);
-      const now = new Date();
       const target = new Date(now);
       target.setHours(h, m, 0, 0);
       const diff = Math.max(0, Math.floor((target.getTime() - now.getTime()) / 1000));
+
+      // Compute span from previous prayer to this next prayer
+      const orderedKeys = ["fajr", "shuruk", "dhuhr", "asr", "maghrib", "isha"] as const;
+      const nextIdx = orderedKeys.indexOf(next.name);
+      let totalSpan: number;
+      if (nextIdx === 0) {
+        // Before Fajr: span from yesterday's Isha to today's Fajr
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+        const yesterdayPrayers = getLivePrayerTimesForDate(yesterdayStr);
+        const prevIshaMin = yesterdayPrayers ? toMin(yesterdayPrayers.isha) : toMin(prayers.isha);
+        const fajrMin = toMin(prayers.fajr);
+        totalSpan = (24 * 60 - prevIshaMin + fajrMin) * 60;
+      } else {
+        const prevKey = orderedKeys[nextIdx - 1];
+        const prevMin = toMin(prayers[prevKey]);
+        const nextMin = toMin(next.time);
+        totalSpan = (nextMin - prevMin) * 60;
+      }
+
       setTimeLeft({
         hours: Math.floor(diff / 3600),
         minutes: Math.floor((diff % 3600) / 60),
         seconds: diff % 60,
       });
+      setProgress(totalSpan > 0 ? Math.min(1, diff / totalSpan) : 0);
     };
 
     update();
@@ -55,9 +89,6 @@ const CountdownTimer: React.FC = () => {
     return () => clearInterval(interval);
   }, [t]);
 
-  const totalSeconds = timeLeft.hours * 3600 + timeLeft.minutes * 60 + timeLeft.seconds;
-  const maxSeconds = 12 * 3600;
-  const progress = Math.min(1, totalSeconds / maxSeconds);
   const circumference = 2 * Math.PI * 70;
   const strokeDashoffset = circumference * (1 - progress);
 
