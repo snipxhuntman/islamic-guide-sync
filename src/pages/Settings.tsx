@@ -125,7 +125,7 @@ const Settings: React.FC = () => {
             </div>
 
             {notif.all && (
-                {/* Prayer Reminder - silent push alert */}
+              <>
                 <div className="border-t border-border pt-3">
                   <div className="flex items-center justify-between">
                     <div>
