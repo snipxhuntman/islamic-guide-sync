@@ -53,6 +53,8 @@ const HomePrayerTimes: React.FC = () => {
   const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const prayers = getLivePrayerTimesForDate(dateStr);
   const nextPrayer = prayers ? getNextPrayer(prayers) : null;
+  // After Isha, highlight Fajr as the next prayer
+  const highlightedPrayer = nextPrayer?.name ?? "fajr";
 
   if (!prayers) return null;
 
@@ -71,7 +73,7 @@ const HomePrayerTimes: React.FC = () => {
   return (
     <div className="grid grid-cols-3 gap-2">
       {prayerKeys.map((key) => {
-        const isNext = nextPrayer?.name === key;
+        const isNext = highlightedPrayer === key;
         return (
           <div
             key={key}
