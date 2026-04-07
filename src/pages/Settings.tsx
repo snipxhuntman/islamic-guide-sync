@@ -10,9 +10,10 @@ import { getHourFormat, setHourFormat, HourFormat } from "@/utils/timeFormat";
 
 interface NotifSettings {
   all: boolean;
-  prayer: boolean;
-  ringtone: string;
+  prayerReminder: boolean;
   prayerAlerts: Record<string, number>;
+  prayerAdhan: boolean;
+  ringtone: string;
   classes: boolean;
   classCancellations: boolean;
   messages: boolean;
@@ -20,11 +21,12 @@ interface NotifSettings {
 
 const defaultSettings: NotifSettings = {
   all: true,
-  prayer: true,
-  ringtone: "adhan1",
+  prayerReminder: true,
   prayerAlerts: {
     fajr: 15, shuruk: 10, dhuhr: 15, asr: 15, maghrib: 10, isha: 15,
   },
+  prayerAdhan: true,
+  ringtone: "adhan1",
   classes: true,
   classCancellations: true,
   messages: true,
@@ -124,14 +126,53 @@ const Settings: React.FC = () => {
 
             {notif.all && (
               <>
-                <div className="flex items-center justify-between border-t border-border pt-3">
-                  <span className="text-sm text-foreground">{t("prayerNotifications")}</span>
-                  <Switch checked={notif.prayer} onCheckedChange={(v) => updateNotif("prayer", v)} />
+                <div className="border-t border-border pt-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm text-foreground">{t("prayerReminders")}</span>
+                      <p className="text-[0.65rem] text-muted-foreground">{t("prayerRemindersDesc")}</p>
+                    </div>
+                    <Switch checked={notif.prayerReminder} onCheckedChange={(v) => updateNotif("prayerReminder", v)} />
+                  </div>
+
+                  {notif.prayerReminder && (
+                    <div className="mt-2 space-y-2">
+                      {prayerKeys.map((key) => (
+                        <div key={key} className="flex items-center justify-between ps-4">
+                          <span className="text-xs text-muted-foreground">{t(key)}</span>
+                          <Select
+                            value={String(notif.prayerAlerts[key] || 15)}
+                            onValueChange={(v) => updatePrayerAlert(key, Number(v))}
+                          >
+                            <SelectTrigger className="w-24 h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[5, 10, 15, 20, 30].map((m) => (
+                                <SelectItem key={m} value={String(m)}>
+                                  {m} {t("alertBefore")}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {notif.prayer && (
-                  <>
-                    <div className="flex items-center justify-between ps-4">
+                {/* Prayer Adhan - sound notification */}
+                <div className="border-t border-border pt-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm text-foreground">{t("prayerAdhan")}</span>
+                      <p className="text-[0.65rem] text-muted-foreground">{t("prayerAdhanDesc")}</p>
+                    </div>
+                    <Switch checked={notif.prayerAdhan} onCheckedChange={(v) => updateNotif("prayerAdhan", v)} />
+                  </div>
+
+                  {notif.prayerAdhan && (
+                    <div className="flex items-center justify-between ps-4 mt-2">
                       <span className="text-xs text-muted-foreground">{t("ringtone")}</span>
                       <Select value={notif.ringtone} onValueChange={(v) => updateNotif("ringtone", v)}>
                         <SelectTrigger className="w-28 h-8 text-xs">
@@ -144,29 +185,8 @@ const Settings: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
-
-                    {prayerKeys.map((key) => (
-                      <div key={key} className="flex items-center justify-between ps-4">
-                        <span className="text-xs text-muted-foreground">{t(key)}</span>
-                        <Select
-                          value={String(notif.prayerAlerts[key] || 15)}
-                          onValueChange={(v) => updatePrayerAlert(key, Number(v))}
-                        >
-                          <SelectTrigger className="w-24 h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[5, 10, 15, 20, 30].map((m) => (
-                              <SelectItem key={m} value={String(m)}>
-                                {m} {t("alertBefore")}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    ))}
-                  </>
-                )}
+                  )}
+                </div>
 
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <span className="text-sm text-foreground">{t("classNotifications")}</span>
