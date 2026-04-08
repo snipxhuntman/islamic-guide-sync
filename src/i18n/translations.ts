@@ -66,6 +66,7 @@ export const translations: Record<Language, Record<string, string>> = {
     timeFormat: "Zeitformat",
     format24h: "24-Stunden",
     format12h: "12-Stunden",
+    none: "Keine",
     privacyPolicy: "Datenschutzerklärung",
 
     // Privacy
@@ -141,6 +142,7 @@ export const translations: Record<Language, Record<string, string>> = {
     timeFormat: "Time Format",
     format24h: "24-Hour",
     format12h: "12-Hour",
+    none: "None",
     privacyPolicy: "Privacy Policy",
 
     privacyTitle: "Privacy Policy",
@@ -214,6 +216,7 @@ export const translations: Record<Language, Record<string, string>> = {
     timeFormat: "صيغة الوقت",
     format24h: "24 ساعة",
     format12h: "12 ساعة",
+    none: "بدون",
     privacyPolicy: "سياسة الخصوصية",
 
     privacyTitle: "سياسة الخصوصية",

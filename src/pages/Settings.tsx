@@ -141,13 +141,14 @@ const Settings: React.FC = () => {
                         <div key={key} className="flex items-center justify-between ps-4">
                           <span className="text-xs text-muted-foreground">{t(key)}</span>
                           <Select
-                            value={String(notif.prayerAlerts[key] || 15)}
+                            value={String(notif.prayerAlerts[key] ?? 15)}
                             onValueChange={(v) => updatePrayerAlert(key, Number(v))}
                           >
                             <SelectTrigger className="w-24 h-8 text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
+                              <SelectItem value="0">{t("none")}</SelectItem>
                               {[5, 10, 15, 20, 30].map((m) => (
                                 <SelectItem key={m} value={String(m)}>
                                   {m} {t("alertBefore")}
