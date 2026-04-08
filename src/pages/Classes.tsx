@@ -89,6 +89,22 @@ const Classes: React.FC = () => {
       <div className="flex-1 px-4 mt-4 space-y-3">
         {classes.map((cls) => {
           const isManual = cls.timingMode === "manual" && cls.manualStart && cls.manualEnd;
+
+          // Compute end time first to determine if class has passed today
+          let tempEnd: string | null = null;
+          if (isManual) {
+            tempEnd = cls.manualEnd!;
+          } else {
+            // Rough estimate: isha time for today
+            const todayStr = toDateStr(new Date());
+            const todayPrayers = getLivePrayerTimesForDate(todayStr);
+            tempEnd = todayPrayers?.isha ?? null;
+          }
+
+          const nextDate = getNextDateForDay(cls.day, tempEnd);
+          const nextDateStr = toDateStr(nextDate);
+          const prayers = getLivePrayerTimesForDate(nextDateStr);
+
           let displayStart: string | null;
           let displayEnd: string | null;
 
@@ -96,8 +112,6 @@ const Classes: React.FC = () => {
             displayStart = cls.manualStart!;
             displayEnd = cls.manualEnd!;
           } else {
-            const nextDate = getNextDateForDay(cls.day);
-            const prayers = getLivePrayerTimesForDate(nextDate);
             displayStart = prayers ? addMinutesToTime(prayers.maghrib, cls.autoOffset ?? 20) : null;
             displayEnd = prayers?.isha ?? null;
           }
@@ -122,7 +136,10 @@ const Classes: React.FC = () => {
                 </h3>
                 <p className="text-sm text-muted-foreground mt-0.5">{getDesc(cls)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {t(cls.day)} · {t("classTime")}:{" "}
+                  {formatClassDate(nextDate, language)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {t("classTime")}:{" "}
                   {displayStart && displayEnd
                     ? `${formatTime(displayStart, language)} – ${formatTime(displayEnd, language)}`
                     : `${t("maghrib")}+20 – ${t("isha")}`}
