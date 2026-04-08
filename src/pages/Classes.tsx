@@ -17,15 +17,39 @@ const DAY_INDEX: Record<string, number> = {
   thursday: 4, friday: 5, saturday: 6,
 };
 
-function getNextDateForDay(dayName: string): string {
+function getNextDateForDay(dayName: string, endTime: string | null): Date {
   const target = DAY_INDEX[dayName] ?? 1;
   const now = new Date();
-  now.setHours(0, 0, 0, 0);
   const current = now.getDay();
-  const diff = (target - current + 7) % 7; // 0 = today if same day
+  let diff = (target - current + 7) % 7;
+
+  // If today is class day, check if the class has already ended
+  if (diff === 0 && endTime) {
+    const [h, m] = endTime.split(":").map(Number);
+    if (now.getHours() > h || (now.getHours() === h && now.getMinutes() >= m)) {
+      diff = 7; // class finished today, show next week
+    }
+  }
+
   const next = new Date(now);
+  next.setHours(0, 0, 0, 0);
   next.setDate(next.getDate() + diff);
-  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
+  return next;
+}
+
+function formatClassDate(date: Date, language: string): string {
+  const localeMap: Record<string, string> = { de: "de-DE", en: "en-US", ar: "ar-SA" };
+  const locale = localeMap[language] || "de-DE";
+  const weekday = date.toLocaleDateString(locale, { weekday: "long" });
+  // Always use western numerals
+  const day = date.getDate();
+  const month = date.toLocaleDateString(locale, { month: "long" });
+  const year = date.getFullYear();
+  return `${weekday}, ${day}. ${month} ${year}`;
+}
+
+function toDateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 const Classes: React.FC = () => {
