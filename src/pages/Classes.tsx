@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveClasses } from "@/data/classes";
 import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
 import { AlertTriangle } from "lucide-react";
 import { formatTime } from "@/utils/timeFormat";
+import { markCancellationsSeen } from "@/utils/notifications";
 
 function addMinutesToTime(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);
@@ -30,6 +31,10 @@ function getNextDateForDay(dayName: string): string {
 const Classes: React.FC = () => {
   const { t, language } = useLanguage();
   const classes = getLiveClasses();
+
+  useEffect(() => {
+    markCancellationsSeen();
+  }, []);
 
   const getTitle = (c: typeof classes[0]) => {
     if (language === "en") return c.titleEn;

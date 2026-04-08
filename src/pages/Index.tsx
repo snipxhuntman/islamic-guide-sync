@@ -77,7 +77,7 @@ const HomePrayerTimes: React.FC = () => {
         return (
           <div
             key={key}
-            className={`flex flex-col items-center rounded-xl px-2 py-3 transition-colors relative ${
+            className={`flex flex-col items-center justify-center rounded-xl px-2 py-3.5 min-h-[4.5rem] transition-colors relative ${
               isNext
                 ? "bg-accent text-accent-foreground ring-2 ring-accent shadow-md"
                 : "bg-card text-foreground"
@@ -88,18 +88,12 @@ const HomePrayerTimes: React.FC = () => {
                 {t("upcoming")}
               </span>
             )}
-            <span
-              className={`text-[0.8125rem] leading-snug ${
-                isNext ? "font-bold mt-1" : "font-medium text-muted-foreground"
-              }`}
-            >
+            <span className={`text-[0.8125rem] leading-snug font-medium ${
+              isNext ? "font-bold" : "text-muted-foreground"
+            }`}>
               {t(key)}
             </span>
-            <span
-              className={`tabular-nums mt-0.5 ${
-                isNext ? "text-[1.125rem] font-bold" : "text-[0.9375rem] font-semibold"
-              }`}
-            >
+            <span className="tabular-nums mt-0.5 text-[1rem] font-semibold">
               {formatTime(getPrayerTime(key), language)}
             </span>
           </div>
