@@ -39,7 +39,7 @@ export const translations: Record<Language, Record<string, string>> = {
     noMessages: "Keine Nachrichten",
 
     // Classes
-    cancelled: "Heute kein Unterricht",
+    cancelled: "Unterricht fällt aus",
     classTime: "Unterrichtszeit",
     everyWeek: "Jede Woche",
 
@@ -116,7 +116,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     noMessages: "No messages",
 
-    cancelled: "Class cancelled today",
+    cancelled: "Class cancelled",
     classTime: "Class time",
     everyWeek: "Every week",
 
@@ -190,7 +190,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     noMessages: "لا توجد رسائل",
 
-    cancelled: "لا درس اليوم",
+    cancelled: "تم إلغاء الدرس",
     classTime: "وقت الدرس",
     everyWeek: "كل أسبوع",
 
