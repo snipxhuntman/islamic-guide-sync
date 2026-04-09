@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import BottomNav from "@/components/BottomNav";
+import UserAgreement from "@/components/UserAgreement";
 import Index from "./pages/Index.tsx";
 import PrayerTimes from "./pages/PrayerTimes.tsx";
 import Messages from "./pages/Messages.tsx";
@@ -30,6 +31,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <UserAgreement>
           <div className="min-h-screen bg-background">
             <Routes>
               {/* User App */}
@@ -58,6 +60,7 @@ const App = () => (
               <Route path="*" element={<BottomNav />} />
             </Routes>
           </div>
+          </UserAgreement>
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>
