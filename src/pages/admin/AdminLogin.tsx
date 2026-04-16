@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Lock } from "lucide-react";
 
 // SHA-256 hash of the admin password — plaintext is never in the bundle
-const ADMIN_PASSWORD_HASH = "a]HASH_PLACEHOLDER";
+const ADMIN_PASSWORD_HASH = "f0ac4193f9d135e927ebc75d01bad8f9e3c81443b59aa7680b75b587f25dec15";
 
 async function sha256(message: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(message);

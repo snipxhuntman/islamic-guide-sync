@@ -35,7 +35,7 @@ const navItems = [
 const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const isAuth = sessionStorage.getItem("admin-auth") === "true";
+  const isAuth = !!sessionStorage.getItem("admin-auth-token");
   const [lang, setLang] = useState<AdminLang>(() =>
     (localStorage.getItem("admin-lang") as AdminLang) || "en"
   );
