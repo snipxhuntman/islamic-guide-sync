@@ -44,7 +44,7 @@ const AdminLayout: React.FC = () => {
   if (!isAuth) return <Navigate to="/admin" replace />;
 
   const handleLogout = () => {
-    sessionStorage.removeItem("admin-auth");
+    sessionStorage.removeItem("admin-auth-token");
     navigate("/admin");
   };
 
