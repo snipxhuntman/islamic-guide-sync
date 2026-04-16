@@ -52,6 +52,13 @@ export function getLivePrayerTimesForDate(dateStr: string): PrayerDay | undefine
   return getLivePrayerTimes().find((p) => p.date === dateStr);
 }
 
+export function getAvailableDateRange(): { min: string; max: string } | null {
+  const times = getLivePrayerTimes();
+  if (times.length === 0) return null;
+  const sorted = [...times].sort((a, b) => a.date.localeCompare(b.date));
+  return { min: sorted[0].date, max: sorted[sorted.length - 1].date };
+}
+
 export type PrayerName = "fajr" | "shuruk" | "dhuhr" | "asr" | "maghrib" | "isha";
 
 export const prayerKeys: PrayerName[] = ["fajr", "shuruk", "dhuhr", "asr", "maghrib", "isha"];
