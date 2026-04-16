@@ -4,20 +4,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock } from "lucide-react";
 
-const ADMIN_PASSWORD = "alrahman2026";
+// SHA-256 hash of the admin password — plaintext is never in the bundle
+const ADMIN_PASSWORD_HASH = "a]HASH_PLACEHOLDER";
+
+async function sha256(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Generate a session token that is not a simple boolean flag
+async function generateSessionToken(password: string): Promise<string> {
+  const timestamp = Date.now().toString();
+  return sha256(password + timestamp + "admin-session-salt");
+}
 
 const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin-auth", "true");
-      navigate("/admin/dashboard");
-    } else {
-      setError(true);
+    setLoading(true);
+    try {
+      const hash = await sha256(password);
+      if (hash === ADMIN_PASSWORD_HASH) {
+        const token = await generateSessionToken(password);
+        sessionStorage.setItem("admin-auth-token", token);
+        navigate("/admin/dashboard");
+      } else {
+        setError(true);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,7 +62,9 @@ const AdminLogin: React.FC = () => {
             className={error ? "border-destructive" : ""}
           />
           {error && <p className="text-sm text-destructive">Incorrect password</p>}
-          <Button type="submit" className="w-full">Login</Button>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Verifying…" : "Login"}
+          </Button>
         </form>
       </div>
     </div>
