@@ -1,11 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Trash2, Download, Minus, Plus } from "lucide-react";
+import { Upload, Trash2, Download } from "lucide-react";
 import { getPrayerTimes, savePrayerTimes, getIqamaSettings, saveIqamaSettings, IqamaSetting, IqamaSettings, computeIqama } from "@/stores/dataStore";
 import { PrayerDay } from "@/data/prayerTimes";
 import { toast } from "sonner";
-import { getHijriCorrection, setHijriCorrection, formatHijriDate } from "@/utils/hijri";
 import {
   Select,
   SelectContent,
@@ -13,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -33,9 +31,9 @@ function parseCSV(text: string): PrayerDay[] {
   if (lines.length < 2) throw new Error("CSV must have a header and at least one data row");
 
   const header = lines[0].split(",").map((h) => h.trim().toLowerCase());
-  const required = ["date", "fajr", "shuruk", "dhuhr", "asr", "maghrib", "isha"];
+  const required = ["date", "hijri", "fajr", "shuruk", "dhuhr", "asr", "maghrib", "isha"];
   const mapping: Record<string, string> = {
-    date: "date", fajr: "fajr", shuruk: "shuruk", dhuhr: "dhuhr", asr: "asr", maghrib: "maghrib", isha: "isha",
+    date: "date", hijri: "hijri", fajr: "fajr", shuruk: "shuruk", dhuhr: "dhuhr", asr: "asr", maghrib: "maghrib", isha: "isha",
   };
 
   for (const r of required) {
@@ -53,9 +51,9 @@ function parseCSV(text: string): PrayerDay[] {
 }
 
 function generateSampleCSV(): string {
-  return `date,fajr,shuruk,dhuhr,asr,maghrib,isha
-2026-04-04,04:30,06:10,13:15,16:45,20:15,22:00
-2026-04-05,04:28,06:08,13:15,16:46,20:16,22:01`;
+  return `date,hijri,fajr,shuruk,dhuhr,asr,maghrib,isha
+2026-04-04,6 Shawwal 1448,04:30,06:10,13:15,16:45,20:15,22:00
+2026-04-05,7 Shawwal 1448,04:28,06:08,13:15,16:46,20:16,22:01`;
 }
 
 const offsetOptions = Array.from({ length: 19 }, (_, i) => i * 5); // 0,5,10,...90
@@ -90,18 +88,8 @@ const Time24Input: React.FC<{ value: string; onChange: (v: string) => void }> = 
 
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
-  const [hijriOffset, setHijriOffset] = useState(() => getHijriCorrection());
   const [iqama, setIqama] = useState<IqamaSettings>(() => getIqamaSettings());
   const fileRef = useRef<HTMLInputElement>(null);
-
-  const updateHijriOffset = (delta: number) => {
-    const next = Math.max(-3, Math.min(3, hijriOffset + delta));
-    setHijriOffset(next);
-    setHijriCorrection(next);
-    toast.success(`Hijri correction set to ${next > 0 ? "+" : ""}${next} day(s)`);
-  };
-
-  const todayHijri = formatHijriDate(new Date(), "en");
 
   const updateIqamaSetting = (prayer: string, update: Partial<IqamaSetting>) => {
     const next = { ...iqama, [prayer]: { ...iqama[prayer], ...update } };
@@ -158,34 +146,6 @@ const AdminPrayerTimes: React.FC = () => {
           <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleUpload} />
         </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Hijri Calendar Correction</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Button size="icon" variant="outline" onClick={() => updateHijriOffset(-1)} disabled={hijriOffset <= -3}>
-                <Minus className="w-4 h-4" />
-              </Button>
-              <span className="font-mono text-lg min-w-[3ch] text-center">
-                {hijriOffset > 0 ? "+" : ""}{hijriOffset}
-              </span>
-              <Button size="icon" variant="outline" onClick={() => updateHijriOffset(1)} disabled={hijriOffset >= 3}>
-                <Plus className="w-4 h-4" />
-              </Button>
-              <span className="text-sm text-muted-foreground">day(s)</span>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Today: <span className="font-semibold text-foreground">{todayHijri}</span>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Adjust if the Hijri date doesn't match your local moon sighting. Range: -3 to +3 days.
-          </p>
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader>
@@ -251,6 +211,7 @@ const AdminPrayerTimes: React.FC = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
+                    <TableHead>Hijri</TableHead>
                     <TableHead>Fajr</TableHead>
                     <TableHead>Shuruk</TableHead>
                     <TableHead>Dhuhr</TableHead>
@@ -263,6 +224,7 @@ const AdminPrayerTimes: React.FC = () => {
                   {data.slice(0, 30).map((d) => (
                     <TableRow key={d.date}>
                       <TableCell className="font-mono text-xs">{d.date}</TableCell>
+                      <TableCell className="text-xs">{d.hijri || "-"}</TableCell>
                       <TableCell>{d.fajr}</TableCell>
                       <TableCell>{d.shuruk}</TableCell>
                       <TableCell>{d.dhuhr}</TableCell>
