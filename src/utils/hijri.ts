@@ -1,5 +1,6 @@
-// Simple Hijri date conversion using the Umm al-Qura approximation
+// Simple Hijri date conversion — prefers CSV data, falls back to algorithmic
 import { toWesternNumerals } from "@/utils/timeFormat";
+import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
 
 export function getHijriCorrection(): number {
   try {
@@ -10,6 +11,34 @@ export function getHijriCorrection(): number {
 
 export function setHijriCorrection(days: number): void {
   localStorage.setItem("hijri-correction", String(days));
+}
+
+// Lookup Hijri date from uploaded CSV data
+function getHijriFromData(dateStr: string): string | null {
+  const day = getLivePrayerTimesForDate(dateStr);
+  return day?.hijri || null;
+}
+
+// Translate English month names to Arabic in a hijri string like "1 Ramadan 1447"
+function translateHijriToArabic(hijriStr: string): string {
+  const monthMap: Record<string, string> = {
+    "muharram": "محرم", "safar": "صفر",
+    "rabi al-awwal": "ربيع الأول", "rabi al-thani": "ربيع الثاني",
+    "jumada al-ula": "جمادى الأولى", "jumada al-thani": "جمادى الثانية",
+    "rajab": "رجب", "sha'ban": "شعبان", "shaban": "شعبان",
+    "ramadan": "رمضان", "shawwal": "شوال",
+    "dhul qi'dah": "ذو القعدة", "dhul qidah": "ذو القعدة",
+    "dhul hijjah": "ذو الحجة",
+  };
+  let result = hijriStr;
+  for (const [en, ar] of Object.entries(monthMap)) {
+    const regex = new RegExp(en, "i");
+    if (regex.test(result)) {
+      result = result.replace(regex, ar);
+      break;
+    }
+  }
+  return result;
 }
 
 export function toHijri(date: Date): { year: number; month: number; day: number; monthName: string } {
@@ -53,6 +82,16 @@ function hijriToJD(year: number, month: number, day: number): number {
 }
 
 export function formatHijriDate(date: Date, lang: string): string {
+  // Build YYYY-MM-DD from the date
+  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  // Try CSV data first
+  const fromData = getHijriFromData(dateStr);
+  if (fromData) {
+    return lang === "ar" ? translateHijriToArabic(fromData) : fromData;
+  }
+
+  // Fallback to algorithmic
   const h = toHijri(date);
   const monthName = lang === "ar" ? hijriMonthNamesAr[h.month - 1] : h.monthName;
   return `${h.day} ${monthName} ${h.year}`;

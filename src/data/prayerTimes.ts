@@ -1,5 +1,6 @@
 export interface PrayerDay {
   date: string; // YYYY-MM-DD
+  hijri?: string; // e.g. "1 Ramadan 1447"
   fajr: string;
   shuruk: string;
   dhuhr: string;
