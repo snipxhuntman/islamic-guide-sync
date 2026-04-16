@@ -11,6 +11,7 @@ import { getIqamaSettings, computeIqama } from "@/stores/dataStore";
 const PrayerTimes: React.FC = () => {
   const { t, language, isRTL } = useLanguage();
   const [dayOffset, setDayOffset] = useState(0);
+  const dateRange = useMemo(() => getAvailableDateRange(), []);
 
   const selectedDate = useMemo(() => {
     const d = new Date();
@@ -24,6 +25,25 @@ const PrayerTimes: React.FC = () => {
   const isToday = dayOffset === 0;
   const currentPrayer = isToday && prayers ? getCurrentPrayer(prayers) : null;
   const iqamaSettings = getIqamaSettings();
+
+  // Compute max forward offset based on available date range
+  const maxOffset = useMemo(() => {
+    if (!dateRange) return 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const maxDate = new Date(dateRange.max + "T00:00:00");
+    return Math.max(0, Math.round((maxDate.getTime() - today.getTime()) / 86400000));
+  }, [dateRange]);
+
+  // Compute min backward offset (don't go before earliest available date)
+  const minOffset = useMemo(() => {
+    if (!dateRange) return 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const minDate = new Date(dateRange.min + "T00:00:00");
+    const diff = Math.round((minDate.getTime() - today.getTime()) / 86400000);
+    return Math.max(0, diff);
+  }, [dateRange]);
 
   const getPrayerTime = (key: PrayerName) => {
     if (!prayers) return { time: "--:--", iqama: "--:--" };
@@ -45,8 +65,8 @@ const PrayerTimes: React.FC = () => {
       {/* Date navigator */}
       <div className="flex items-center justify-between px-4 mt-4">
         <button
-          onClick={() => setDayOffset((o) => Math.max(0, o - 1))}
-          disabled={dayOffset === 0}
+          onClick={() => setDayOffset((o) => Math.max(minOffset, o - 1))}
+          disabled={dayOffset <= minOffset}
           className="p-2 rounded-full hover:bg-muted disabled:opacity-30 transition-colors"
         >
           <PrevIcon className="w-5 h-5" />
@@ -58,7 +78,8 @@ const PrayerTimes: React.FC = () => {
           <p className="text-xs text-accent">{formatHijriDate(selectedDate, language)}</p>
         </div>
         <button
-          onClick={() => setDayOffset((o) => o + 1)}
+          onClick={() => setDayOffset((o) => Math.min(maxOffset, o + 1))}
+          disabled={dayOffset >= maxOffset}
           className="p-2 rounded-full hover:bg-muted transition-colors"
         >
           <NextIcon className="w-5 h-5" />
