@@ -1,41 +1,28 @@
 
 
-## Plan: CSV-Based Hijri Date Mapping
+## Plan: Add AI Prompt Display Card to Admin Prayer Times
 
 ### Overview
-Replace the algorithmic Hijri date calculation with admin-provided Hijri dates from the CSV file. Each row in the CSV will include a `hijri` column (e.g., `1 Ramadan 1447`), and the app will use this mapping everywhere Hijri dates are displayed.
+Add a collapsible card in the Admin Prayer Times page that displays a predefined AI prompt (togglable between English and German). The admin can copy this prompt to use with an AI tool to convert a PDF prayer calendar into the required CSV format.
 
 ### Changes
 
-**1. Update `PrayerDay` interface** (`src/data/prayerTimes.ts`)
-- Add optional `hijri` field (string, e.g. `"1 Ramadan 1447"`) to the `PrayerDay` interface
+**1. Update `src/pages/admin/AdminPrayerTimes.tsx`**
+- Add a new `Card` component below the existing buttons and above the Iqama Settings card
+- Include a language toggle (EN/DE) using a simple button group or tabs
+- Display the appropriate prompt text based on the selected language
+- Add a "Copy to clipboard" button that copies the prompt text and shows a toast confirmation
+- The card title: "AI Prompt — PDF to CSV" (collapsible via Collapsible or Accordion)
 
-**2. Update CSV parser** (`src/pages/admin/AdminPrayerTimes.tsx`)
-- Add `hijri` to the required CSV columns
-- Map the `hijri` column into `PrayerDay` objects
-- Update sample CSV to include the `hijri` column
-- Remove the Hijri Calendar Correction card (no longer needed since admin controls dates directly)
+**2. Prompt content**
+- English and German prompts stored as constants within the component
+- Each prompt includes the full instruction text as provided by the user
 
-**3. Update `formatHijriDate` to use CSV data** (`src/utils/hijri.ts`)
-- New function `getHijriFromData(dateStr: string): string | null` that looks up the Hijri date from the uploaded prayer times data for a given Gregorian date
-- Modify `formatHijriDate` to first check CSV data; fall back to algorithmic calculation only if no CSV entry exists
-- Support Arabic month name substitution when `lang === "ar"` by parsing the stored Hijri string
+### UI Design
+- Collapsed by default to keep the page clean
+- When expanded: language toggle at top, prompt text in a styled `<pre>` or muted text block, copy button
+- Uses existing UI components (Card, Button, Tabs or toggle)
 
-**4. Update all consumer pages** (`src/pages/PrayerTimes.tsx`, `src/pages/Index.tsx`)
-- Pass the date string to the updated `formatHijriDate` so it can look up CSV data — minimal change since the function signature stays the same
-
-**5. Update admin table display** (`src/pages/admin/AdminPrayerTimes.tsx`)
-- Add `Hijri` column to the preview table
-
-**6. Update sample CSV format**
-```
-date,hijri,fajr,shuruk,dhuhr,asr,maghrib,isha
-2026-04-04,6 Shawwal 1448,04:30,06:10,13:15,16:45,20:15,22:00
-2026-04-05,7 Shawwal 1448,04:28,06:08,13:15,16:46,20:16,22:01
-```
-
-### Technical Notes
-- The Hijri correction offset feature in admin will be removed since the CSV is now the source of truth
-- The algorithmic `toHijri` / `jdToHijri` functions remain as fallback for dates not covered by CSV
-- Month length (29 or 30 days) is implicitly handled — the admin simply lists the correct Hijri date for each Gregorian date
+### No other files affected
+- No translation file changes needed (admin is EN/DE only, and this is static display content)
 
