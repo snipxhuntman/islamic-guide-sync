@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Trash2, Download } from "lucide-react";
+import { Upload, Trash2, Download, Copy, ChevronDown, ChevronRight } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { getPrayerTimes, savePrayerTimes, getIqamaSettings, saveIqamaSettings, IqamaSetting, IqamaSettings, computeIqama } from "@/stores/dataStore";
 import { PrayerDay } from "@/data/prayerTimes";
 import { toast } from "sonner";
@@ -86,6 +87,75 @@ const Time24Input: React.FC<{ value: string; onChange: (v: string) => void }> = 
   );
 };
 
+const PROMPT_EN = `Read the provided prayer times calendar in PDF format and extract the data exactly as shown in the document. Do not infer or calculate any values.
+
+Required data to extract:
+• Gregorian date
+• Corresponding Hijri date (use only the Hijri date written in the PDF; do NOT calculate or convert it)
+• Daily prayer times
+
+Export the extracted data into a CSV file that strictly matches the structure, column names, and formatting of the provided sample CSV file. Ensure all values are copied accurately from the PDF.`;
+
+const PROMPT_DE = `Lies den bereitgestellten Gebetszeitenkalender im PDF-Format und extrahiere die Daten genau so, wie sie im Dokument stehen. Berechne oder ergänze keine Werte selbst.
+
+Zu extrahierende Daten:
+• Gregorianisches Datum
+• Zugehöriges Hidschri-Datum (verwende ausschließlich das im PDF angegebene Datum; keine eigene Berechnung oder Umrechnung)
+• Tägliche Gebetszeiten
+
+Exportiere die extrahierten Daten in eine CSV-Datei, die exakt der Struktur, den Spaltennamen und dem Format der bereitgestellten Beispiel-CSV-Datei entspricht. Stelle sicher, dass alle Werte korrekt aus dem PDF übernommen werden.`;
+
+const AiPromptCard: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [lang, setLang] = useState<"en" | "de">("en");
+  const prompt = lang === "en" ? PROMPT_EN : PROMPT_DE;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(prompt).then(() => {
+      toast.success(lang === "en" ? "Prompt copied!" : "Prompt kopiert!");
+    });
+  };
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <Card>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="cursor-pointer select-none flex flex-row items-center gap-2 py-3">
+            {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            <CardTitle className="text-sm">AI Prompt — PDF to CSV</CardTitle>
+          </CardHeader>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardContent className="space-y-3 pt-0">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={lang === "en" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setLang("en")}
+              >
+                EN
+              </Button>
+              <Button
+                variant={lang === "de" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setLang("de")}
+              >
+                DE
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleCopy} className="ml-auto">
+                <Copy className="w-4 h-4 mr-1" /> Copy
+              </Button>
+            </div>
+            <pre className="whitespace-pre-wrap text-sm text-muted-foreground bg-muted/50 rounded-md p-4 border">
+              {prompt}
+            </pre>
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
+  );
+};
+
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
   const [iqama, setIqama] = useState<IqamaSettings>(() => getIqamaSettings());
@@ -146,6 +216,8 @@ const AdminPrayerTimes: React.FC = () => {
           <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleUpload} />
         </div>
       </div>
+
+      <AiPromptCard />
 
       <Card>
         <CardHeader>
