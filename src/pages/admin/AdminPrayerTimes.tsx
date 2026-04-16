@@ -148,6 +148,8 @@ const AdminPrayerTimes: React.FC = () => {
         </div>
       </div>
 
+      <AiPromptCard />
+
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">Iqama Settings</CardTitle>
