@@ -34,6 +34,14 @@ export const translations: Record<Language, Record<string, string>> = {
     allowLocation: "Standort erlauben",
     qiblaDesc: "Kompass zeigt Richtung nach Makkah",
     locationDenied: "Standortzugriff verweigert",
+    accuracy: "Genauigkeit",
+    accuracyHigh: "Hoch",
+    accuracyMedium: "Mittel",
+    accuracyLow: "Niedrig",
+    calibrateHint: "Bewege dein Gerät in einer Acht (∞), um den Kompass zu kalibrieren.",
+    interferenceWarning: "Magnetische Störung erkannt. Entferne dich von Metall oder Elektronik.",
+    holdStill: "Halte das Gerät ruhig für eine genaue Messung.",
+    trueNorth: "Bezogen auf geografisch Nord",
 
     // Messages
     noMessages: "Keine Nachrichten",
@@ -113,6 +121,14 @@ export const translations: Record<Language, Record<string, string>> = {
     allowLocation: "Allow Location",
     qiblaDesc: "Compass points towards Makkah",
     locationDenied: "Location access denied",
+    accuracy: "Accuracy",
+    accuracyHigh: "High",
+    accuracyMedium: "Medium",
+    accuracyLow: "Low",
+    calibrateHint: "Move your device in a figure-8 pattern (∞) to calibrate the compass.",
+    interferenceWarning: "Magnetic interference detected. Move away from metal or electronics.",
+    holdStill: "Hold the device still for an accurate reading.",
+    trueNorth: "Aligned with true north",
 
     noMessages: "No messages",
 
@@ -187,6 +203,14 @@ export const translations: Record<Language, Record<string, string>> = {
     allowLocation: "السماح بالموقع",
     qiblaDesc: "البوصلة تشير نحو مكة المكرمة",
     locationDenied: "تم رفض الوصول للموقع",
+    accuracy: "الدقة",
+    accuracyHigh: "عالية",
+    accuracyMedium: "متوسطة",
+    accuracyLow: "منخفضة",
+    calibrateHint: "حرّك جهازك على شكل رقم 8 (∞) لمعايرة البوصلة.",
+    interferenceWarning: "تم اكتشاف تداخل مغناطيسي. ابتعد عن المعادن أو الأجهزة الإلكترونية.",
+    holdStill: "أمسك الجهاز بثبات للحصول على قراءة دقيقة.",
+    trueNorth: "محاذاة مع الشمال الجغرافي",
 
     noMessages: "لا توجد رسائل",
 
