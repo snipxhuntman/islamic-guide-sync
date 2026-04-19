@@ -16,15 +16,17 @@ const Banner: React.FC<BannerProps> = ({ className = "" }) => {
     <div
       className={`relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-800 to-emerald-900 text-primary-foreground shadow-lg px-4 py-4 ${className}`}
     >
-      <img
-        src={logo}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 m-auto h-full w-auto object-contain opacity-15 pointer-events-none select-none invert brightness-200"
-      />
-      <div className="relative text-center">
-        <h1 className="text-xl font-bold tracking-wide">{t("mosqueName")}</h1>
-        <p className="text-sm opacity-80">{t("mosqueSubtitle")}</p>
+      <div className="relative flex items-center gap-3">
+        <img
+          src={logo}
+          alt="IGS-AM e.V."
+          className="h-14 w-14 shrink-0 object-contain invert brightness-0 saturate-0 contrast-200"
+          style={{ filter: "invert(1) brightness(2)" }}
+        />
+        <div className="flex-1 text-center pr-10">
+          <h1 className="text-xl font-bold tracking-wide">{t("mosqueName")}</h1>
+          <p className="text-sm opacity-80">{t("mosqueSubtitle")}</p>
+        </div>
       </div>
       <div className="absolute bottom-2 right-2 z-10">
         <a
