@@ -64,9 +64,9 @@ export default {
             light: "hsl(160, 40%, 40%)",
           },
           gold: {
-            DEFAULT: "hsl(40, 80%, 56%)",
-            light: "hsl(42, 85%, 65%)",
-            dark: "hsl(38, 75%, 45%)",
+            DEFAULT: "hsl(43, 96%, 56%)",
+            light: "hsl(43, 96%, 68%)",
+            dark: "hsl(40, 92%, 48%)",
           },
         },
       },
