@@ -20,7 +20,7 @@ const Banner: React.FC<BannerProps> = ({ className = "" }) => {
         <img
           src={logo}
           alt="IGS-AM e.V."
-          className="h-14 w-14 shrink-0 object-contain invert brightness-0 saturate-0 contrast-200"
+          className="h-20 w-20 shrink-0 object-contain"
           style={{ filter: "invert(1) brightness(2)" }}
         />
         <div className="flex-1 text-center pr-10">
