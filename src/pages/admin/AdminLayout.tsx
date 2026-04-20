@@ -3,6 +3,7 @@ import { Outlet, NavLink, Navigate, useNavigate } from "react-router-dom";
 import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe, Radio, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { clearAdminPassword } from "@/stores/contentSync";
 
 type AdminLang = "en" | "de";
 
@@ -45,6 +46,7 @@ const AdminLayout: React.FC = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("admin-auth-token");
+    clearAdminPassword();
     navigate("/admin");
   };
 

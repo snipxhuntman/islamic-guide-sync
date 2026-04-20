@@ -7,6 +7,7 @@ import { formatHijriDate, formatGregorianDate } from "@/utils/hijri";
 import { getLivePrayerTimesForDate, getNextPrayer, prayerKeys, PrayerName } from "@/data/prayerTimes";
 import { formatTime } from "@/utils/timeFormat";
 import { getSiteLinks } from "@/stores/dataStore";
+import { useContentVersion } from "@/hooks/useContentVersion";
 import { Globe } from "lucide-react";
 
 const SocialIcons = () => {
@@ -42,6 +43,8 @@ const SocialIcons = () => {
 const HomePrayerTimes: React.FC = () => {
   const { t, language } = useLanguage();
   const [tick, setTick] = useState(0);
+  // Re-render when prayer-times cloud sync pushes new data
+  useContentVersion("prayer_times");
 
   // Re-check next prayer every 30 seconds so the highlight stays in sync
   useEffect(() => {
@@ -106,6 +109,8 @@ const HomePrayerTimes: React.FC = () => {
 const Index: React.FC = () => {
   const { language, t } = useLanguage();
   const today = new Date();
+  // Re-render when site_links cloud sync pushes new data
+  useContentVersion("site_links");
   const links = getSiteLinks();
 
   const donationUrl = links.donation[language] || links.donation.de;

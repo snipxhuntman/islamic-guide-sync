@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock } from "lucide-react";
+import { setAdminPassword } from "@/stores/contentSync";
 
 // SHA-256 hash of the admin password — plaintext is never in the bundle
 const ADMIN_PASSWORD_HASH = "f0ac4193f9d135e927ebc75d01bad8f9e3c81443b59aa7680b75b587f25dec15";
@@ -34,6 +35,8 @@ const AdminLogin: React.FC = () => {
       if (hash === ADMIN_PASSWORD_HASH) {
         const token = await generateSessionToken(password);
         sessionStorage.setItem("admin-auth-token", token);
+        // Cache plaintext for cloud writes (cleared on logout)
+        setAdminPassword(password);
         navigate("/admin/dashboard");
       } else {
         setError(true);

@@ -132,7 +132,10 @@ function formToSchedule(f: FormState): BroadcastSchedule | undefined {
 }
 
 function saveBroadcasts(data: Broadcast[]) {
-  localStorage.setItem("admin-broadcasts", JSON.stringify(data));
+  // Push to cloud (also updates localStorage optimistically) so all visitors sync.
+  void import("@/stores/contentSync").then(({ saveAdminContent }) =>
+    saveAdminContent("broadcasts", data),
+  );
 }
 
 function formatScheduleLabel(b: Broadcast, t: typeof i18n.en): string {
