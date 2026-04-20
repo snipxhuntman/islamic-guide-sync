@@ -144,7 +144,7 @@ export function getSiteLinks(): SiteLinks {
   return load(KEYS.siteLinks, defaultSiteLinks);
 }
 export function saveSiteLinks(data: SiteLinks) {
-  save(KEYS.siteLinks, data);
+  void pushAdmin("site_links", data);
 }
 
 // Privacy Policy
