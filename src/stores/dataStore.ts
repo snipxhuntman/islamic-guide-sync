@@ -233,5 +233,5 @@ export function getPrivacyPolicy(): PrivacyPolicyContent {
   return load("admin-privacy-policy", defaultPrivacyPolicy);
 }
 export function savePrivacyPolicy(data: PrivacyPolicyContent) {
-  save("admin-privacy-policy", data);
+  void pushAdmin("privacy_policy", data);
 }
