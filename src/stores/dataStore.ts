@@ -4,6 +4,8 @@ import { ClassItem } from "@/data/classes";
 import { prayerTimesData as defaultPrayerTimes } from "@/data/prayerTimes";
 import { messagesData as defaultMessages } from "@/data/messages";
 import { classesData as defaultClasses } from "@/data/classes";
+import { saveAdminContent, type ContentKey } from "@/stores/contentSync";
+import { toast } from "sonner";
 
 const KEYS = {
   prayerTimes: "admin-prayer-times",
@@ -22,8 +24,19 @@ function load<T>(key: string, fallback: T): T {
   }
 }
 
-function save<T>(key: string, data: T) {
+// Local-only write (used internally for optimistic updates already handled
+// by saveAdminContent). Kept for backwards compat in case anything else uses it.
+function saveLocal<T>(key: string, data: T) {
   localStorage.setItem(key, JSON.stringify(data));
+}
+
+// Pushes admin content to the cloud. Optimistically updates localStorage
+// (inside saveAdminContent) so UI feels instant; surfaces a toast on failure.
+async function pushAdmin(cloudKey: ContentKey, data: unknown) {
+  const result = await saveAdminContent(cloudKey, data);
+  if (!result.ok) {
+    toast.error(`Sync failed: ${result.error ?? "unknown error"}`);
+  }
 }
 
 // Iqama Settings
@@ -49,7 +62,7 @@ export function getIqamaSettings(): IqamaSettings {
   return load(KEYS.iqamaSettings, defaultIqamaSettings);
 }
 export function saveIqamaSettings(data: IqamaSettings) {
-  save(KEYS.iqamaSettings, data);
+  void pushAdmin("iqama_settings", data);
 }
 
 export function computeIqama(prayerTime: string, setting: IqamaSetting): string {
@@ -64,7 +77,7 @@ export function getPrayerTimes(): PrayerDay[] {
   return load(KEYS.prayerTimes, defaultPrayerTimes);
 }
 export function savePrayerTimes(data: PrayerDay[]) {
-  save(KEYS.prayerTimes, data);
+  void pushAdmin("prayer_times", data);
 }
 
 // Messages
@@ -72,7 +85,7 @@ export function getMessages(): Message[] {
   return load(KEYS.messages, defaultMessages);
 }
 export function saveMessages(data: Message[]) {
-  save(KEYS.messages, data);
+  void pushAdmin("messages", data);
 }
 
 // Classes
@@ -80,8 +93,9 @@ export function getClasses(): ClassItem[] {
   return load(KEYS.classes, defaultClasses);
 }
 export function saveClasses(data: ClassItem[]) {
-  save(KEYS.classes, data);
+  void pushAdmin("classes", data);
 }
+
 
 // Site Links
 export interface SiteLinks {
