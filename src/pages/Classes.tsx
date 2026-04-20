@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveClasses } from "@/data/classes";
 import { getLivePrayerTimesForDate } from "@/data/prayerTimes";
 import { AlertTriangle } from "lucide-react";
 import { formatTime } from "@/utils/timeFormat";
 import { markCancellationsSeen } from "@/utils/notifications";
+import { useContentVersion } from "@/hooks/useContentVersion";
 
 function addMinutesToTime(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);
@@ -54,7 +55,9 @@ function toDateStr(d: Date): string {
 
 const Classes: React.FC = () => {
   const { t, language } = useLanguage();
-  const classes = getLiveClasses();
+  const classesVer = useContentVersion("classes");
+  useContentVersion("prayer_times");
+  const classes = useMemo(() => getLiveClasses(), [classesVer]);
 
   useEffect(() => {
     markCancellationsSeen();

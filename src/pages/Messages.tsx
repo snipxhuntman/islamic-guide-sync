@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLiveMessages } from "@/data/messages";
 import { formatTimestamp, toWesternNumerals } from "@/utils/timeFormat";
+import { useContentVersion } from "@/hooks/useContentVersion";
 
 function getReadMessageIds(): Set<string> {
   try {
@@ -18,7 +19,8 @@ function markAllAsRead(ids: string[]) {
 
 const Messages: React.FC = () => {
   const { t, language } = useLanguage();
-  const messagesData = getLiveMessages();
+  const messagesVer = useContentVersion("messages");
+  const messagesData = useMemo(() => getLiveMessages(), [messagesVer]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [unreadIds, setUnreadIds] = useState<Set<string>>(() => {
     const read = getReadMessageIds();
