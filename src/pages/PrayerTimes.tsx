@@ -7,11 +7,15 @@ import { getLivePrayerTimesForDate, getCurrentPrayer, prayerKeys, PrayerName, ge
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatTime } from "@/utils/timeFormat";
 import { getIqamaSettings, computeIqama } from "@/stores/dataStore";
+import { useContentVersion } from "@/hooks/useContentVersion";
 
 const PrayerTimes: React.FC = () => {
   const { t, language, isRTL } = useLanguage();
   const [dayOffset, setDayOffset] = useState(0);
-  const dateRange = useMemo(() => getAvailableDateRange(), []);
+  // Re-render when prayer times or iqama settings sync from cloud
+  const prayerVer = useContentVersion("prayer_times");
+  const iqamaVer = useContentVersion("iqama_settings");
+  const dateRange = useMemo(() => getAvailableDateRange(), [prayerVer]);
 
   const selectedDate = useMemo(() => {
     const d = new Date();
@@ -21,10 +25,10 @@ const PrayerTimes: React.FC = () => {
   }, [dayOffset]);
 
   const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, "0")}-${String(selectedDate.getDate()).padStart(2, "0")}`;
-  const prayers = getLivePrayerTimesForDate(dateStr);
+  const prayers = useMemo(() => getLivePrayerTimesForDate(dateStr), [dateStr, prayerVer]);
   const isToday = dayOffset === 0;
   const currentPrayer = isToday && prayers ? getCurrentPrayer(prayers) : null;
-  const iqamaSettings = getIqamaSettings();
+  const iqamaSettings = useMemo(() => getIqamaSettings(), [iqamaVer]);
 
   // Compute max forward offset based on available date range
   const maxOffset = useMemo(() => {
