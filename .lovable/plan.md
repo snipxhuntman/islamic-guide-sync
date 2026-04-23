@@ -1,28 +1,42 @@
 
 
-## Plan: Add AI Prompt Display Card to Admin Prayer Times
+## Show tomorrow's Fajr after Isha
 
-### Overview
-Add a collapsible card in the Admin Prayer Times page that displays a predefined AI prompt (togglable between English and German). The admin can copy this prompt to use with an AI tool to convert a PDF prayer calendar into the required CSV format.
+**What changes**
 
-### Changes
+After Isha prayer time has passed today, the homepage's prayer-times grid will:
+- Highlight Fajr using **tomorrow's** Fajr time (instead of today's Fajr time, which is already in the past)
+- Show a small "tomorrow" label under the time so it's clear this is the upcoming day
 
-**1. Update `src/pages/admin/AdminPrayerTimes.tsx`**
-- Add a new `Card` component below the existing buttons and above the Iqama Settings card
-- Include a language toggle (EN/DE) using a simple button group or tabs
-- Display the appropriate prompt text based on the selected language
-- Add a "Copy to clipboard" button that copies the prompt text and shows a toast confirmation
-- The card title: "AI Prompt — PDF to CSV" (collapsible via Collapsible or Accordion)
+The "Upcoming" badge above the tile remains the same. All other prayer tiles continue to show today's times.
 
-**2. Prompt content**
-- English and German prompts stored as constants within the component
-- Each prompt includes the full instruction text as provided by the user
+The countdown timer below already correctly counts down to tomorrow's Fajr after Isha, so no changes there.
 
-### UI Design
-- Collapsed by default to keep the page clean
-- When expanded: language toggle at top, prompt text in a styled `<pre>` or muted text block, copy button
-- Uses existing UI components (Card, Button, Tabs or toggle)
+**Visual layout of the Fajr tile (after Isha only)**
 
-### No other files affected
-- No translation file changes needed (admin is EN/DE only, and this is static display content)
+```text
+┌─────────────────┐
+│   [UPCOMING]    │
+│      Fajr       │
+│      04:30      │
+│    tomorrow     │   ← new small label
+└─────────────────┘
+```
+
+**Technical details**
+
+1. `src/pages/Index.tsx` — `HomePrayerTimes`:
+   - Detect "after Isha" state: `getNextPrayer(prayers)` returns `null` when all of today's prayers have passed.
+   - When in this state, fetch tomorrow's prayer times via `getLivePrayerTimesForDate(tomorrowStr)` and override the Fajr time displayed in the highlighted tile with tomorrow's Fajr.
+   - Render a small `tomorrow` label under the time for the Fajr tile only when this override is active.
+   - Keep the existing 30-second tick so the transition happens automatically when Isha rolls over.
+
+2. `src/i18n/translations.ts` — add a `tomorrow` key:
+   - EN: "tomorrow"
+   - DE: "morgen"
+   - AR: "غداً"
+
+3. Edge cases:
+   - If tomorrow's prayer times aren't available (end of uploaded calendar), fall back to today's Fajr time without the "tomorrow" label.
+   - Numeric formatting continues to use the existing `formatTime` helper (respects 12h/24h setting and Arabic Western numerals).
 
