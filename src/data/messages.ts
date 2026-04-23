@@ -15,9 +15,11 @@ export interface Message {
 export function getLiveMessages(): Message[] {
   try {
     const raw = localStorage.getItem("admin-messages");
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      // Respect admin intent: an empty array means "no messages",
+      // not "fall back to hardcoded defaults".
+      if (Array.isArray(parsed)) return parsed;
     }
   } catch {}
   return messagesData;
