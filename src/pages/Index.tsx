@@ -99,7 +99,7 @@ const HomePrayerTimes: React.FC = () => {
             }`}
           >
             {isNext && (
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 leading-none whitespace-nowrap">
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 items-center gap-0.5 leading-none whitespace-nowrap flex flex-row">
                 {showTomorrow && (
                   <span className="bg-secondary text-secondary-foreground text-[0.625rem] font-bold uppercase px-2 py-0.5 rounded-full">
                     {t("tomorrow")}
