@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,7 @@ import { getMessages, saveMessages } from "@/stores/dataStore";
 import { Message } from "@/data/messages";
 import { toast } from "sonner";
 import { useAdminLang } from "./AdminLayout";
+import { useContentVersion } from "@/hooks/useContentVersion";
 
 const i18n = {
   en: {
@@ -62,7 +63,12 @@ const i18n = {
 const AdminMessages: React.FC = () => {
   const { lang } = useAdminLang();
   const t = i18n[lang];
+  const messagesVer = useContentVersion("messages");
   const [messages, setMessages] = useState<Message[]>(() => getMessages());
+  // Re-sync from localStorage whenever cloud pushes an update
+  useEffect(() => {
+    setMessages(getMessages());
+  }, [messagesVer]);
   const [editing, setEditing] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [englishEnabled, setEnglishEnabled] = useState<boolean>(() => {
