@@ -85,22 +85,30 @@ const HomePrayerTimes: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 gap-2 pt-3">
       {prayerKeys.map((key) => {
         const isNext = highlightedPrayer === key;
+        const showTomorrow = key === "fajr" && showTomorrowFajr;
         return (
           <div
             key={key}
-            className={`flex flex-col items-center justify-center rounded-xl px-2 py-3.5 min-h-[4.5rem] transition-colors relative ${
+            className={`flex flex-col items-center justify-center rounded-xl px-2 py-3.5 h-[5rem] transition-colors relative ${
               isNext
                 ? "bg-accent text-accent-foreground ring-2 ring-accent shadow-md"
                 : "bg-card text-foreground"
             }`}
           >
             {isNext && (
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[0.625rem] font-bold uppercase px-2 py-0.5 rounded-full leading-none whitespace-nowrap">
-                {t("upcoming")}
-              </span>
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5 leading-none whitespace-nowrap">
+                {showTomorrow && (
+                  <span className="bg-secondary text-secondary-foreground text-[0.625rem] font-bold uppercase px-2 py-0.5 rounded-full">
+                    {t("tomorrow")}
+                  </span>
+                )}
+                <span className="bg-primary text-primary-foreground text-[0.625rem] font-bold uppercase px-2 py-0.5 rounded-full">
+                  {t("upcoming")}
+                </span>
+              </div>
             )}
             <span className={`text-[0.8125rem] leading-snug font-medium ${
               isNext ? "font-bold" : "text-muted-foreground"
@@ -110,13 +118,6 @@ const HomePrayerTimes: React.FC = () => {
             <span className="tabular-nums mt-0.5 text-[1rem] font-semibold">
               {formatTime(getPrayerTime(key), language)}
             </span>
-            {key === "fajr" && showTomorrowFajr && (
-              <span className={`mt-0.5 text-[0.625rem] font-medium uppercase tracking-wide ${
-                isNext ? "text-accent-foreground/80" : "text-muted-foreground"
-              }`}>
-                {t("tomorrow")}
-              </span>
-            )}
           </div>
         );
       })}
