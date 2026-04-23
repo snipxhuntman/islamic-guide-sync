@@ -58,10 +58,21 @@ const HomePrayerTimes: React.FC = () => {
   const nextPrayer = prayers ? getNextPrayer(prayers) : null;
   // After Isha, highlight Fajr as the next prayer
   const highlightedPrayer = nextPrayer?.name ?? "fajr";
+  const isAfterIsha = prayers != null && nextPrayer == null;
+
+  // After Isha: look up tomorrow's Fajr to display on the highlighted tile
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
+  const tomorrowPrayers = isAfterIsha ? getLivePrayerTimesForDate(tomorrowStr) : undefined;
+  const showTomorrowFajr = isAfterIsha && !!tomorrowPrayers;
 
   if (!prayers) return null;
 
   const getPrayerTime = (key: PrayerName) => {
+    if (key === "fajr" && showTomorrowFajr && tomorrowPrayers) {
+      return tomorrowPrayers.fajr;
+    }
     const timeMap: Record<PrayerName, string> = {
       fajr: prayers.fajr,
       shuruk: prayers.shuruk,
@@ -99,6 +110,13 @@ const HomePrayerTimes: React.FC = () => {
             <span className="tabular-nums mt-0.5 text-[1rem] font-semibold">
               {formatTime(getPrayerTime(key), language)}
             </span>
+            {key === "fajr" && showTomorrowFajr && (
+              <span className={`mt-0.5 text-[0.625rem] font-medium uppercase tracking-wide ${
+                isNext ? "text-accent-foreground/80" : "text-muted-foreground"
+              }`}>
+                {t("tomorrow")}
+              </span>
+            )}
           </div>
         );
       })}
