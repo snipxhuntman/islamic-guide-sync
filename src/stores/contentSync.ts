@@ -106,16 +106,62 @@ export async function initContentSync(): Promise<void> {
 
 // ----- Admin write path -----
 
-export function setAdminPassword(pw: string) {
-  sessionStorage.setItem(ADMIN_PASSWORD_SESSION_KEY, pw);
+export interface AdminSession {
+  token: string;
+  exp: number;
 }
 
-export function clearAdminPassword() {
-  sessionStorage.removeItem(ADMIN_PASSWORD_SESSION_KEY);
+export function setAdminSession(session: AdminSession) {
+  sessionStorage.setItem(ADMIN_SESSION_KEY, session.token);
+  sessionStorage.setItem(ADMIN_SESSION_EXP_KEY, String(session.exp));
 }
 
-export function getAdminPassword(): string | null {
-  return sessionStorage.getItem(ADMIN_PASSWORD_SESSION_KEY);
+export function clearAdminSession() {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  sessionStorage.removeItem(ADMIN_SESSION_EXP_KEY);
+}
+
+/**
+ * Returns a non-expired, structurally-valid session token, or null.
+ * The signature itself can only be verified by the server; this check just
+ * weeds out missing/expired/obviously-fake tokens so the UI doesn't render
+ * for users who clearly aren't logged in.
+ */
+export function getAdminSessionToken(): string | null {
+  const token = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  const expRaw = sessionStorage.getItem(ADMIN_SESSION_EXP_KEY);
+  if (!token || !expRaw) return null;
+  const exp = Number(expRaw);
+  if (!Number.isFinite(exp) || Date.now() > exp) {
+    clearAdminSession();
+    return null;
+  }
+  // Must look like `payload.signature` base64url.
+  if (!/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token)) return null;
+  return token;
+}
+
+/** Server-side login. Returns the session on success. */
+export async function adminLogin(password: string): Promise<
+  { ok: true; session: AdminSession } | { ok: false; error: string }
+> {
+  try {
+    const { data, error } = await supabase.functions.invoke("admin-login", {
+      body: { password },
+    });
+    if (error) return { ok: false, error: error.message };
+    if (!data || typeof data !== "object") {
+      return { ok: false, error: "Invalid server response" };
+    }
+    const d = data as { token?: unknown; exp?: unknown; error?: unknown };
+    if (typeof d.error === "string") return { ok: false, error: d.error };
+    if (typeof d.token !== "string" || typeof d.exp !== "number") {
+      return { ok: false, error: "Invalid server response" };
+    }
+    return { ok: true, session: { token: d.token, exp: d.exp } };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Network error" };
+  }
 }
 
 export interface SaveResult {
@@ -124,18 +170,18 @@ export interface SaveResult {
 }
 
 /**
- * Save admin content to the cloud. Also updates localStorage immediately
- * for snappy admin UX; realtime will reconfirm on other clients.
+ * Save admin content to the cloud using the server-issued session token.
+ * The plaintext password is NEVER sent on writes.
  */
 export async function saveAdminContent(
   key: ContentKey,
   value: unknown,
 ): Promise<SaveResult> {
-  const password = getAdminPassword();
-  if (!password) {
+  const token = getAdminSessionToken();
+  if (!token) {
     return {
       ok: false,
-      error: "Admin password missing — please log out and back in.",
+      error: "Admin session expired — please log in again.",
     };
   }
 
@@ -144,11 +190,9 @@ export async function saveAdminContent(
 
   try {
     const { data, error } = await supabase.functions.invoke("admin-write", {
-      body: { password, key, value },
+      body: { token, key, value },
     });
-    if (error) {
-      return { ok: false, error: error.message };
-    }
+    if (error) return { ok: false, error: error.message };
     if (data && typeof data === "object" && "error" in data) {
       return { ok: false, error: String((data as { error: unknown }).error) };
     }
