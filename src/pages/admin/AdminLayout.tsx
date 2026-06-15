@@ -119,7 +119,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <AdminLangContext.Provider value={{ lang, setLang }}>
-      <div className="min-h-screen bg-background flex">
+      <div dir="ltr" className="min-h-screen bg-background flex">
         {/* Desktop sidebar */}
         {!isMobile && (
           <aside className="w-60 border-r border-border bg-card flex flex-col shrink-0">
