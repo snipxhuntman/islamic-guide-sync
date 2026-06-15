@@ -24,7 +24,8 @@ export const CONTENT_KEYS = {
 
 export type ContentKey = keyof typeof CONTENT_KEYS;
 
-const ADMIN_PASSWORD_SESSION_KEY = "admin-plain-pw";
+const ADMIN_SESSION_KEY = "admin-session-token";
+const ADMIN_SESSION_EXP_KEY = "admin-session-exp";
 
 // Subscribers notified after any cloud-driven localStorage change.
 // Pages can call subscribeContentSync() and re-read via existing getters.
