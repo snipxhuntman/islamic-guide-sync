@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { Outlet, NavLink, Navigate, useNavigate } from "react-router-dom";
 import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe, Radio, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { clearAdminSession, getAdminSessionToken } from "@/stores/contentSync";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type AdminLang = "en" | "de";
 
@@ -36,11 +37,24 @@ const navItems = [
 const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { isRTL } = useLanguage();
   const isAuth = !!getAdminSessionToken();
   const [lang, setLang] = useState<AdminLang>(() =>
     (localStorage.getItem("admin-lang") as AdminLang) || "en"
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Force LTR in admin panel regardless of app language (admin has no Arabic)
+  useEffect(() => {
+    const prevDir = document.documentElement.dir;
+    const hadRtlClass = document.body.classList.contains("rtl");
+    document.documentElement.dir = "ltr";
+    document.body.classList.remove("rtl");
+    return () => {
+      document.documentElement.dir = prevDir;
+      if (hadRtlClass) document.body.classList.add("rtl");
+    };
+  }, [isRTL]);
 
   if (!isAuth) return <Navigate to="/admin" replace />;
 
@@ -105,7 +119,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <AdminLangContext.Provider value={{ lang, setLang }}>
-      <div className="min-h-screen bg-background flex">
+      <div dir="ltr" className="min-h-screen bg-background flex">
         {/* Desktop sidebar */}
         {!isMobile && (
           <aside className="w-60 border-r border-border bg-card flex flex-col shrink-0">
