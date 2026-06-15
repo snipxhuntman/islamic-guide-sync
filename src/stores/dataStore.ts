@@ -81,6 +81,58 @@ export function savePrayerTimes(data: PrayerDay[]) {
   void pushAdmin("prayer_times", data);
 }
 
+// Prayer Time Uploads — each upload is preserved so admins can keep the
+// existing calendar live while adding a new one (e.g. Ramadan). The merged
+// dataset (newer uploads override matching dates) is what gets pushed to
+// `prayer_times` for the rest of the app.
+export interface PrayerUpload {
+  id: string;
+  name: string;
+  uploadedAt: number;
+  days: PrayerDay[];
+}
+
+export function getPrayerUploads(): PrayerUpload[] {
+  return load<PrayerUpload[]>(KEYS.prayerUploads, []);
+}
+
+function savePrayerUploadsLocal(uploads: PrayerUpload[]) {
+  saveLocal(KEYS.prayerUploads, uploads);
+}
+
+export function mergeUploads(uploads: PrayerUpload[]): PrayerDay[] {
+  // Sort ascending by uploadedAt so later uploads overwrite earlier ones for
+  // any duplicated date.
+  const sorted = [...uploads].sort((a, b) => a.uploadedAt - b.uploadedAt);
+  const byDate = new Map<string, PrayerDay>();
+  for (const u of sorted) {
+    for (const d of u.days) {
+      if (d?.date) byDate.set(d.date, d);
+    }
+  }
+  return Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export function addPrayerUpload(name: string, days: PrayerDay[]): PrayerUpload[] {
+  const upload: PrayerUpload = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    name,
+    uploadedAt: Date.now(),
+    days,
+  };
+  const uploads = [...getPrayerUploads(), upload];
+  savePrayerUploadsLocal(uploads);
+  savePrayerTimes(mergeUploads(uploads));
+  return uploads;
+}
+
+export function deletePrayerUpload(id: string): PrayerUpload[] {
+  const uploads = getPrayerUploads().filter((u) => u.id !== id);
+  savePrayerUploadsLocal(uploads);
+  savePrayerTimes(mergeUploads(uploads));
+  return uploads;
+}
+
 // Messages
 export function getMessages(): Message[] {
   return load(KEYS.messages, defaultMessages);
