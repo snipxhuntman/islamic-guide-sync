@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { Outlet, NavLink, Navigate, useNavigate } from "react-router-dom";
 import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe, Radio, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { clearAdminSession, getAdminSessionToken } from "@/stores/contentSync";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type AdminLang = "en" | "de";
 
