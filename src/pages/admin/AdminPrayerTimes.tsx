@@ -158,6 +158,7 @@ const AiPromptCard: React.FC = () => {
 
 const AdminPrayerTimes: React.FC = () => {
   const [data, setData] = useState<PrayerDay[]>(() => getPrayerTimes());
+  const [uploads, setUploads] = useState<PrayerUpload[]>(() => getPrayerUploads());
   const [iqama, setIqama] = useState<IqamaSettings>(() => getIqamaSettings());
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -167,16 +168,22 @@ const AdminPrayerTimes: React.FC = () => {
     saveIqamaSettings(next);
   };
 
+  const refreshFromStore = () => {
+    setUploads(getPrayerUploads());
+    setData(getPrayerTimes());
+  };
+
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const fileName = file.name.replace(/\.csv$/i, "");
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
         const parsed = parseCSV(ev.target?.result as string);
-        savePrayerTimes(parsed);
-        setData(parsed);
-        toast.success(`Loaded ${parsed.length} days of prayer times`);
+        addPrayerUpload(fileName, parsed);
+        refreshFromStore();
+        toast.success(`Added "${fileName}" — ${parsed.length} days. Existing calendars kept live.`);
       } catch (err: any) {
         toast.error(err.message || "Failed to parse CSV");
       }
@@ -185,10 +192,20 @@ const AdminPrayerTimes: React.FC = () => {
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  const handleClear = () => {
-    savePrayerTimes([]);
-    setData([]);
-    toast.success("Prayer times cleared");
+  const handleDeleteUpload = (id: string, name: string) => {
+    if (!confirm(`Delete upload "${name}"? Dates only covered by this upload will be removed.`)) return;
+    deletePrayerUpload(id);
+    refreshFromStore();
+    toast.success(`Removed "${name}"`);
+  };
+
+  const handleClearAll = () => {
+    if (!confirm("Remove ALL prayer time uploads? This cannot be undone.")) return;
+    // Delete each upload to keep merged state in sync.
+    const ids = getPrayerUploads().map((u) => u.id);
+    ids.forEach((id) => deletePrayerUpload(id));
+    refreshFromStore();
+    toast.success("All prayer times cleared");
   };
 
   const handleDownloadSample = () => {
@@ -199,25 +216,71 @@ const AdminPrayerTimes: React.FC = () => {
     a.click();
   };
 
+  const formatUploadDate = (ts: number) =>
+    new Date(ts).toLocaleString(undefined, {
+      year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+
   return (
     <div className="space-y-6">
       <div className="space-y-3">
         <h1 className="text-2xl font-bold text-foreground">Prayer Times</h1>
+        <p className="text-xs text-muted-foreground">
+          Uploading a new CSV keeps existing calendars live. Newer uploads override older ones for matching dates.
+        </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <Button variant="outline" size="sm" onClick={handleDownloadSample} className="w-full sm:w-auto">
             <Download className="w-4 h-4 mr-1" /> Sample CSV
           </Button>
-          <Button variant="outline" size="sm" onClick={handleClear} className="w-full sm:w-auto">
-            <Trash2 className="w-4 h-4 mr-1" /> Clear
+          <Button variant="outline" size="sm" onClick={handleClearAll} className="w-full sm:w-auto">
+            <Trash2 className="w-4 h-4 mr-1" /> Clear all
           </Button>
           <Button size="sm" onClick={() => fileRef.current?.click()} className="w-full sm:w-auto">
-            <Upload className="w-4 h-4 mr-1" /> Upload CSV
+            <Upload className="w-4 h-4 mr-1" /> Add CSV
           </Button>
           <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleUpload} />
         </div>
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Uploaded calendars ({uploads.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {uploads.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-2">
+              No uploads yet. Add a CSV to start; you can keep multiple calendars active at once.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {[...uploads].sort((a, b) => b.uploadedAt - a.uploadedAt).map((u) => (
+                <div
+                  key={u.id}
+                  className="flex items-center justify-between gap-3 rounded-md border p-3"
+                >
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{u.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {u.days.length} days · uploaded {formatUploadDate(u.uploadedAt)}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteUpload(u.id, u.name)}
+                    aria-label={`Delete ${u.name}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <AiPromptCard />
+
 
       <Card>
         <CardHeader>
