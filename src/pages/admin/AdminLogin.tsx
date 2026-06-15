@@ -3,47 +3,28 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock } from "lucide-react";
-import { setAdminPassword } from "@/stores/contentSync";
-
-// SHA-256 hash of the admin password — plaintext is never in the bundle
-const ADMIN_PASSWORD_HASH = "f0ac4193f9d135e927ebc75d01bad8f9e3c81443b59aa7680b75b587f25dec15";
-
-async function sha256(message: string): Promise<string> {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-// Generate a session token that is not a simple boolean flag
-async function generateSessionToken(password: string): Promise<string> {
-  const timestamp = Date.now().toString();
-  return sha256(password + timestamp + "admin-session-salt");
-}
+import { adminLogin, setAdminSession } from "@/stores/contentSync";
 
 const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!password) return;
     setLoading(true);
-    try {
-      const hash = await sha256(password);
-      if (hash === ADMIN_PASSWORD_HASH) {
-        const token = await generateSessionToken(password);
-        sessionStorage.setItem("admin-auth-token", token);
-        // Cache plaintext for cloud writes (cleared on logout)
-        setAdminPassword(password);
-        navigate("/admin/dashboard");
-      } else {
-        setError(true);
-      }
-    } finally {
-      setLoading(false);
+    setError(null);
+    const result = await adminLogin(password);
+    setLoading(false);
+    if (result.ok) {
+      setAdminSession(result.session);
+      setPassword("");
+      navigate("/admin/dashboard");
+      return;
     }
+    setError((result as { error?: string }).error || "Incorrect password");
   };
 
   return (
@@ -61,11 +42,11 @@ const AdminLogin: React.FC = () => {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => { setPassword(e.target.value); setError(false); }}
+            onChange={(e) => { setPassword(e.target.value); setError(null); }}
             className={error ? "border-destructive" : ""}
           />
-          {error && <p className="text-sm text-destructive">Incorrect password</p>}
-          <Button type="submit" className="w-full" disabled={loading}>
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <Button type="submit" className="w-full" disabled={loading || !password}>
             {loading ? "Verifying…" : "Login"}
           </Button>
         </form>

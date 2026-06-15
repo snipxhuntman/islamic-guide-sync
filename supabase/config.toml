@@ -2,3 +2,6 @@ project_id = "oxgxqmhacycdoaenvesj"
 
 [functions.admin-write]
 verify_jwt = false
+
+[functions.admin-login]
+verify_jwt = false

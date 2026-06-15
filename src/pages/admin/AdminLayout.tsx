@@ -3,7 +3,7 @@ import { Outlet, NavLink, Navigate, useNavigate } from "react-router-dom";
 import { CalendarDays, MessageSquare, BookOpen, LayoutDashboard, LogOut, Globe, Radio, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { clearAdminPassword } from "@/stores/contentSync";
+import { clearAdminSession, getAdminSessionToken } from "@/stores/contentSync";
 
 type AdminLang = "en" | "de";
 
@@ -36,7 +36,7 @@ const navItems = [
 const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const isAuth = !!sessionStorage.getItem("admin-auth-token");
+  const isAuth = !!getAdminSessionToken();
   const [lang, setLang] = useState<AdminLang>(() =>
     (localStorage.getItem("admin-lang") as AdminLang) || "en"
   );
@@ -45,8 +45,7 @@ const AdminLayout: React.FC = () => {
   if (!isAuth) return <Navigate to="/admin" replace />;
 
   const handleLogout = () => {
-    sessionStorage.removeItem("admin-auth-token");
-    clearAdminPassword();
+    clearAdminSession();
     navigate("/admin");
   };
 
