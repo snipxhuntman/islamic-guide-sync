@@ -37,11 +37,24 @@ const navItems = [
 const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { isRTL } = useLanguage();
   const isAuth = !!getAdminSessionToken();
   const [lang, setLang] = useState<AdminLang>(() =>
     (localStorage.getItem("admin-lang") as AdminLang) || "en"
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Force LTR in admin panel regardless of app language (admin has no Arabic)
+  useEffect(() => {
+    const prevDir = document.documentElement.dir;
+    const hadRtlClass = document.body.classList.contains("rtl");
+    document.documentElement.dir = "ltr";
+    document.body.classList.remove("rtl");
+    return () => {
+      document.documentElement.dir = prevDir;
+      if (hadRtlClass) document.body.classList.add("rtl");
+    };
+  }, [isRTL]);
 
   if (!isAuth) return <Navigate to="/admin" replace />;
 
