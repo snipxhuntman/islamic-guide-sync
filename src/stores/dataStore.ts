@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 const KEYS = {
   prayerTimes: "admin-prayer-times",
+  prayerUploads: "admin-prayer-uploads",
   messages: "admin-messages",
   classes: "admin-classes",
   siteLinks: "admin-site-links",
