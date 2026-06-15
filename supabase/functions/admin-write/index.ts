@@ -1,5 +1,7 @@
-// Edge function: validates admin password and upserts a row in app_content.
-// All admin writes go through here so the table can stay write-locked publicly.
+// Edge function: validates a server-issued admin session token (HMAC) and
+// upserts a row in app_content. The client never sends the plaintext password
+// to this endpoint anymore — only the short-lived token returned by
+// `admin-login` is accepted.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -20,7 +22,6 @@ const ALLOWED_KEYS = new Set([
 ]);
 
 // In-memory rate limiter: max 5 failed auth attempts per IP per 15 minutes.
-// Successful auths reset the counter.
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_MAX_FAILURES = 5;
 const failureTracker = new Map<string, { count: number; firstAt: number }>();
@@ -53,22 +54,61 @@ function recordFailure(ip: string): void {
   }
 }
 
-function clearFailures(ip: string): void {
-  failureTracker.delete(ip);
+function b64urlDecode(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? "" : "=".repeat(4 - (s.length % 4));
+  const b64 = (s + pad).replace(/-/g, "+").replace(/_/g, "/");
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
 }
 
-// Constant-time string comparison to avoid timing-based password discovery.
-function timingSafeEqual(a: string, b: string): boolean {
-  const enc = new TextEncoder();
-  const aBytes = enc.encode(a);
-  const bBytes = enc.encode(b);
-  // Compare against the longer length so timing doesn't leak length info.
-  const len = Math.max(aBytes.length, bBytes.length);
-  let diff = aBytes.length ^ bBytes.length;
-  for (let i = 0; i < len; i++) {
-    diff |= (aBytes[i] ?? 0) ^ (bBytes[i] ?? 0);
-  }
+function b64urlEncode(bytes: Uint8Array): string {
+  let str = "";
+  for (const b of bytes) str += String.fromCharCode(b);
+  return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// Constant-time byte comparison.
+function timingSafeEqualBytes(a: Uint8Array, b: Uint8Array): boolean {
+  const len = Math.max(a.length, b.length);
+  let diff = a.length ^ b.length;
+  for (let i = 0; i < len; i++) diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
   return diff === 0;
+}
+
+async function verifySession(secret: string, token: string): Promise<boolean> {
+  const parts = token.split(".");
+  if (parts.length !== 2) return false;
+  const [payloadB64, sigB64] = parts;
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const expectedSig = new Uint8Array(
+    await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payloadB64)),
+  );
+  let providedSig: Uint8Array;
+  try {
+    providedSig = b64urlDecode(sigB64);
+  } catch {
+    return false;
+  }
+  if (!timingSafeEqualBytes(expectedSig, providedSig)) return false;
+
+  try {
+    const payloadJson = new TextDecoder().decode(b64urlDecode(payloadB64));
+    const payload = JSON.parse(payloadJson) as { exp?: number };
+    if (typeof payload.exp !== "number") return false;
+    if (Date.now() > payload.exp) return false;
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -112,22 +152,19 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { password, key, value } = body as {
-      password?: string;
+    const { token, key, value } = body as {
+      token?: string;
       key?: string;
       value?: unknown;
     };
 
-    if (typeof password !== "string" || !timingSafeEqual(password, adminPassword)) {
+    if (typeof token !== "string" || !(await verifySession(adminPassword, token))) {
       recordFailure(clientIp);
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    // Successful auth — reset failure counter for this IP.
-    clearFailures(clientIp);
 
     if (typeof key !== "string" || !ALLOWED_KEYS.has(key)) {
       return new Response(JSON.stringify({ error: "Invalid key" }), {
@@ -143,7 +180,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Reject obviously oversized payloads (~5MB)
     const serialized = JSON.stringify(value);
     if (serialized.length > 5_000_000) {
       return new Response(JSON.stringify({ error: "Payload too large" }), {
