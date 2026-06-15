@@ -24,7 +24,7 @@ const AdminLogin: React.FC = () => {
       navigate("/admin/dashboard");
       return;
     }
-    setError(result.error || "Incorrect password");
+    setError((result as { error?: string }).error || "Incorrect password");
   };
 
   return (
