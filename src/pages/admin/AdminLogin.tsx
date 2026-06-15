@@ -1,15 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock } from "lucide-react";
 import { adminLogin, setAdminSession } from "@/stores/contentSync";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { isRTL } = useLanguage();
+
+  useEffect(() => {
+    const prevDir = document.documentElement.dir;
+    const hadRtlClass = document.body.classList.contains("rtl");
+    document.documentElement.dir = "ltr";
+    document.body.classList.remove("rtl");
+    return () => {
+      document.documentElement.dir = prevDir;
+      if (hadRtlClass) document.body.classList.add("rtl");
+    };
+  }, [isRTL]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
