@@ -22,9 +22,9 @@ const AdminLogin: React.FC = () => {
       setAdminSession(result.session);
       setPassword("");
       navigate("/admin/dashboard");
-    } else {
-      setError(result.error || "Incorrect password");
+      return;
     }
+    setError(result.error || "Incorrect password");
   };
 
   return (
